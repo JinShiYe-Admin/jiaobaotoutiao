@@ -1,0 +1,218 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/iconfont/iconfont.css" />
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/qiniu/qiniu.js"></script>
+		<script type="text/javascript" src="../../js/utils/cryption.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/utils/CloudFileUtil.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script type="text/javascript" src="../../js/cloud/AndroidFileSystem.js"></script>
+		<script type="text/javascript" src="../../js/utils/UploadHeadImage.js"></script>
+		<script type="text/javascript" src="../../js/utils/compress.js"></script>
+		<style>
+			body,
+			.mui-content {
+				background: white;
+			}
+
+			.qun-image {
+				height: 100px;
+				width: 100px;
+				margin-top: 20px;
+			}
+
+			.mui-input-row label {
+				text-align: center;
+				width: 25%;
+				padding: 11px 0px;
+				font-size: 15px;
+			}
+
+			.mui-input-group {
+				margin-top: 20px;
+			}
+
+			.mui-input-group:before,
+			.mui-input-group:after {
+				height: 0px;
+			}
+
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				width: 75%;
+				font-size: 15px;
+				padding-right: 10px;
+			}
+
+			.mui-input-group .mui-input-row:after {
+				width: 100%;
+				left: 0;
+				background-color: #D9D9D9 !important;
+			}
+
+			.mui-btn-block {
+				border-radius: 50px;
+				margin-top: 50px;
+				width: 80%;
+				margin-left: 10%;
+				height: 40px;
+				padding: 0;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">群信息</h1>
+		</header>
+		<div class="mui-content" id="content">
+			<div id="qunimage">
+				<div id="choose" class="qun-image" style="text-align: center;margin-left: auto;margin-right: auto;border: 1px solid #F2F2F2;border-radius: 50%;">
+					<a class="mui-icon iconfont icon-xiangji" style="color: #BBBBBB;font-size: 30px;margin-top: 20px;">
+						<p style="font-size: 10px;margin-top: 10px;">
+							请上传群图标!
+						</p>
+					</a>
+				</div>
+			</div>
+			<form class="mui-input-group">
+				<div class="mui-input-row" data-value='gname'>
+					<label>群名称：</label>
+					<input id="gname" type="text" onfocus="this.blur();" placeholder="请为你们的群起一个给力的名字吧！">
+				</div>
+				<div class="mui-input-row" data-value='gnote'>
+					<label>群说明：</label>
+					<input id="gnote" type="text" onfocus="this.blur();" placeholder="请简单介绍一下本群！">
+				</div>
+				<div class="mui-input-row" data-value='qunremark' style="display: none;">
+					<label>群备注：</label>
+					<input id="qunremark" type="text" onfocus="this.blur();" class="mui-input-clear">
+				</div>
+			</form>
+		</div>
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function() {
+				events.blurBack();
+				//				var Width = plus.screen.resolutionWidth;
+				//				var marginLeft = (Width) / 8 + 'px';
+				//addQunImg(); //显示上传群头像的图标
+				var qname = document.getElementById("gname"); //群名称
+				var qnote = document.getElementById("gnote"); //群说明
+				var qremark = document.getElementById("qunremark"); //群备注
+				//---从父页面获取数据---start---
+				var main = plus.webview.currentWebview(); //获取当前窗体对象
+				var subData = main.data; //接收页面传入的参数值
+				//console.log('从父页面获取的数据:' + JSON.stringify(subData));
+				//---从父页面获取数据---end---
+				//var qunImgPath = 'qunHeadImge' + subData.gid + '.png';
+				//9.获取用户群
+				//获取个人信息
+				//var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid;
+				//需要参数
+				var comData = {
+					vtp: 'ig', //要获取的项:cg(创建的群),ug(参与群),mg(协管的群),ag(所有的群),ig(群信息vvl对应群ID)
+					vvl: subData.gid //查询的各项，对应人的utid，可以是查询的任何人
+				};
+				//返回值model：model_groupList
+				// 等待的对话框
+				var wd = events.showWaiting();
+				postDataPro_PostGList(comData, wd, function(data) {
+					//console.log('9.90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						qname.value = data.RspData[0].gname;
+						qnote.value = data.RspData[0].gnote;
+						//qremark.value=data.RspData[0].;
+						if(data.RspData[0].gimg != '' && data.RspData[0].gimg != null && data.RspData[0].gimg != 'null') {
+							document.getElementById("choose").innerHTML = '<img src="' + updateHeadImg(data.RspData[0].gimg, 2) + '" style="margin-top:0px;border: 1px solid #F2F2F2;border-radius: 50%;height: 100px;width: 100px;" />';
+						}
+						//upQN();
+					} else {
+						document.getElementById("content").style.display = 'none';
+						mui.toast(data.RspTxt);
+					}
+					wd.close();
+				});
+
+				mui('.mui-input-group').on('tap', '.mui-input-row', function() {
+					var id = this.getAttribute('data-value');
+					var type = '';
+					var value = '';
+					switch(id) {
+						case 'gname': //名称
+							type = 'gname';
+							value = qname.value;
+							break;
+						case 'gnote': //群说明
+							type = 'gnote';
+							value = qnote.value;
+							break;
+						case 'qunremark': //群备注
+							type = 'qunremark';
+							value = qremark.value;
+							break;
+						default:
+							//console.log('修改群资料的类型选择出错');
+							break;
+					}
+
+					events.openNewWindowWithData('qun_manage_info_change_post.html', {
+						gid: subData.gid, //群id
+						type: type, //修改的类型
+						value: value, //修改的值
+						post: true, //是否post
+						listener: [subData.listener, { webid: 'qun_manage_info_change.html', winid: 'valueChange' }]
+					});
+				});
+
+				//修改群信息成功后修改界面的值
+				window.addEventListener('valueChange', function(e) {
+					var data = e.detail;
+					document.getElementById(data.type).value = data.value;
+				});
+
+				//群头像修改
+				var qunimage = document.getElementById("choose");
+				UploadHeadImage.addListener(qunimage, 2, {
+					id: subData.gid, //资料id
+				}, function(successCB) {
+					//console.log('上传并修改群头像，成功的回调' + JSON.stringify(successCB));
+					document.getElementById("choose").innerHTML = '<img src="' + updateHeadImg(successCB, 2) + '" style="margin-top:0px;border: 1px solid #F2F2F2;border-radius: 50%;height: 100px;width: 100px;"/>';
+					mui.toast('更新群头像成功');
+				}, function(errorCB) {
+					//console.log('上传并修改群头像，失败的回调' + JSON.stringify(errorCB));
+					mui.toast('更新群头像失败 ' + JSON.stringify(errorCB));
+				});
+
+				/**
+				 * 上传群图标区域
+				 */
+				function addQunImg() {
+					var div = document.getElementById("qunimage");
+					div.innerHTML = '<div style="margin-left: ' + marginLeft + ';" class="qun-image">\
+										<a class="mui-icon iconfont icon-xiangji" style="color: #BBBBBB;font-size: 30px;margin-top: 20px;">\
+											<p style="font-size: 10px;margin-top: 10px;">\
+												请上传群图标!\
+											</p>\
+										</a>\
+									</div>';
+					//div.innerHTML = '<img style="margin-left: ' + marginLeft + ';" src="../../image/clip/u292.png" class="qun-image" />';
+					var table = document.body.querySelector('.mui-content');
+					table.insertBefore(div, table.firstChild);
+				}
+			});
+		</script>
+	</body>
+
+</html>

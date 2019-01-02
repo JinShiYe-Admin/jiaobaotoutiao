@@ -1,0 +1,38 @@
+.info-headImg{
+	width: 6rem;
+	height: 6rem;
+	border-radius: 50%;
+}
+.info-main{
+	width: 100%;
+	padding: 2rem 0 1rem;
+	text-align: center;
+	background-color: white;
+}
+.mui-table-view-cell p{
+	color: #323232;
+	font-size: 1.5rem;
+}
+.info-remark{
+	color: #000000;
+}
+.info-nick{
+	color: #323232;
+	font-size: 1.6rem;
+}
+.mui-badge {
+	color: #8f8f94;
+	font-size: 1.2rem;
+	background-color: transparent;
+	max-width: 80%;
+}
+.mui-navigate-right:after, .mui-push-right:after{
+	font-size: 20px;
+}
+.mui-table-view:before{
+	height: 1px;
+	background-color: #E4E4E4;
+}
+.area-container{
+	margin-right: 20px;
+}

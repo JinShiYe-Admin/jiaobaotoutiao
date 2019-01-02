@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">更改作业评论</h1>
+			<a id="submit-change" class="mui-pull-right">提交</a>
+		</header>
+		<div class="mui-content">
+		    <textarea class="input-area" name="" rows="10" cols="" placeholder="请输入评论，最多1000字"></textarea>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script src="../../js/publicHomeworkProtocol.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			var workInfo;
+			mui.plusReady(function() {
+				events.blurBack();
+				workInfo = plus.webview.currentWebview().data;
+				//console.log("作业修改评论界面获取的数据："+JSON.stringify(workInfo))
+				document.querySelector(".input-area").value=workInfo.Comment;
+				jQuery(".input-area").prop("maxLength",1000);
+				events.addTap("submit-change", function() {
+					var value=document.querySelector(".input-area").value;
+					if(value){
+						if(events.limitInput(value,1000)){
+							return;
+						}
+						modifyHomeworkComment(value)
+					}				
+				})
+			})
+			/**
+			 * 更改普通作业评论
+			 */
+			var modifyHomeworkComment = function(commentValue) {
+				var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+				postDataPro_ModifyHomeworkResultComment({
+					teacherId: myStorage.getItem(storageKeyName.PERSONALINFO).utid,
+					homeworkResultId: workInfo.HomeworkResultId,
+					studentId: workInfo.utid,
+					classId: workInfo.gid,
+					homeworkId: workInfo.HomeworkId,
+					comment: commentValue
+				}, wd, function(data) {
+					wd.close();
+					//console.log('老师评价页面获取老师更改普通作业评论的结果：' + JSON.stringify(data));
+					if(data.RspCode == '0000') {
+						mui.toast('修改评论成功！')
+						mui.fire(plus.webview.currentWebview().opener(),"commentChanged",commentValue)
+						mui.back();
+					} else {
+						mui.toast(data.RspTxt);
+					}
+				})
+			}
+		</script>
+	</body>
+
+</html>

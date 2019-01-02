@@ -1,0 +1,592 @@
+<!--
+	作者：444811716@qq.com
+	时间：2016-10-22
+	描述：学生动态
+-->
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>学生动态</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="author" content="莫尚霖,email:444811716@qq.com" />
+		<meta name="description" content="学生动态" />
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/utils/preview.css" />
+		<link rel="stylesheet" href="../../css/utils/pullToRefresh.css" />
+		<style>
+			body,
+			.mui-content {
+				background-color: white;
+			}
+
+			.mui-table-view:before,
+			.mui-table-view:after,
+			.mui-table-view-cell:after {
+				height: 0px;
+			}
+
+			.mui-table-view {
+				word-break: break-all;
+				background-color: white;
+			}
+
+			.mui-col-sm-9 {
+				background: #F2F3F5;
+			}
+
+			.mui-col-sm-3 {
+				padding-left: 10px;
+			}
+
+			.dynamic-date :first-child {
+				font-size: 3rem;
+				display: inline;
+			}
+
+			.dynamic-date :last-child {
+				font-size: 1.5rem;
+				display: inline;
+			}
+
+			.mui-table-view-cell {
+				padding: 8px;
+				margin: 0px;
+			}
+
+			.mui-table-view-cell.mui-active {
+				background: #D9D9D9;
+			}
+
+			.dynamic-ellipsis-show {
+				overflow: hidden;
+				text-overflow: ellipsis;
+				display: -webkit-box;
+				-webkit-line-clamp: 4;
+				-webkit-box-orient: vertical;
+				font-size: 1.4rem;
+				line-height: 20px;
+			}
+
+			.dynamic-date-parent {
+				margin-top: 20px;
+			}
+
+			.dynamic-date-year-parent {
+				width: 16.6%;
+				margin-left: 15px;
+			}
+
+			.dynamic-date-year {
+				font-weight: bold;
+				font-size: 1.8rem;
+			}
+
+			.dynamic-date {
+				/*日期*/
+				font-weight: bold;
+				/*加粗*/
+				margin-top: 4px;
+			}
+
+			.mui-row {
+				margin-top: 5px;
+				margin-right: 10px;
+				word-break: break-all;
+			}
+
+			.record-imge {
+				width: 100%;
+				margin-top: 3px;
+			}
+
+			.record-picture {
+				overflow: hidden;
+				position: relative;
+				float: left;
+				text-align: center;
+				margin-bottom: 3px;
+			}
+
+			.record-picture-num {
+				/*剩余图片数量*/
+				position: absolute;
+				color: white;
+				background-color: rgba(0, 0, 0, .3);
+				width: 100%;
+				font-size: 25px;
+			}
+
+			.show-all {
+				display: none;
+				color: #B7B7B7;
+				font-size: 1.4rem;
+			}
+
+			.dynamic-name {
+				float: right;
+				color: #808080;
+			}
+
+			.mui-pull-bottom-wrapper {
+				/*底部加载更多区域*/
+				background-color: white;
+			}
+
+			.mui-popover {
+				width: 100%;
+				height: 0px;
+				border-radius: initial;
+				background-color: transparent;
+				border: none;
+				box-shadow: none;
+			}
+
+			.mui-backdrop {
+				background-color: black;
+			}
+
+			.video-thumb {
+				/*视频缩略图*/
+				width: 50%;
+				visibility: hidden;
+			}
+
+			.video-play {
+				/*播放按钮*/
+				position: absolute;
+				visibility: hidden;
+			}
+
+			.video-time {
+				/*视频时间*/
+				position: absolute;
+				color: white;
+				right: 52%;
+				visibility: hidden;
+				bottom: 10px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title"></h1>
+			<a id="stuImage" class="mui-icon mui-icon-contact mui-pull-right"></a>
+		</header>
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper" style="z-index: 1;">
+			<div class="mui-scroll">
+				<!--数据列表-->
+				<ul class="mui-table-view" id="ul_table">
+				</ul>
+			</div>
+		</div>
+		<div id="videoPopover" class="mui-popover">
+			<video id="video" style="position: absolute;z-index: 999;" controls="controls" webkit-playsinline playsinline>
+				您的浏览器不支持 video 标签。
+			</video>
+		</div>
+	</body>
+	<script src="../../js/mui.min.js"></script>
+	<script type="text/javascript" src="../../js/qiniu/qiniu.js"></script>
+	<script type="text/javascript" src="../../js/utils/cryption.js"></script>
+	<script type="text/javascript" src="../../js/utils/events.js"></script>
+	<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+	<script type="text/javascript" src="../../js/utils/CloudFileUtil.js"></script>
+	<script type="text/javascript" src="../../js/cloud/AndroidFileSystem.js"></script>
+	<script type="text/javascript" src="../../js/utils/UploadHeadImage.js"></script>
+	<script type="text/javascript" src="../../js/mui.zoom.js"></script>
+	<script type="text/javascript" src="../../js/mui.previewimage.js"></script>
+	<script type="text/javascript" src="../../js/mui.pullToRefresh.js"></script>
+	<script type="text/javascript" src="../../js/mui.pullToRefresh.material.js"></script>
+	<script type="text/javascript" src="../../js/utils/compress.js"></script>
+	<script type="text/javascript" src="../../js/utils/playutil.js"></script>
+	<script type="text/javascript" src="../../js/utils/showvideoutil.js"></script>
+
+	<script type="text/javascript">
+		var main; //获取当前窗体对象
+		var mainData; //页面传入值
+		var markDate = ''; //记录日期
+		var today = ''; //记录今天日期
+		var year = ''; //记录年份
+		var previewImage; //查看图片的控件
+		var pullRefresh; //下拉，上拉控件
+		var page; //记录页数
+		var records = {
+			recordKey: [], //记录点到记事的Key
+			recordValue: {} //记录点到记事的Value
+		}; //记录所有的点到记事
+		var userId = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid; //用户ID
+		var row_width = (localStorage.getItem('resolutionWidth') * 1 - 10) * 0.8 - 16;
+		var imageWidth = parseInt(row_width * 0.3);
+		var imageHeight = parseInt(imageWidth * 3 / 4);
+		var marginBottom = parseInt(row_width * 0.016);
+
+		//启用双击监听
+		mui.init({
+			gestureConfig: {
+				doubletap: true,
+			}
+		});
+
+		mui.plusReady(function() {
+			initData();
+			initControl();
+			initListener();
+			getNotes(1, 0);
+		});
+
+		/**
+		 * 初始化数据
+		 */
+		function initData() {
+			var main = plus.webview.currentWebview();
+			mainData = main.data;
+			//console.log(main.id + ' ' + JSON.stringify(mainData));
+			//修改标题
+			document.getElementById("title").innerText = mainData.studentName;
+			var myDate = new Date();
+			var month = myDate.getMonth() + 1;
+			if(month.length = 1) {
+				month = '0' + month;
+			}
+			//获得今天
+			today = myDate.getFullYear() + '-' + month + '-' + myDate.getDate();
+		}
+
+		/**
+		 * 初始化控件
+		 */
+		function initControl() {
+			//初始化图片查看控件
+			previewImage = mui.previewImage();
+
+			//初始化下拉，上拉控件
+			var deceleration = mui.os.ios ? 0.003 : 0.0009;
+			mui('.mui-scroll-wrapper').scroll({
+				bounce: false,
+				indicators: true,
+				deceleration: deceleration
+			});
+			pullRefresh = mui('.mui-scroll-wrapper .mui-scroll').pullToRefresh({
+				down: {
+					callback: function() {
+						//console.log('down ' + JSON.stringify(page));
+						getNotes(1, 1);
+					}
+				},
+				up: {
+					contentinit: '', //默认没有更多显示空白
+					contentnomore: '', //隐藏没有更多提示
+					callback: function() {
+						//console.log('up ' + JSON.stringify(page));
+						if(page) {
+							getNotes(page.pageIndex + 1, 2);
+						} else {
+							pullRefresh.endPullUpToRefresh();
+							mui.toast('数据异常，请下拉刷新后重新尝试');
+						}
+					}
+				}
+			});
+
+			//初始化播放器
+			ShowVideoUtil.initVideo(document.getElementById("video"));
+		}
+
+		/**
+		 * 初始化监听
+		 */
+		function initListener() {
+			//资料头像修改
+			var stuImage = document.getElementById("stuImage");
+			UploadHeadImage.addListener(stuImage, 1, {
+				id: mainData.studentId, //资料id
+				name: mainData.studentName //资料名称
+			}, function(successCB) {
+				//console.log('上传并修改资料头像，成功的回调' + JSON.stringify(successCB));
+				mui.toast('资料头像更新成功');
+				//获得主页面的webview
+				var cloud_home = plus.webview.getWebviewById('cloud_home.html');
+				//触发tab-zone页面的setRead事件
+				mui.fire(cloud_home, 'stuImgeChanged', {
+					id: mainData.studentId,
+					img: successCB
+				});
+			}, function(errorCB) {
+				//console.log('上传并修改资料头像失败 ' + JSON.stringify(errorCB));
+				mui.toast('资料头像更新失败' + JSON.stringify(errorCB));
+			});
+
+			//点击图片的数字
+			mui('#ul_table').on('tap', '.record-picture-num', function() {
+				previewImage.open(document.getElementById("img_" + this.getAttribute('data-id')))
+			});
+
+			//显示全部，收起
+			mui('#ul_table').on('tap', '.show-all', function() {
+				var str = this.innerText;
+				var id = this.id.replace('_show', '');
+				var content = document.getElementById(id + "_content");
+				if(str == '显示全部') {
+					this.innerText = '收起';
+					content.style.webkitLineClamp = 'inherit';
+				} else if(str == '收起') {
+					var offsetHeight_0 = content.offsetHeight;
+					this.innerText = '显示全部';
+					content.style.webkitLineClamp = '3';
+					var offsetHeight_1 = content.offsetHeight;
+					var scroll = mui('#pullrefresh').scroll(); //滑动控件
+					var move = scroll.y + (offsetHeight_0 - offsetHeight_1);
+					if(move >= 0) {
+						scroll.scrollTo(0, 0, 0);
+					} else {
+						scroll.scrollTo(0, move, 0);
+					}
+				}
+			});
+
+			//双击标题返回列表顶部
+			document.getElementById('title').addEventListener('doubletap', function() {
+				mui('#pullrefresh').scroll().scrollTo(0, 0, 100);
+			});
+
+			/**
+			 * 播放视频
+			 */
+			mui('#ul_table').on('tap', '.video-play', function() {
+				var ids = this.id.split('_');
+				ShowVideoUtil.showVideo(document.getElementById("video"), 'videoPopover', records.recordValue[ids[2]].EncAddr, records.recordValue[ids[2]].EncImgAddr);
+			});
+		}
+
+		/**
+		 * 获取用户针对某学生的点到记事列表
+		 * @param {Object} pageIndex 当前页数
+		 */
+		function getNotes(pageIndex, type) {
+			var wd = null;
+			if(type == 0) {
+				wd = events.showWaiting();
+			}
+			var comData = {
+				userId: userId, //用户ID----utid
+				classId: mainData.classId, //班级id
+				studentId: mainData.studentId, //学生ID----stuid
+				pageIndex: pageIndex, //当前页数
+				pageSize: '10', //每页记录数
+				publisherId: '0' //发布者ID,0代表全部
+			};
+			//4.（点到记事）获取用户针对某学生的点到记事列表
+			postDataPro_getNotesByUserForStudent(comData, wd, function(data) {
+				//console.log('4 获取用户针对某学生的点到记事列表 getNotesByUserForStudent' + JSON.stringify(data));
+				if(data.RspCode == 0) {
+					//记录页数
+					page = {
+						pageIndex: pageIndex, //当前页数
+						totalPage: data.RspData.TotalPage //总页数
+					};
+					//console.log('page ' + JSON.stringify(page));
+					if(pageIndex == 1) { //下拉刷新或者获取的第一页的内容
+						//清空对应的界面
+						document.getElementById('ul_table').innerHTML = '';
+						year = ''; //清空年份
+						markDate = ''; //清空年份
+						records = {
+							recordKey: [], //记录点到记事的Key
+							recordValue: {} //记录点到记事的Value
+						}; //记录所有的点到记事
+						var comData2 = {
+							userId: userId, //用户ID----utid
+							classId: mainData.classId, //班级ID----
+							studentId: mainData.studentId //学生ID----stuid
+						};
+						postDataPro_setNoteReadByUser(comData2, wd, function(data2) {
+							//console.log('10 修改某用户针对某学生所有点到记事阅读状态为已读 setNoteReadByUser' + JSON.stringify(data2));
+						});
+						pullRefresh.refresh(true); //更新当前控件
+					}
+					if(data.RspData.Data.length == 0 && pageIndex == 1) {
+						mui.toast('学生动态为空');
+					} else {
+						for(var i = 0; i < data.RspData.Data.length; i++) {
+							createNotes(data.RspData.Data[i]);
+						}
+					}
+				} else {
+					mui.toast(data.RspTxt);
+				}
+				if(type == 0) {
+					wd.close();
+				} 
+				if(type == 1) { //结束下拉刷新
+					pullRefresh.endPullDownToRefresh();
+				}
+				endPullUp();
+			});
+		}
+
+		/**
+		 * 界面中创建一条记录
+		 * @param {Object} item
+		 */
+		function createNotes(data) {
+			////console.log('createNotes ' + JSON.stringify(data));
+			records.recordKey.push(data.TabId);
+			records.recordValue[data.TabId] = data;
+			var date = data.PublishDate.split(' '); //发布的日期和时间
+			var dateItem = date[0]; //日期
+			var time = date[0].split('-'); //时间
+			var timeItem_month = time[1] + '月';
+			var timeItem_day = time[2];
+			var yearItem = dateItem.split('-')[0];
+			if(year == yearItem) { //同一年
+				yearItem = '';
+			} else {
+				year = yearItem; //新的一年
+			}
+			if(year == today.split('-')[0]) { //今年
+				yearItem = '';
+			}
+
+			if(markDate != dateItem) {
+				var element = document.createElement('div');
+				element.className = 'dynamic-date-parent'
+				element.id = dateItem;
+				element.innerHTML = '<div class="dynamic-date-year-parent"><div class="dynamic-date-year">' + yearItem + '</div></div>';
+				document.getElementById("ul_table").appendChild(element);
+			}
+
+			if(dateItem == today) {
+				timeItem_day = '今天';
+				timeItem_month = '';
+			}
+			if(markDate == dateItem) {
+				timeItem_month = '';
+				timeItem_day = '';
+			}
+
+			var html_media = ''; //多媒体
+			var marginRight;
+
+			if(data.EncType == 1) { //附件类型,1图片2音视频3仅文字
+				var imageArray = data.EncAddr.split('|');
+				var thumbArray = data.EncImgAddr.split('|');
+				var html_0 = '<div class="record-imge" style="height=' + imageHeight + marginBottom + 'px;">';
+				var html_1 = '';
+				var html_2 = ''; //显示剩余的图片数量
+				var html_3 = ''; //是否显示图片
+				for(var i = 0; i < imageArray.length; i++) {
+					if(i == 2 || i == 5 || i == 8) {
+						marginRight = 0;
+					} else {
+						marginRight = marginBottom;
+					}
+					if(i > 2) {
+						html_3 = 'display: none;';
+					}
+					if(i == 2 && imageArray.length > 3) {
+						html_2 = '<div data-id="' + data.TabId + '_' + i + '" class="record-picture-num" style="line-height: ' + (imageHeight + 1) + 'px;">+' + (imageArray.length - 3) + '</div>'
+					}
+					html_1 = html_1 + '<div class="record-picture" style="width: ' + imageWidth + 'px; height: ' + imageHeight + 'px; margin-right: ' + marginRight + 'px;' + html_3 + '">\
+									' + html_2 + '<img id="img_' + data.TabId + '_' + i + '" src="' + thumbArray[i] + '" data-preview-src="' + imageArray[i] + '" data-preview-group="' + data.TabId + '" style="width:100%;visibility: hidden;" onerror="events.imageOnError(this,this.getAttribute(\'data-preview-src\'));this.style.visibility=\'visible\';" onload="if(this.offsetHeight<=this.offsetWidth){if(this.offsetHeight<' + imageHeight + '){this.style.height=\'' + imageHeight + 'px\';this.style.width=\'initial\';}this.style.marginLeft=-parseInt((this.offsetWidth-' + imageWidth + ')/2)+\'px\';}else{this.style.marginTop=-parseInt((this.offsetHeight-' + imageHeight + ')/2)+\'px\';};this.style.visibility=\'visible\';">\
+								</div>';
+				}
+				html_media = html_0 + html_1 + '</div>';
+			} else if(data.EncType == 2) { //视频
+				var play_width = 55;
+				var html_0 = '<div class="record-video">\
+								<div id="video_time_' + data.TabId + '" class="video-time">' + data.EncLen + '\'\'</div>\
+								<img id="video_play_' + data.TabId + '" style="width:' + play_width + 'px;height:' + play_width + 'px;" class="video-play" onload="videoThumbLoad(this);" src="../../image/utils/playvideo.png" />\
+								<img id="video_thumb_' + data.TabId + '" class="video-thumb" src="' + data.EncImgAddr + '" onload="videoThumbLoad(this);" onerror="videoThumbError(this);">\
+							</div>';
+				html_media = html_0;
+			}
+
+			var element = document.createElement('div');
+			element.className = 'mui-row';
+			element.innerHTML = '<div class="mui-col-sm-3 mui-col-xs-3">\
+										<div class="dynamic-date">\
+											<div style="font-size:2.5rem;">' + timeItem_day + '</div><div style="margin-left:2px;font-size:1.4rem;">' + timeItem_month + '</div>\
+										</div>\
+									</div>\
+									<div class="mui-col-sm-9 mui-col-xs-9">\
+										<div class="mui-table-view-cell">\
+											<div id="' + data.TabId + '_content" class="dynamic-ellipsis-show"></div>\
+											<div id="' + data.TabId + '_show" class="show-all">显示全部</div>' + html_media + '\
+										</div>\
+									</div>';
+			document.getElementById(dateItem).appendChild(element);
+
+			var type = ''; //类型
+			if(data.NoteType == 1) { //点到
+				if(data.MsgContent != '') { //有内容
+					type = data.CheckTypeStr + ' : ';
+				} else {
+					type = data.CheckTypeStr;
+				}
+			}
+			if(data.MsgContent == '' && data.NoteType == 2) {
+				document.getElementById(data.TabId + '_content').style.display = 'none';
+			} else {
+				var height_0;
+				var height_1;
+				var contentEl = document.getElementById(data.TabId + '_content');
+				contentEl.innerText = type + data.MsgContent;
+				height_0 = contentEl.offsetHeight;
+				contentEl.style.webkitLineClamp = '3';
+				height_1 = contentEl.offsetHeight;
+				if(height_0 > height_1) {
+					//内容高度大于三行
+					document.getElementById(data.TabId + "_show").style.display = 'inline';
+				}
+			}
+			markDate = dateItem;
+		}
+
+		/**
+		 * 结束上拉加载更多
+		 */
+		function endPullUp() {
+			if(page && page.pageIndex >= page.totalPage) {
+				//console.log('没有下一页');
+				pullRefresh.endPullUpToRefresh(true);
+			} else {
+				pullRefresh.endPullUpToRefresh();
+			}
+		}
+
+		/**
+		 * 视频的缩略图加载成功
+		 * @param {Object} img
+		 */
+		function videoThumbLoad(img) {
+			var ids = img.id.split('_');
+			img.setAttribute('data-load', 1);
+			var img_a;
+			if(ids[1] == 'play') {
+				img_a = document.getElementById("video_thumb_" + ids[2]);
+			} else {
+				img_a = document.getElementById("video_play_" + ids[2]);
+			}
+			if(img.getAttribute('data-load') && img_a.getAttribute('data-load')) {
+				ShowVideoUtil.videoThumbLoad(document.getElementById("video_thumb_" + ids[2]), document.getElementById("video_play_" + ids[2]), 1, document.getElementById("video_time_" + ids[2]));
+			}
+		}
+
+		/**
+		 * 视频的缩略图加载失败
+		 * @param {Object} img
+		 */
+		function videoThumbError(img) {
+			var ids = img.id.split('_');
+			ShowVideoUtil.videoThumbError(img, document.getElementById("video_play_" + ids[2]), records.recordValue[ids[2]].EncAddr);
+		}
+	</script>
+
+</html>

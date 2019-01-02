@@ -1,0 +1,1848 @@
+<!--
+	作者：444811716@qq.com
+	时间：2016-12-08
+	描述：传输列表
+-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/iconfont/iconfont.css" />
+		<link rel="stylesheet" href="../../css/cloud/file.css" />
+		<style>
+			#sliderSegmentedControl {
+				background-color: white;
+			}
+
+			.iconfont-size {
+				font-size: 42px;
+			}
+
+			.mui-table-view {
+				background-color: transparent;
+			}
+
+			.mui-table-view-cell {
+				background-color: white;
+			}
+
+			.mui-btn {
+				right: 15px;
+			}
+
+			.transport-info {
+				width: 90%;
+			}
+
+			.mui-media-object {
+				height: 42px;
+				width: 42px;
+			}
+
+			.mui-slider .mui-segmented-control.mui-segmented-control-inverted~.mui-slider-group .mui-slider-item {
+				border-top: none;
+			}
+
+			.mui-segmented-control.mui-segmented-control-inverted~.mui-slider-progress-bar {
+				background-color: #00a5e0;
+			}
+
+			#download .mui-btn-outlined {
+				visibility: hidden;
+			}
+
+			.mui-checkbox input[type=checkbox]:checked:before {
+				color: #13b7f6;
+			}
+
+			.mui-checkbox input[type=checkbox] {
+				right: 0px;
+				top: 5px;
+			}
+
+			#cancel {
+				display: none;
+			}
+
+			.mui-bar.mui-bar-tab {
+				box-shadow: none;
+				background-color: #636770;
+			}
+
+			.mui-bar-tab .mui-tab-item {
+				color: white !important;
+				opacity: 0.5;
+			}
+
+			.mui-tab-item div {
+				display: inline !important;
+			}
+
+			#nav {
+				display: none;
+			}
+
+			#sliderGroup {
+				bottom: 0px;
+			}
+
+			.delete-show #downloaded button,
+			.delete-show #uploaded button {
+				display: none;
+			}
+
+			.delete-hide #downloaded .mui-checkbox,
+			.delete-hide #uploaded .mui-checkbox {
+				display: none;
+			}
+
+			#failPop .mui-popup {
+				display: block;
+				background-color: white;
+			}
+
+			#failPop .mui-popup .mui-scroll-wrapper {
+				top: 45px;
+				bottom: 38px;
+			}
+
+			#failPop .mui-popup .mui-popup-buttons {
+				margin-top: 129px;
+				border-top: 0.5px solid rgba(0, 0, 0, 0.1);
+				/*box-shadow: 0px -1px 0px rgba(0, 0, 0, 0.1);*/
+			}
+
+			#failPop .mui-popup .mui-table-view-cell {
+				padding: 11px 15px;
+			}
+
+			#failPop .mui-popup .mui-table-view {
+				background-color: white;
+			}
+
+			#downloaded button,
+			#uploaded button {
+				margin-top: 4px;
+			}
+
+			#download button,
+			#upload button {
+				margin-top: 4.5px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<div id="cancel" class="title-text-pull-left" @tap="tap">取消</div>
+			<a id="back" class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title">传输列表</h1>
+			<div id="edit" class="title-text-pull-right" @tap="tap">{{content}}</div>
+		</header>
+		<nav id="nav" class="mui-bar mui-bar-tab">
+			<div id="delete_file" class="mui-tab-item" :style="{opacity:opacity}">
+				<div class="mui-icon iconfont iconfont-color icon-trash" @tap="tap"></div>
+				<div class="mui-tab-label" @tap="tap">删除</div>
+			</div>
+		</nav>
+		<div class="mui-content">
+			<div id="slider" class="mui-slider mui-fullscreen delete-hide">
+				<div id="sliderSegmentedControl" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+					<a class="mui-control-item mui-active" href="#item1mobile">
+						下载列表
+					</a>
+					<a class="mui-control-item" href="#item2mobile">
+						上传列表
+					</a>
+				</div>
+				<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-6" style="margin-top: -1px;"></div>
+				<div id="sliderGroup" class="mui-slider-group">
+					<div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+						<div id="scroll1" class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<ul class="mui-table-view">
+									<div style="margin-top: 5px;background-color: white;">
+										<div id="downloadnum" style="padding:5px;">
+											下载中
+										</div>
+										<div style="height: 1px;width: 100%;background: #E4E4E4;"></div>
+									</div>
+									<div id="download">
+										<!--<li class="mui-table-view-cell mui-media">
+											<div class="mui-media-object mui-pull-right">
+												<button id="down_btn_' + id + '" type="button" class="mui-btn mui-btn-outlined" style="visibility: visible;">等待</button>
+											</div>
+											<span class="mui-media-object mui-icon iconfont iconfont-size icon-imge mui-pull-left"></span>
+											<div class="mui-media-body">
+												<div class="mui-ellipsis transport-info">
+													一二三四五六七八九十
+												</div>
+												<div class="transport-info">
+													<div id="down_bar_' + id + '" class="mui-progressbar">
+														<span></span>
+													</div>
+													<p id="down_size_' + id + '" class="mui-pull-left"></p>
+													<p id="down_waiting_' + id + '" class="mui-pull-right">
+														正在等待...
+													</p>
+												</div>
+											</div>
+										</li>-->
+									</div>
+									<div style="margin-top: 10px;background-color: white;">
+										<div id="downloadednum" style="padding:5px;">
+											已下载
+										</div>
+										<div style="height: 1px;width: 100%;background: #E4E4E4;"></div>
+									</div>
+									<div id="downloaded">
+										<!--<li class="mui-table-view-cell mui-media local-file-delete">
+											<div class="mui-media-object mui-pull-right">
+												<div class="mui-input-row mui-checkbox" v-if="showcheck">
+													<label>&nbsp;</label>
+													<input name="Checkbox" type="checkbox" value="' + li.id + '">
+												</div>
+												<button value="' + fpath + '" type="button" class="mui-btn mui-btn-outlined local-file-open">打开</button>
+											</div>
+											<span class="mui-media-object mui-icon iconfont iconfont-size ' + type + ' mui-pull-left"></span>
+											<div class="mui-media-body">
+												<div class="mui-ellipsis transport-info">
+													一二三四五六七八九十一二三四五六七八九十
+												</div>
+												<div class="transport-info">
+													<p class="mui-ellipsis">
+														一二三四五六七八九十&nbsp;&nbsp;一二三四五六七八九十
+													</p>
+												</div>
+											</div>
+										</li>-->
+									</div>
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div id="item2mobile" class="mui-slider-item mui-control-content">
+						<div id="scroll2" class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<ul class="mui-table-view">
+									<div style="margin-top: 5px;background-color: white;">
+										<div id="uploadnum" style="padding:5px;">
+											上传中
+										</div>
+										<div style="height: 1px;width: 100%;background: #E4E4E4;"></div>
+									</div>
+									<div id="upload">
+
+									</div>
+									<div style="margin-top: 10px;background-color: white;">
+										<div id="uploadednum" style="padding:5px;">
+											已上传
+										</div>
+										<div style="height: 1px;width: 100%;background: #E4E4E4;"></div>
+									</div>
+									<div id="uploaded">
+									</div>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="failPop" class="mui-popover">
+			<div class="mui-popup mui-popup-in">
+				<div class="mui-popup-inner">
+					<div class="mui-popup-title">失败列表</div>
+				</div>
+				<div class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<ul class="mui-table-view">
+							<li v-for="value in failArray" class="mui-table-view-cell mui-ellipsis">
+								{{value}}
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="mui-popup-buttons"><span v-on:tap="clean" class="mui-popup-button mui-popup-button-bold">确定</span></div>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/qiniu/qiniu.js"></script>
+		<script type="text/javascript" src="../../js/utils/cryption.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script type="text/javascript" src="../../js/utils/vue.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/cloud/cloud.js"></script>
+		<script type="text/javascript" src="../../js/utils/CloudFileUtil.js"></script>
+		<script type="text/javascript" src="../../js/cloud/AndroidFileSystem.js"></script>
+		<script type="text/javascript" src="../../js/utils/playutil.js"></script>
+		<script type="text/javascript">
+			var main; //获取当前窗体对象
+			var uploadList = {
+				key: [],
+				value: {}
+			}; //记录所有的上传对象
+			var downloadList = {
+				key: [],
+				value: {}
+			}; //记录所有的下载对象
+			var taskArray = {
+				key: [],
+				value: {}
+			}; //记录所有的任务对象的id和元素的id
+
+			var eleId = 0;
+			var uploadingId = null; //正在上传的任务id
+			var downloadingId = null; //正在下载的任务id
+			var upFolderEntry = null; //上传文件夹的目录对象
+			var downFolderEntry = null; //下载文件夹的目录对象
+			var upLoadNoWiFi = false; //没有WIFI是否依旧上传
+			var downLoadNoWiFi = false; //没有WIFI是否依旧上传
+			//文件存放在私有空间或公有空间
+			var mainSpace = window.storageKeyName.QNPRISPACE;
+			//缩略图存放在私有空间或公有空间
+			var imageThumb = window.storageKeyName.QNPUBSPACE; //文件上传的空间
+			var uploadSpace = window.storageKeyName.CLOUDSTORAGE;
+			var delEdit = false; //是否批量删除状态
+			var slideNumber = 0; //silder中当前显示的列表，0下载列表；1上传列表
+			var delFileArray = []; //存储批量删除文件的信息
+
+			//编辑删除
+			var vm_edit = new Vue({
+				el: "#edit",
+				data: {
+					content: "编辑"
+				},
+				methods: {
+					tap: function() {
+						//console.log("tap:" + vm_edit.content);
+						if(vm_edit.content == "编辑") { //进入批量删除状态
+							delEdit = true;
+							document.getElementById("slider").className = "mui-slider mui-fullscreen delete-show";
+							document.getElementById("back").style.display = "none";
+							document.getElementById("cancel").style.display = "block";
+							document.getElementById("sliderGroup").style.bottom = "50px";
+							document.getElementById("nav").style.display = "block";
+							document.getElementById("title").innerText = "已选定0个";
+							vm_edit.content = "全选";
+						} else {
+							var checked = true;
+							if(vm_edit.content == "全不选") {
+								checked = false;
+							}
+							var qsString = "";
+							if(slideNumber) { //下载列表
+								qsString = "#uploaded";
+							} else {
+								qsString = "#downloaded";
+							}
+							qsString = qsString + " .mui-checkbox input[type=checkbox]";
+							var checkBox = document.body.querySelectorAll(qsString);
+							//console.log("checkBox:" + checkBox.length);
+							if(checkBox.length == 0) {
+								return false;
+							}
+							for(var i in checkBox) {
+								checkBox[i].checked = checked;
+							}
+							if(checked) {
+								vm_edit.content = "全不选";
+							} else {
+								vm_edit.content = "全选";
+							}
+						}
+						editChangeTitle();
+					}
+				}
+			});
+
+			//退出删除状态
+			var vm_cancel = new Vue({
+				el: "#cancel",
+				methods: {
+					tap: function() {
+						//console.log("cancel");
+						delEdit = false;
+						document.getElementById("slider").className = "mui-slider mui-fullscreen delete-hide";
+						document.getElementById("back").style.display = "block";
+						document.getElementById("cancel").style.display = "none";
+						document.getElementById("sliderGroup").style.bottom = "0px";
+						document.getElementById("nav").style.display = "none";
+						document.getElementById("title").innerText = "传输列表";
+						mui('.mui-checkbox input[type=checkbox]:checked').each(function(index, element) {
+							element.checked = false;
+						});
+						vm_edit.content = "编辑";
+					}
+				}
+			});
+
+			//批量删除按钮
+			var vm_del = new Vue({
+				el: "#delete_file",
+				data: {
+					opacity: 0.5, //透明度
+					deling: false //正在删除
+				},
+				methods: {
+					tap: function() {
+						//console.log("delete_file:" + vm_del.opacity);
+						if(vm_del.opacity === 1) {
+							vm_del.deling = true;
+							var btnArray = ['否', '是'];
+							mui.confirm('确认删除记录？', '提示', btnArray, function(e) {
+								if(e.index == 1) { //是
+									var deleteWaiting = events.showWaiting("处理中...");
+									delFileArray = [];
+									mui('.mui-checkbox input[type=checkbox]:checked').each(function(index, element) {
+										//console.log("checked:" + index + " " + element.getAttribute("value"));
+										var value = element.getAttribute("value");
+										var values = element.value.split("_");
+										var fpath = "";
+										if(values[0] == "upLoaded") {
+											fpath = value.replace("upLoaded_", "");
+										} else {
+											fpath = value.replace("downLoaded_", "");
+										}
+										var names = fpath.split("/");
+										var fname = names[names.length - 1];
+										delFileArray[delFileArray.length] = {
+											type: values[0],
+											fpath: fpath,
+											fname: fname
+										}
+									});
+									vm_cancel.tap();
+									deleteFileArray(deleteWaiting);
+								}
+								vm_del.deling = false;
+							}, "div");
+
+						}
+					}
+				}
+			});
+
+			//失败列表
+			var vm_fail = new Vue({
+				el: "#failPop",
+				data: {
+					failArray: []
+				},
+				methods: {
+					clean: function() {
+						mui('#failPop').popover('toggle');
+						vm_fail.failArray = [];
+						vm_del.deling = false;
+					},
+					show: function() {
+						vm_del.deling = true;
+						mui('#failPop').popover('toggle');
+						document.querySelector('.mui-backdrop').style.backgroundColor = "rgba(0,0,0,0.3)";
+						document.querySelector('.mui-backdrop').addEventListener('tap', function() {
+							vm_del.deling = false;
+							vm_fail.failArray = []; //清空列表
+						});
+					}
+				}
+			});
+			mui.init({
+				gestureConfig: {
+					longtap: true, //默认为false
+					doubletap: true //默认为false
+				}
+			});
+
+			mui.plusReady(function() {
+				initData();
+				initListener();
+				initScroll();
+			});
+
+			function initData() {
+				main = plus.webview.currentWebview(); //获取当前窗体对象
+				//获取上传和下载文件夹的目录对象
+				getUpAndDownEntry(function() {
+					//console.log("getUpAndDownEntry");
+				});
+			}
+
+			function initScroll() {
+				mui(".mui-scroll-wrapper").scroll({
+					scrollY: true, //是否竖向滚动
+					scrollX: false, //是否横向滚动
+					indicators: true, //是否显示滚动条
+					deceleration: 0.0006, //阻尼系数,系数越小滑动越灵敏
+					bounce: true, //是否启用回弹
+				});
+			}
+
+			function initListener() {
+
+				mui.back = function() {
+					if(vm_del.deling) { //正在删除
+						return false;
+					}
+					if(delEdit) { //批量删除
+						return false;
+					}
+					mui.closePopups();
+					plus.webview.hide(main, 'pop-out');
+					plus.webview.show("storage_main.html", 'slide-in-left');
+				}
+
+				//清除所有的任务和界面
+				window.addEventListener('removeAllTask', function() {
+					//console.log('传输列表:removeAllTask');
+					//上传下载任务处理
+					for(var i in taskArray.key) {
+						var value = taskArray.value[taskArray.key[i]];
+						if(value) {
+							var task = value.taskOB;
+							if(task) {
+								task.abort();
+							}
+						}
+					}
+					uploadList = {
+						key: [],
+						value: {}
+					}; //记录所有的上传对象
+					downloadList = {
+						key: [],
+						value: {}
+					}; //记录所有的下载对象
+					taskArray = {
+						key: [],
+						value: {}
+					}; //记录所有的任务对象的id和元素的id
+					plus.uploader.clear(); //清除上传任务
+					plus.downloader.clear(); //清除下载任务
+					document.getElementById("upload").innerHTML = '';
+					document.getElementById("uploaded").innerHTML = '';
+					document.getElementById("download").innerHTML = '';
+					document.getElementById("downloaded").innerHTML = '';
+					uploadingId = null; //是否正在下载
+					downloadingId = null; //是否正在上传
+					upFolderEntry = null; //上传文件夹的目录对象
+					downFolderEntry = null; //下载文件夹的目录对象
+					upLoadNoWiFi = false;
+					downLoadNoWiFi = false;
+				});
+
+				//新增一项下载任务
+				window.addEventListener('addDownload', function(e) {
+					var subData = e.detail.data; //接收页面传入的参数值
+					//console.log('传输列表新增一项下载任务 ' + JSON.stringify(subData));
+					mui('.mui-slider').slider().gotoItem(0);
+					//获取上传和下载文件夹的目录对象
+					getUpAndDownEntry(function() {
+						var myDate = new Date();
+						for(var i in subData.fileArray) {
+							var url = subData.fileArray[i].fpath + '?attname=' + subData.fileArray[i].fname + subData.fileArray[i].ftype;
+							var data = {
+								eleId: eleId, //元素的id
+								state: -1, //状态-1,未开始；-2,上传失败;
+								fileUrl: url, //文件下载地址
+								fname: subData.fileArray[i].fname + subData.fileArray[i].ftype, //云端的文件名
+								localname: subData.fileArray[i].fname + subData.fileArray[i].ftype, //本地的文件名
+								save: subData.save //是否保存到本地相册
+							}
+							downloadList.key[downloadList.key.length] = data.eleId;
+							downloadList.value[data.eleId] = data;
+							eleId++;
+							addDownloadItem(data.eleId, data.fname);
+						}
+						//console.log(downloadList.key.length);
+						startDownloadingNetType();
+					});
+				});
+
+				//新增一项上传任务
+				window.addEventListener('addUpload', function(e) {
+					var subData = e.detail.data; //接收页面传入的参数值
+					//console.log('传输列表新增一项上传任务 ' + JSON.stringify(subData));
+					mui('.mui-slider').slider().gotoItem(1);
+					//获取上传和下载文件夹的目录对象
+					getUpAndDownEntry(function() {
+						var myDate = new Date();
+						for(var i in subData.files) {
+							//console.log("addUpload " + i + " " + JSON.stringify(subData.files[i]));
+							var ftype = ""; //文件类型
+							var ftypeList = subData.files[i].fileName.split(".");
+							if(ftypeList.length != 1) {
+								ftype = '.' + ftypeList[ftypeList.length - 1];
+							}
+							var QNFileName = myDate.getTime() + (Math.floor(Math.random() * 10000) + 1) + ftype;
+							var data = {
+								eleId: eleId, //元素的id
+								state: -1, //状态-1,未开始；-2,上传失败;
+								getUpTokenUrl: window.storageKeyName.QNGETUPTOKENFILE, //获取uptoken的url
+								QNFileName: QNFileName, //存放在七牛的文件名
+								fPath: subData.files[i].path, //上传文件的本地路径
+								fname: subData.files[i].fileName, //上传文件的名字
+								pid: subData.pid, //父ID，该文件的上层ID
+							}
+							eleId++;
+							uploadList.key[uploadList.key.length] = data.eleId;
+							uploadList.value[data.eleId] = data;
+							addUploadItem(data.eleId, subData.files[i].fileName);
+						}
+						startUploadingNetType();
+					});
+				});
+
+				/**
+				 * 获取上传和下载文件夹的目录对象
+				 */
+				window.addEventListener('getUpAndDownEntry', function() {
+					getUpAndDownEntry(function() {
+						//console.log("getUpAndDownEntry");
+					});
+				});
+
+				document.querySelector('.mui-slider').addEventListener('slide', function(event) {
+					slideNumber = event.detail.slideNumber;
+					if(delEdit) {
+						changeCheckBox();
+					}
+				});
+
+				//上传中列表的按钮
+				mui('#upload').on('tap', 'button', function() {
+					if(delEdit) { //批量删除
+						return false;
+					}
+					var ids = this.getAttribute('id').split("_"); //元素id
+					//console.log('upload ' + JSON.stringify(ids));
+					//console.log("data " + JSON.stringify(uploadList.value[ids[2]]));
+					if(uploadList.value[ids[2]].state == -1) { //未开始
+						mui.confirm('确认删除上传任务？', '提示', ['否', '是'], function(e) {
+							if(e.index == 1) { //是
+								if(uploadList.value[ids[2]].state == -1) { //未开始
+									delete uploadList.value[ids[2]];
+									var liUp = document.getElementById("up_" + ids[2]);
+									liUp.parentNode.removeChild(liUp);
+									mui.toast('删除成功');
+								} else {
+									mui.toast('删除失败上传任务已经开始');
+								}
+							}
+						}, 'div');
+					}
+				});
+
+				//上传中列表的任务
+				mui('#upload').on('longtap', '.mui-table-view-cell', function() {
+					if(delEdit) { //批量删除
+						return false;
+					}
+					var ids = this.getAttribute('id').split("_"); //元素id
+					//console.log('upload ' + JSON.stringify(ids));
+					//console.log("data " + JSON.stringify(uploadList.value[ids[1]]));
+					var btnArray = ['否', '是'];
+					mui.confirm('确认删除上传任务？', '提示', btnArray, function(e) {
+						if(e.index == 1) { //是
+							if(uploadList.value[ids[1]].state == -2 || uploadList.value[ids[1]].state == -1) {
+								//上传失败||未开始
+								delete uploadList.value[ids[1]];
+								var liUp = document.getElementById("up_" + ids[1]);
+								liUp.parentNode.removeChild(liUp);
+							} else {
+								mui.toast("删除失败上传任务已开始");
+							}
+						}
+					}, 'div');
+
+				});
+
+				//下载中列表的按钮
+				mui('#download').on('tap', 'button', function() {
+					if(delEdit) { //批量删除
+						return false;
+					}
+					var ids = this.getAttribute('id').split("_"); //元素id
+					//console.log('download ' + JSON.stringify(ids));
+					//console.log("data " + JSON.stringify(downloadList.value[ids[2]]));
+					//console.log("downloadingId1 " + downloadingId);
+					switch(downloadList.value[ids[2]].state) {
+						case -1: //未开始
+							if(downloadingId == null) { //没有正在下载的任务
+								startDownloadingNetType(downloadList.value[ids[2]]);
+							} else {
+								mui.toast('有正在执行下的载任务');
+							}
+							break;
+						case 3: //正在下载中
+							//暂停下载任务对象
+							var task = taskArray.value[downloadList.value[ids[2]].taskId];
+							//console.log("task " + JSON.stringify(task));
+							if(task && task.taskOB) {
+								//console.log("暂停下载任务");
+								task.taskOB.pause();
+								downloadList.value[ids[2]].state = 5;
+								document.getElementById("down_waiting_" + ids[2]).innerText = '暂停中';
+								document.getElementById("down_btn_" + ids[2]).innerText = '继续';
+							}
+							//开始下一个任务
+							downloadingId = null;
+							startDownloadingNetType();
+							break;
+						case 5: //继续下载任务
+							if(downloadingId == null) { //没有正在下载的任务
+								var task = taskArray.value[downloadList.value[ids[2]].taskId];
+								//console.log("task " + JSON.stringify(task));
+								if(task && task.taskOB) {
+									//console.log("继续下载任务");
+									downloadingId = ids[2];
+									downloadList.value[ids[2]].state = 3;
+									task.taskOB.resume();
+									document.getElementById("down_waiting_" + ids[2]).innerText = '下载中';
+									document.getElementById("down_btn_" + ids[2]).innerText = '暂停';
+								}
+								startDownloadingNetType(downloadList.value[ids[2]]);
+							} else {
+								downloadList.value[ids[2]].state = -1;
+								document.getElementById("down_waiting_" + ids[2]).innerText = '开始';
+								document.getElementById("down_btn_" + ids[2]).innerText = '等待中';
+							}
+							break;
+						default:
+							break;
+					}
+				});
+
+				//删除下载的任务
+				mui('#download').on('longtap', '.mui-table-view-cell', function() {
+					if(delEdit) { //批量删除
+						return false;
+					}
+					var ids = this.getAttribute('id').split("_"); //元素id
+					//console.log('download ' + JSON.stringify(ids));
+					//console.log("data " + JSON.stringify(downloadList.value[ids[1]]));
+					//console.log("downloadingId3 " + downloadingId);
+					var btnArray = ['否', '是'];
+					mui.confirm('确认删除下载任务？', '提示', btnArray, function(e) {
+						if(e.index == 1) { //是
+							downloadList.value[ids[1]].state = -3;
+							var taskId = downloadList.value[ids[1]].taskId;
+							//console.log("taskId " + taskId);
+							if(taskId) {
+								var task = taskArray.value[taskId];
+								//console.log('task ' + JSON.stringify(task));
+								task.taskOB.pause();
+								task.taskOB.abort();
+								taskArray.value[downloadList.value[ids[1]].taskId].taskId = null;
+								taskArray.value[downloadList.value[ids[1]].taskId].taskOB = null;
+							}
+							var liUp = document.getElementById("down_" + ids[1]);
+							liUp.parentNode.removeChild(liUp);
+							mui.toast("删除成功");
+							if(downloadingId == ids[1]) {
+								downloadingId = null;
+								startDownloadingNetType();
+							}
+						}
+					}, 'div');
+				});
+
+				//网络变化
+				document.addEventListener("netchange", function() {
+					//console.log("netchange " + plus.webview.currentWebview().id);
+					if(plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_WIFI) {
+						if(!upLoadNoWiFi) {
+							upLoadNoWiFi = true;
+							startUploadingNetType();
+						}
+						if(!downLoadNoWiFi) {
+							downLoadNoWiFi = true;
+							startDownloadingNetType();
+						}
+					} else {
+						upLoadNoWiFi = false;
+						downLoadNoWiFi = false;
+					}
+				});
+
+				//双击标题返回列表顶部
+				document.getElementById('title').addEventListener('doubletap', function() {
+					if(slideNumber) {
+						mui("#item2mobile .mui-scroll-wrapper").scroll().scrollTo(0, 0, 100);
+					} else {
+						mui("#item1mobile .mui-scroll-wrapper").scroll().scrollTo(0, 0, 100);
+					}
+				});
+
+				//打开本地文件
+				mui('#sliderGroup').on('tap', '.local-file-open', function() {
+					var value = this.getAttribute("value");
+					//console.log("openFile:" + value);
+					playutil.openFile(value, function(text) {
+						mui.toast(text);
+					});
+				});
+
+				//删除本地文件
+				mui('#sliderGroup').on('longtap', '.local-file-delete', function() {
+					if(delEdit) { //批量删除
+						return false;
+					}
+					var value = this.getAttribute("id");
+					var values = value.split("_");
+					//console.log("deleteFile:" + JSON.stringify(values));
+					var fpath = "";
+					if(values[0] == "upLoaded") {
+						fpath = value.replace("upLoaded_", "");
+					} else {
+						fpath = value.replace("downLoaded_", "");
+					}
+					vm_del.deling = true;
+					var btnArray = ['否', '是'];
+					mui.confirm('确认删除记录？', '提示', btnArray, function(e) {
+						if(e.index == 1) { //是
+							deleteLocalFile({
+								type: values[0],
+								fpath: fpath
+							}, function(data) {
+								if(data.code == 1) {
+									var ele = document.getElementById(data.file.type + "_" + data.file.fpath);
+									ele.parentNode.removeChild(ele);
+								}
+								mui.toast(data.message);
+							});
+						}
+						vm_del.deling = false;
+					}, 'div');
+				});
+
+				//checkBox变化
+				mui('#sliderGroup').on('change', 'input', function() {
+					//console.log("checkChange");
+					changeCheckBox();
+				})
+
+			}
+
+			/**
+			 * 开始创建下载任务之前判断网络状态
+			 */
+			function startDownloadingNetType(downData) {
+				//console.log("startDownloadingNetType " + downloadingId + " " + downData);
+				if(downloadingId != null) {
+					//有正在下载的任务
+					return false;
+				}
+				downloadingId = -1; //正在下载
+				if(!downData) {
+					for(var i in downloadList.key) {
+						////console.log("downloadList " + i + " " + downloadList.key[i] + " " + JSON.stringify(downloadList.value[downloadList.key[i]]));
+						if(downloadList.value[downloadList.key[i]] && downloadList.value[downloadList.key[i]].state == -1) { //未开始的任务
+							downloadingId = downloadList.key[i];
+							break;
+						}
+					}
+				} else {
+					downloadingId = downData.eleId;
+				}
+				//console.log("downloadingId2 " + downloadingId);
+
+				if(downloadingId != -1) {
+					var data = null;
+					if(!downData) {
+						data = downloadList.value[downloadingId];
+					} else {
+						data = downData;
+					}
+					var netType = plus.networkinfo.getCurrentType();
+					//console.log("startUploadingNetType " + netType + " " + downLoadNoWiFi);
+					if(netType == plus.networkinfo.CONNECTION_WIFI || downLoadNoWiFi) {
+						//WIFI||没有WIFI也下载
+						startDownloading(data);
+					} else {
+						if(netType == plus.networkinfo.CONNECTION_NONE) {
+							//没有连接网络
+							mui.toast("没有连接网络，请连接网络后重新尝试");
+						} else {
+							mui.confirm('当前不是无线WIFI网络，还继续下载吗？', '提示', ['否', '是'], function(e) {
+								if(e.index == 1) { //是
+									downLoadNoWiFi = true;
+									startDownloading(data);
+								} else {
+									downLoadNoWiFi = false;
+									downloadingId = -1; //正在下载
+								}
+							}, 'div');
+						}
+					}
+				} else {
+					//没有开始的下载任务
+					downloadingId = null;
+				}
+			}
+
+			/**
+			 * 开始创建下载任务
+			 */
+			function startDownloading(startData) {
+				//console.log("startDownloading " + JSON.stringify(startData));
+				var taskId = startData.taskId;
+				//console.log("taskId " + taskId);
+				if(taskId == undefined) {
+					//新的下载任务对象
+					//console.log("新的下载任务");
+					getQNDownToken(startData.fileUrl, startData.fname, startData.localname);
+				} else {
+					//继续下载任务对象
+					//console.log("继续下载任务");
+					//console.log("startTask " + JSON.stringify(startTask));
+					var startTask = taskArray.value[taskId];
+					startTask.taskOB.resume();
+				}
+			}
+
+			/**
+			 * 获取七牛下载token并创建下载任务
+			 * @param {Object} fileUrl 文件的下载路径
+			 * @param {Object} fname 云端文件的名字
+			 * @param {Object} localname 本地文件的名字
+			 */
+			function getQNDownToken(fileUrl, fname, localname) {
+				var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid;
+				var fpath = '_documents/' + personalUTID + '/download/' + localname;
+				//console.log('getQNDownToken:fname ' + fname);
+				//console.log('getQNDownToken:fpath ' + fpath);
+				var getDownToken = {
+					appId: 4, //int 必填 项目id
+					urls: [fileUrl] //array 必填 需要获取下载token文件的路径
+				}
+				CloudFileUtil.getQNDownToken(window.storageKeyName.QNGETDOWNTOKENFILE, getDownToken, function(data) {
+					//console.log('七牛下载token ' + JSON.stringify(data));
+					CloudFileUtil.download(data.Data[0].Value, fpath, function(download, status) {
+						//下载任务完成的监听
+						//console.log('下载任务完成' + status + '|' + JSON.stringify(download));
+						if(status == 200) {
+							var localFilePath = download.filename;
+							var id = taskArray.value[download.id].downId;
+							var ulDown = document.getElementById("down_" + id);
+							if(ulDown) {
+								document.getElementById("down_btn_" + id).style.display = 'none';
+								ulDown.parentNode.removeChild(ulDown);
+							}
+							plus.io.resolveLocalFileSystemURL(localFilePath, function(succesCB) {
+								addUpedOrDownedMetadataItem(0, succesCB);
+							}, function(errorCB) {
+								//console.log("请求上传或者下载文件系统失败: " + JSON.stringify(errorCB));
+							});
+							if(downloadList.value[id].save) {
+								plus.gallery.save(localFilePath, function(succesCB) {
+									//console.log("保存文件到系统相册中成功: " + JSON.stringify(succesCB));
+								}, function(errorCB) {
+									mui.toast("保存" + fname + "到系统相册中失败" + JSON.stringify(errorCB));
+									//console.log("保存文件到系统相册中失败: " + JSON.stringify(errorCB));
+								});
+							}
+							downloadList.value[id].state = 4;
+							downloadingId = null;
+							startDownloadingNetType();
+						} else {
+							downloadFail();
+						}
+					}, function(download, status) {
+						var id = taskArray.value[download.id].downId;
+						switch(download.state) {
+							case 1: //下载任务开始请求
+								//console.log('下载任务开始请求:|id:' + id + '|downloadState:' + download.state);
+								mui("#down_bar_" + id).progressbar({
+									progress: 0
+								}).show();
+								break;
+							case 2: //下载任务请求已经接收
+								//console.log('下载任务请求已经接收:|id:' + id + '|downloadState:' + download.state);
+								break;
+							case 3: //下载任务接收数据
+								////console.log('下载任务接收数据:|id:' + id + '|downloadState:' + download.state);
+								downloadList.value[id].state = 3;
+								if(downloadingId !== id) { //只允许一个下载任务进行
+									download.pause();
+									downloadList.value[id].state = 5;
+									document.getElementById("down_waiting_" + id).innerText = '暂停中';
+									document.getElementById("down_btn_" + id).innerText = '继续';
+								}
+								//已下载数据的大小
+								var downloadSize = AndroidFileSystem.readSize(download.downloadedSize);
+								//下载数据的总大小
+								var totalSize = AndroidFileSystem.readSize(download.totalSize);
+								////console.log('下载任务接收数据 id' + id + ' downloadState ' + download.state + " totalSize " + totalSize +" downloadSize " + downloadSize);
+								var waiting = document.getElementById("down_waiting_" + id);
+								if(waiting) {
+									var progress = parseInt(download.downloadedSize / download.totalSize * 100);
+									//console.log("下载中 " + progress);
+									waiting.innerText = '下载中';
+									document.getElementById("down_btn_" + id).style.visibility = 'visible';
+									document.getElementById("down_btn_" + id).innerText = '暂停';
+									mui("#down_bar_" + id).progressbar().setProgress(progress);
+									document.getElementById("down_size_" + id).innerText = downloadSize + '/' + totalSize;
+								}
+								break;
+							case 5:
+								//console.log('下载任务已暂停:|id:' + id + '|downloadState:' + download.state);
+								downloadList.value[id].state = 5;
+								var waiting = document.getElementById("down_waiting_" + id);
+								if(waiting) {
+									//console.log('zanting lalllllllllll');
+									waiting.innerText = '暂停中';
+									document.getElementById("down_btn_" + id).innerText = '继续';
+								}
+								break;
+							default:
+								//								if(download.state != 3) {
+								//console.log('下载任务 id ' + id + '|downloadState ' + download.state);
+								//								}
+								break;
+						}
+					}, function(dtask) {
+						//下载任务创建成功的回调
+						//console.log("dtask " + JSON.stringify(dtask));
+						taskArray.key[taskArray.key.length] = dtask.id;
+						taskArray.value[dtask.id] = {
+							downId: downloadingId, //下载任务id
+							taskOB: dtask //下载任务对象
+						};
+						downloadList.value[downloadingId].taskId = dtask.id;
+						if(downloadList.value[downloadingId].state != -3) {
+							downloadList.value[downloadingId].state = 1; //已经创建任务
+							dtask.start();
+							var waiting = document.getElementById("down_waiting_" + downloadingId);
+							if(waiting) {
+								waiting.innerText = '开始下载';
+							}
+						}
+					});
+				}, function(xhr, type, errorThrown) {
+					downloadFail();
+				});
+			}
+
+			/**
+			 * 下载任务失败
+			 */
+			function downloadFail() {
+				var waiting = document.getElementById("down_waiting_" + downloadingId);
+				if(waiting) {
+					waiting.innerText = '下载失败';
+					document.getElementById("down_btn_" + downloadingId).style.display = "none";
+				}
+				downloadList.value[downloadingId].state = -2;
+				downloadingId = null;
+				startDownloadingNetType();
+			}
+
+			/**
+			 * 开始创建上传任务之前判断网络状态
+			 */
+			function startUploadingNetType() {
+				//console.log("startUploadingNetType " + uploadingId);
+				if(uploadingId != null) {
+					//有正在上传的任务
+					return false;
+				}
+				uploadingId = -1; //正在上传
+				var data; //上传任务的参数
+				for(var i in uploadList.key) {
+					////console.log("uploadList " + i + " " + uploadList.key[i] + " " + JSON.stringify(uploadList.value[uploadList.key[i]]));
+					if(uploadList.value[uploadList.key[i]] && uploadList.value[uploadList.key[i]].state == -1) { //未开始的任务
+						uploadingId = uploadList.key[i];
+						document.getElementById("up_btn_" + uploadList.key[i]).style.display = "none"; //隐藏取消上传任务按钮
+						break;
+					}
+				}
+				if(uploadingId != -1) {
+					var data = uploadList.value[uploadingId];
+					var netType = plus.networkinfo.getCurrentType();
+					//console.log("startUploadingNetType " + netType + " " + upLoadNoWiFi);
+					if(netType == plus.networkinfo.CONNECTION_WIFI || upLoadNoWiFi) {
+						//WIFI||没有WIFI也上传
+						startUploading(data);
+					} else {
+						if(netType == plus.networkinfo.CONNECTION_NONE) {
+							//没有连接网络
+							mui.toast("没有连接网络，请连接网络后重新尝试");
+						} else {
+							mui.confirm('当前不是无线WIFI网络，还继续上传吗？', '提示', ['否', '是'], function(e) {
+								if(e.index == 1) { //是
+									upLoadNoWiFi = true;
+									startUploading(data);
+								} else {
+									upLoadNoWiFi = false;
+									uploadingId = -1; //正在上传
+								}
+							}, 'div');
+						}
+					}
+				} else {
+					//没有开始的上传任务
+					uploadingId = null;
+				}
+			}
+
+			/**
+			 * 开始创建上传任务
+			 */
+			function startUploading(data) {
+				//console.log("startUploading " + JSON.stringify(data));
+				getQNUpToken(data.getUpTokenUrl, data.QNFileName, data.fPath, data.fname, data.pid);
+			}
+
+			/**
+			 * 获取七牛上传token并创建上传任务
+			 * @param {Object} getUpTokenUrl 获取uptoken的url
+			 * @param {Object} QNFileName 存放在七牛的文件名
+			 * @param {Object} fPath 上传文件的本地路径
+			 * @param {Object} fname 上传文件的名字
+			 * @param {Object} pid 父ID，该文件的上层ID
+			 */
+			function getQNUpToken(getUpTokenUrl, QNFileName, fPath, fname, pid) {
+				var temp = cloud.classify(QNFileName);
+				var type = '1';
+				if(temp == '') {
+					type = '0';
+				}
+				var getToken = {
+					type: type, //str 必填 获取上传token的类型。0上传需要生成缩略图的文件；1上传文件
+					QNFileName: QNFileName, //str 必填 存放到七牛的文件名
+					appId: 4, //int 必填 项目id
+					mainSpace: mainSpace, //str 必填 文件存放在私有空间或公有空间
+					uploadSpace: uploadSpace, //str 必填  上传的空间
+					imageThumb: imageThumb //str json 选填 type为0时有效，缩略图存放在私有空间或公有空间，默认mainSpace
+				}
+				CloudFileUtil.getQNUpToken(getUpTokenUrl, getToken, function(data) {
+					var QNUptoken = data.data; //token数据
+					var configure = data.configure; //获取token的配置信息
+					//console.log('七牛上传token:' + JSON.stringify(QNUptoken));
+					if(QNUptoken.Status == 0) { //获取uptoken失败
+						//console.log('### ERROR ### 获取上传凭证失败' + QNUptoken.Message);
+						mui.toast('上传失败' + QNUptoken.Message);
+						uploadFail();
+					} else {
+						CloudFileUtil.upload(fPath, QNUptoken.Data.Token, QNUptoken.Data.Key, function(upload, status) {
+							//上传任务完成的监听
+							//console.log('上传任务完成' + status + '|' + JSON.stringify(upload));
+							if(status == 200) {
+								//var thumb = QNUptoken.Data.OtherKey[configure.thumbKey]; //缩略图地址
+								var domain = QNUptoken.Data.Domain + QNUptoken.Data.Key; //文件地址
+								////console.log(thumb);
+								//console.log(domain);
+								var fnameList = fname.split('.');
+								var name = '';
+								var type = '';
+								if(fnameList.length == 1) {
+									name = fname;
+									type = '';
+								} else {
+									type = '.' + fnameList[fnameList.length - 1];
+									name = fname.substring(0, (fname.length * 1 - type.length * 1));
+								}
+								var comData = {
+									pid: pid, //父ID，该文件的上层ID
+									fname: name, //文件名称，文件或文件夹名称,文件存扩展名之前的名称
+									ftype: type, //文件类型，存文件的扩展名,如.file为文件夹
+									fpath: domain, //文件路径，文件路径,为文件用
+									fsize: upload.totalSize //文件大小，文件用
+								};
+								uploadList.value[uploadingId].state = 4;
+								addFile(comData, fPath, fname, uploadingId);
+							} else {
+								mui.toast('上传失败' + upload.responseText);
+								uploadFail();
+							}
+						}, function(upload, status) {
+							//上传任务id
+							var task = taskArray.value[upload.__UUID__];
+							if(!task) {
+								return false;
+							}
+							var id = taskArray.value[upload.__UUID__].upId;
+							switch(upload.state) {
+								case 0: //上传任务开始调度
+									//console.log('上传任务开始调度:|id:' + id + '|uploadState:' + upload.state);
+									break;
+								case 1: //上传任务开始请求
+									//console.log('上传任务开始请求:|id:' + id + '|uploadState:' + upload.state);
+									mui("#up_bar_" + id).progressbar({
+										progress: 0
+									}).show();
+									document.getElementById("up_waiting_" + id).innerText = '开始请求';
+									break;
+								case 2: //上传任务请求已经建立
+									//console.log('上传任务请求已经建立:|id:' + id + '|uploadState:' + upload.state);
+									break;
+								case 3: //上传任务提交数据
+									//已完成上传数据的大小
+									var uploadedSize = AndroidFileSystem.readSize(upload.uploadedSize);
+									//上传数据的总大小
+									var totalSize = AndroidFileSystem.readSize(upload.totalSize);
+									var waiting = document.getElementById("up_waiting_" + id);
+									if(waiting) {
+										document.getElementById("up_waiting_" + id).innerText = '正在上传';
+										mui("#up_bar_" + id).progressbar().setProgress(upload.uploadedSize / upload.totalSize * 100);
+										document.getElementById("up_size_" + id).innerText = uploadedSize + '/' + totalSize;
+									}
+									break;
+								case 4: //上传任务已完成
+									//console.log('上传任务已完成:|id:' + id + '|uploadState:' + upload.state);
+									//delete taskArray.value[upload.__UUID__]; //删除上传任务
+									break;
+								case 5: //上传任务已暂停
+									//console.log('上传任务已暂停:|id:' + id + '|uploadState:' + upload.state);
+									break;
+								default:
+									//console.log('上传任务状态监听:其他状态' + upload.state);
+									break;
+							}
+						}, function(task) {
+							//console.log("task " + JSON.stringify(task));
+							taskArray.key[taskArray.key.length] = task.__UUID__;
+							taskArray.value[task.__UUID__] = {
+								upId: uploadingId, //上传任务id
+								taskOB: task //上传任务对象
+							};
+							uploadList.value[uploadingId].state = 1;
+							task.start();
+						});
+					}
+				}, function(xhr, type, errorThrown) {
+					mui.toast('上传失败' + type);
+					uploadFail();
+				});
+			}
+
+			/**
+			 * 上传任务失败
+			 */
+			function uploadFail() {
+				var waiting = document.getElementById("up_waiting_" + uploadingId);
+				if(waiting) {
+					waiting.innerText = '上传失败';
+				}
+				uploadList.value[uploadingId].state = -2;
+				uploadingId = null;
+				startUploadingNetType();
+			}
+
+			/**
+			 * 添加一项正在上传
+			 * @param {Object} id
+			 * @param {Object} fname
+			 */
+			function addUploadItem(id, fname) {
+				//console.log('addUploadItem:' + id + ' ' + fname)
+				var type = cloud.classify2(fname);
+				var li = document.createElement('li');
+				li.id = "up_" + id;
+				li.className = 'mui-table-view-cell mui-media';
+				li.innerHTML = '<div class="mui-media-object mui-pull-right">\
+											<button id="up_btn_' + id + '" type="button" class="mui-btn mui-btn-outlined" >取消</button>\
+										</div> <span class="mui-media-object mui-icon iconfont iconfont-size ' + type + ' mui-pull-left"></span>\
+										<div class="mui-media-body">\
+											<div class="mui-ellipsis transport-info">\
+												' + fname + '\
+											</div>\
+											<div class="transport-info">\
+												<div id="up_bar_' + id + '" class="mui-progressbar">\
+													<span></span>\
+												</div>\
+												<p id="up_size_' + id + '" class="mui-pull-left">\
+													 \
+												</p>\
+												<p id="up_waiting_' + id + '" class="mui-pull-right">\
+													正在等待...\
+												</p>\
+											</div>\
+										</div>';
+				document.getElementById("upload").appendChild(li);
+			}
+
+			/**
+			 * 添加一项已经上传
+			 * @param {Object} fpath 本地文件路径
+			 * @param {Object} fname 显示的文件名
+			 * @param {Object} size 文件的大小
+			 * @param {Object} modificationTime 文件或目录的最后修改时间
+			 */
+			function addUploadedItem(fpath, fname, size, modificationTime) {
+				////console.log('addUploadedItem:' + fpath + '|' + fname + '|' + size + '|' + modificationTime);
+				var type = cloud.classify2(fname); //图标
+				var fsize = ''; //文件的大小
+				var fmodificationTime = ''; //modificationTime
+				if(size != undefined) {
+					fsize = AndroidFileSystem.readSize(size);
+				}
+				if(modificationTime != undefined) {
+					fmodificationTime = modificationTime;
+				}
+				var li = document.createElement('li');
+				li.id = 'upLoaded_' + fpath;
+				li.className = 'mui-table-view-cell mui-media local-file-delete';
+				li.innerHTML = '<div class="mui-media-object mui-pull-right">\
+											<div class="mui-input-row mui-checkbox" v-if="showcheck">\
+												<label>&nbsp;</label>\
+												<input name="Checkbox" type="checkbox" value="' + li.id + '">\
+											</div>\
+											<button value="' + fpath + '" type="button" class="mui-btn mui-btn-outlined local-file-open">打开</button>\
+										</div> <span class="mui-media-object mui-icon iconfont iconfont-size ' + type + ' mui-pull-left"></span>\
+										<div class="mui-media-body">\
+											<div class="mui-ellipsis transport-info">\
+												' + fname + '\
+											</div>\
+											<div class="transport-info">\
+												<p class="mui-pull-left">\
+													' + fsize + '&nbsp;&nbsp;' + fmodificationTime + '\
+												</p>\
+											</div>\
+										</div>';
+				document.getElementById("uploaded").insertBefore(li, document.getElementById("uploaded").firstChild);
+				if(delEdit) {
+					changeCheckBox();
+				}
+			}
+
+			/**
+			 * 添加一项正在下载
+			 * @param {Object} id
+			 * @param {Object} fname
+			 */
+			function addDownloadItem(id, fname) {
+				//console.log('addDownloadItem:' + id + '|' + fname)
+				var type = cloud.classify2(fname);
+				var li = document.createElement('li');
+				li.setAttribute('id', 'down_' + id);
+				li.setAttribute('data-id', id);
+				li.className = 'mui-table-view-cell mui-media';
+				li.innerHTML = '<div class="mui-media-object mui-pull-right">\
+											<button id="down_btn_' + id + '" type="button" class="mui-btn mui-btn-outlined">等待</button>\
+										</div> <span class="mui-media-object mui-icon iconfont iconfont-size ' + type + ' mui-pull-left"></span>\
+										<div class="mui-media-body">\
+											<div class="mui-ellipsis transport-info">\
+												' + fname + '\
+											</div>\
+											<div class="transport-info">\
+												<div id="down_bar_' + id + '" class="mui-progressbar">\
+													<span></span>\
+												</div>\
+												<p id="down_size_' + id + '" class="mui-pull-left">\
+													 \
+												</p>\
+												<p id="down_waiting_' + id + '" class="mui-pull-right">\
+													正在等待...\
+												</p>\
+											</div>\
+										</div>';
+				document.getElementById("download").appendChild(li);
+			}
+
+			/**
+			 * 添加一项已经下载
+			 * @param {Object} fpath 本地文件路径
+			 * @param {Object} fname 显示的文件名
+			 * @param {Object} size 文件的大小
+			 * @param {Object} modificationTime 文件或目录的最后修改时间
+			 */
+			function addDownloadedItem(fpath, fname, size, modificationTime) {
+				////console.log('addDownloadedItem:' + fpath + '|' + fname + '|' + size + '|' + modificationTime);
+				var type = cloud.classify2(fname); //图标
+				var fsize = ''; //文件的大小
+				var fmodificationTime = ''; //modificationTime
+				if(size != undefined) {
+					fsize = AndroidFileSystem.readSize(size);
+				}
+				if(modificationTime != undefined) {
+					fmodificationTime = modificationTime;
+				}
+				var html1 = '<span class="mui-media-object mui-icon iconfont iconfont-size ' + type + ' mui-pull-left"></span>';
+				var li = document.createElement('li');
+				li.id = 'downLoaded_' + fpath; //文件名
+				li.className = 'mui-table-view-cell mui-media local-file-delete';
+				li.innerHTML = '<div class="mui-media-object mui-pull-right">\
+										<div class="mui-input-row mui-checkbox" v-if="showcheck">\
+											<label>&nbsp;</label>\
+											<input name="Checkbox" type="checkbox" value="' + li.id + '">\
+										</div>\
+										<button value="' + fpath + '" type="button" class="mui-btn mui-btn-outlined local-file-open">打开</button>\
+									</div> ' + html1 + '\
+									<div class="mui-media-body">\
+										<div class="mui-ellipsis transport-info">\
+											' + fname + '\
+										</div>\
+										<div class="transport-info">\
+											<p class="mui-pull-left">\
+												' + fsize + '&nbsp;&nbsp;' + fmodificationTime + '\
+											</p>\
+										</div>\
+									</div>';
+				document.getElementById("downloaded").insertBefore(li, document.getElementById("downloaded").firstChild);
+				if(delEdit) {
+					changeCheckBox();
+				}
+			}
+
+			/**
+			 * 用户云盘文件上传或创建文件夹
+			 * @param {Object} comData 往服务器传的数据
+			 * @param {Object} filePath 本地文件路径
+			 *  @param {Object} fname 本地文件名
+			 */
+			function addFile(comData, filePath, fname, id) {
+				//console.log('addFile:' + JSON.stringify(comData));
+				//27.用户云盘文件上传或创建文件夹
+				//所需参数
+				//var comData = {
+				//	pid: '', //	父ID，该文件的上层ID
+				//	fname: '', //	文件名称，文件或文件夹名称,文件存扩展名之前的名称
+				//	ftype: '', //	文件类型，存文件的扩展名,如.file为文件夹
+				//	fpath: '', //	文件路径，文件路径,为文件用
+				//	fsize: '' //	文件大小，文件用
+				//};
+				// 等待的对话框
+				var wd = events.showWaiting();
+				postDataPro_PostDiFiA(comData, wd, function(data) {
+					wd.close();
+					//console.log('27 用户云盘文件上传或创建文件夹 ' + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						//						mui.toast(comData.fname + comData.ftype + ' 上传成功');
+						var ulUp = document.getElementById("up_" + id);
+						if(ulUp) {
+							ulUp.parentNode.removeChild(ulUp);
+						}
+						copyFileToUpload(filePath, fname, function() {
+							uploadingId = null;
+							startUploadingNetType();
+						});
+					} else {
+						document.getElementById("up_waiting_" + id).innerText = '上传失败';
+						uploadList.value[id].state = -2;
+						mui.toast('上传失败' + data.RspTxt + fname);
+						var batchDelete = {
+							appId: 4, //int 必填 项目id
+							urls: [comData.fpath] //array 必填 需要获取下载token文件的路径
+						}
+						/**
+						 * 七牛批量删除
+						 */
+						CloudFileUtil.BatchDelete(window.storageKeyName.QNGETTOKENDELETE, batchDelete, function(data) {
+								if(data.Status == 1) {
+									//console.log('七牛删除成功:' + JSON.stringify(data));
+								} else {
+									//console.log('七牛删除:' + JSON.stringify(data));
+								}
+							},
+							function(xhr, type, errorThrown) {
+								//console.log('七牛删除失败:' + JSON.stringify(type));
+							}
+						);
+						uploadingId = null;
+						startUploadingNetType();
+					}
+				});
+			}
+
+			/**
+			 * 获取上传和下载文件夹的目录对象
+			 */
+			function getUpAndDownEntry(callBack) {
+				//获取下载文件夹目录对象
+				if(downFolderEntry == null || upFolderEntry == null) {
+					createFolder(function(succesCB) {
+						//console.log("请求文件系统成功: " + succesCB);
+						//						getUpOrDownEntry(0);
+						//						getUpOrDownEntry(1);
+						callBack();
+					}, function(errorCB) {
+						//console.log("请求文件系统失败: " + errorCB);
+						mui.toast("请求文件系统失败 " + errorCB.message);
+					});
+				} else {
+					callBack();
+				}
+			}
+
+			/**
+			 * 获取上传或者下载文件夹的目录对象
+			 * @param {Object} type 下载0上传1
+			 */
+			function getUpOrDownEntry(type) {
+				var utidPath = window.myStorage.getItem(window.storageKeyName.DOCUMENTSPATH) + window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid;
+				var path = '';
+				if(type == 1) { //上传
+					path = utidPath + '/upload/';
+				} else { //下载
+					path = utidPath + '/download/';
+				}
+				//console.log("getUpOrDownEntry " + path);
+				plus.io.resolveLocalFileSystemURL(path, function(succesCB) {
+					if(type == 1) { //上传
+						upFolderEntry = succesCB;
+						//console.log("请求上传或者下载文件系统成功: " + upFolderEntry.name);
+						folderUpOrDownDirectoryReader(1, upFolderEntry);
+					} else {
+						downFolderEntry = succesCB;
+						//console.log("请求上传或者下载文件系统成功: " + downFolderEntry.name);
+						folderUpOrDownDirectoryReader(0, downFolderEntry);
+					}
+				}, function(errorCB) {
+					if(type == 1) { //上传
+						mui.toast('获取上传记录失败 ' + errorCB.message);
+					} else {
+						mui.toast('获取下载记录失败 ' + errorCB.message)
+					}
+					//console.log("请求上传或者下载文件系统失败: " + JSON.stringify(errorCB));
+				});
+			}
+
+			/**
+			 * 读取上传或文件夹下的文件及子目录
+			 * @param {Object} type 下载0上传1
+			 * @param {Object} entry 文件系统对象
+			 */
+			function folderUpOrDownDirectoryReader(type, entry) {
+				var directoryReader = entry.createReader();
+				directoryReader.readEntries(function(succesCB) {
+					//succesCB:文件或目录对象的引用,可指向文件或目录对象（DirectoryEntry|FileEntry）
+					////console.log("获取上传或下载目录中的所有文件和子目录成功");
+					mui.each(succesCB, function(index, element) {
+						////console.log("directoryReader:" + element.fullPath);
+						//读取上传或下载文件夹下的文件或子目录属性并生成记录
+						addUpedOrDownedMetadataItem(type, element);
+					});
+				}, function(errorCB) {
+					if(type == 1) { //上传
+						mui.toast('获取上传记录失败 ' + errorCB.message);
+					} else {
+						mui.toast('获取下载记录失败 ' + errorCB.message)
+					}
+					//console.log("获取上传或下载记录失败:" + JSON.stringify(errorCB));
+				});
+			}
+
+			/**
+			 * 读取上传或下载文件夹下的文件或子目录属性并生成记录
+			 * @param {Object} type 下载0上传1
+			 * @param {Object} element 文件系统对象
+			 */
+			function addUpedOrDownedMetadataItem(type, element) {
+				//获取文件属性
+				element.getMetadata(function(succesCB2) {
+					////console.log("获取上传或下载记录 " + type + " " + JSON.stringify(succesCB2));
+					if(type == 1) { //增加一项已上传记录
+						addUploadedItem(element.toLocalURL(), element.name, succesCB2.size, dateToStr(succesCB2.modificationTime));
+					} else { //增加一项已下载记录
+						addDownloadedItem(element.toLocalURL(), element.name, succesCB2.size, dateToStr(succesCB2.modificationTime));
+					}
+				}, function(errorCB2) {
+					//console.log("获取上传或下载记录文件属性失败:" + JSON.stringify(errorCB2));
+					if(type == 1) { //增加一项已上传记录
+						addUploadedItem(element.toLocalURL(), fname);
+					} else { //增加一项已下载记录
+						addDownloadedItem(element.toLocalURL(), fname);
+					}
+				});
+			}
+
+			/**
+			 * data to string
+			 * @param {Object} datetime
+			 */
+			function dateToStr(datetime) {
+				////console.log(datetime);
+				var year = datetime.getFullYear(),
+					month = datetime.getMonth() + 1,
+					date = datetime.getDate(),
+					hour = datetime.getHours(),
+					minutes = datetime.getMinutes(),
+					second = datetime.getSeconds();
+				if(month < 10) {
+					month = "0" + month;
+				}
+				if(date < 10) {
+					date = "0" + date;
+				}
+				if(hour < 10) {
+					hour = "0" + hour;
+				}
+				if(minutes < 10) {
+					minutes = "0" + minutes;
+				}
+				if(second < 10) {
+					second = "0" + second;
+				}
+				return(year + "-" + month + "-" + date + " " + hour + ":" + minutes + ":" + second);
+			}
+
+			/**
+			 * 拷贝一份文件到程序
+			 * @param {Object} filePath 文件路径
+			 * @param {Object} fname 文件名
+			 */
+			function copyFileToUpload(filePath, fname, callBack) {
+				//console.log("copyFileToUpload:" + filePath + '|' + fname);
+				plus.io.resolveLocalFileSystemURL(filePath, function(succesCB) {
+					//console.log("拷贝:请求被文件的文件系统成功: " + JSON.stringify(succesCB.name));
+					var upReader = upFolderEntry.createReader();
+					upReader.readEntries(function(allEntry) {
+						//设置本地文件名字
+						var num = 0;
+						fname = fname.toString();
+						var allFileName = {
+							key: [],
+							value: {}
+						}
+						//console.log("allEntry " + allEntry.length);
+						for(var i in allEntry) {
+							////console.log("upReader " + i + " " + allEntry[i].isFile + " " + allEntry[i].fullPath);
+							if(allEntry[i].isFile) {
+								if(allEntry[i].name == fname) {
+									//有重名
+									num++;
+								} else {
+									allFileName.key[allFileName.key.length] = allEntry[i].name;
+									allFileName.value[allEntry[i].name] = allEntry[i].name;
+								}
+							}
+						}
+						var copyName = "";
+						checkUploadFileName(allFileName, fname, num, function(copyName) {
+							//console.log("拷贝 copyName " + copyName);
+							succesCB.copyTo(upFolderEntry, copyName, function(succesCB2) {
+								//console.log("拷贝成功 " + JSON.stringify(succesCB2.name));
+								//获取文件属性
+								succesCB2.getMetadata(function(succesCB3) {
+									//console.log("获取拷贝后文件属性成功:" + JSON.stringify(succesCB3));
+									//增加一项已上传记录
+									addUploadedItem(succesCB2.toLocalURL(), copyName, succesCB3.size, dateToStr(succesCB3.modificationTime));
+								}, function(errorCB3) {
+									//console.log("拷贝:获取文件属性失败:" + JSON.stringify(errorCB3));
+									//增加一项已上传记录
+									addUploadedItem(succesCB2.toLocalURL(), copyName);
+								});
+								callBack();
+							}, function(errorCB2) {
+								//console.log("拷贝失败:" + JSON.stringify(errorCB2));
+								mui.toast('增加上传记录失败 ' + errorCB2.message);
+								callBack();
+							});
+						});
+					}, function(allEntryErrorCB) {
+						//console.log("读取上传文件夹失败 " + JSON.stringify(allEntryErrorCB));
+						mui.toast('增加上传记录失败 ' + allEntryErrorCB.message);
+						callBack();
+					});
+				}, function(errorCB) {
+					//请求失败的的回调
+					mui.toast('增加上传记录失败 ' + errorCB.message);
+					//console.log("请求被拷贝文件的文件系统失败: " + JSON.stringify(errorCB));
+					callBack();
+				});
+			}
+
+			/**
+			 * 检查上传文件记录是否有重名
+			 */
+			function checkUploadFileName(allFileName, fname, num, callBack) {
+				if(num == 0) {
+					callBack(fname);
+				} else {
+					//console.log("checkUploadFileName " + allFileName.key.length + " " + fname + " " + num);
+					var check = true;
+					var checkName = fname;
+					var names = fname.split('.');
+					if(names.length == 1) {
+						checkName = fname + "(" + num + ")";
+					} else {
+						var name = '';
+						for(var j in names) {
+							if(j == 0) {
+								name = names[j];
+							} else {
+								if(j == names.length - 1) {
+									name = name + "(" + (num * 1 + 1) + ")." + names[j];
+								} else {
+									name = name + "." + names[j];
+								}
+							}
+						}
+						checkName = name;
+					}
+					//console.log("checkName " + checkName);
+					var value = allFileName.value[checkName];
+					if(value == undefined) {
+						//console.log("returnCheckName " + checkName);
+						callBack(checkName);
+					} else {
+						checkUploadFileName(allFileName, fname, num + 1, callBack);
+					}
+				}
+			}
+
+			/**
+			 * 删除一个本地文件
+			 * @param {Object} fPath
+			 * @param {Object} callback
+			 */
+			function deleteLocalFile(data, callback) {
+				////console.log("deleteLocalFile:" + JSON.stringify(data))
+				plus.io.resolveLocalFileSystemURL(data.fpath, function(succesCB) {
+					////console.log("获取删除本地文件的文件系统成功: " + succesCB.name);
+					succesCB.remove(function(succesCB2) {
+						////console.log("删除本地文件成功: " + JSON.stringify(succesCB2));
+						callback({
+							code: 1,
+							file: data,
+							message: "删除成功"
+						});
+					}, function(errorCB2) {
+						//console.log("删除本地文件失败: " + JSON.stringify(succesCB2));
+						callback({
+							code: 0,
+							file: data,
+							message: "删除失败" + errorCB2.message
+						});
+					});
+				}, function(errorCB) {
+					//console.log("获取删除本地文件的文件系统失败: " + JSON.stringify(errorCB));
+					callback({
+						code: 0,
+						file: data,
+						message: "删除失败" + errorCB.message
+					});
+				});
+			}
+
+			/**
+			 * 在程序中创建utid的文件夹和对应的上传下载文件夹
+			 */
+			function createFolder(callBack, errorCallBack) {
+				plus.io.requestFileSystem(plus.io.PUBLIC_DOCUMENTS, function(succesCB) {
+					var LocalURL = succesCB.root.toLocalURL();
+					window.myStorage.setItem(window.storageKeyName.DOCUMENTSPATH, LocalURL);
+					var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid;
+					//创建utid文件夹
+					//console.log("requestFileSystem " + personalUTID);
+					succesCB.root.getDirectory(personalUTID, {
+						create: true
+					}, function(succesCB2) {
+						//创建或打开下载文件夹
+						succesCB2.getDirectory('download', {
+							create: true
+						}, function(succesCB3) {
+							//console.log("download");
+							downFolderEntry = succesCB3;
+							//console.log("请求下载文件系统成功 " + downFolderEntry.fullPath);
+							folderUpOrDownDirectoryReader(0, downFolderEntry);
+
+							//创建或打开上传文件夹
+							succesCB2.getDirectory('upload', {
+								create: true
+							}, function(succesCB4) {
+								//console.log("upload");
+								upFolderEntry = succesCB4;
+								//console.log("请求上传文件系统成功 " + upFolderEntry.fullPath);
+								folderUpOrDownDirectoryReader(1, upFolderEntry);
+								callBack(succesCB2);
+							}, function(errorCB4) {
+								errorCallBack(errorCB4);
+							});
+
+						}, function(errorCB3) {
+							errorCallBack(errorCB3);
+						});
+					}, function(errorCB2) {
+						errorCallBack(errorCB2);
+					});
+				}, function(errorCB) {
+					errorCallBack(errorCB);
+				});
+			}
+
+			/**
+			 * checkbox状态变化
+			 */
+			function changeCheckBox() {
+				var qsString = "";
+				var qsString_check = "";
+				if(slideNumber) { //下载列表
+					qsString = "#uploaded";
+				} else {
+					qsString = "#downloaded";
+				}
+				qsString = qsString + " .mui-checkbox input[type=checkbox]";
+				qsString_check = qsString + ":checked";
+				var checkBox = document.body.querySelectorAll(qsString);
+				var checked = document.body.querySelectorAll(qsString_check);
+				//console.log("checkBox:" + checkBox.length);
+				//console.log("checked:" + checked.length);
+				if(checkBox.length == 0) {
+					vm_edit.content = "全选";
+					return false;
+				}
+				if(checkBox.length == checked.length) {
+					vm_edit.content = "全不选";
+				} else {
+					vm_edit.content = "全选";
+				}
+				editChangeTitle();
+			}
+
+			/**
+			 * 修改标题中已选个数
+			 */
+			function editChangeTitle() {
+				var checked = document.body.querySelectorAll(".mui-checkbox input[type=checkbox]:checked");
+				//console.log("editChangeTitle:" + checked.length);
+				document.getElementById("title").innerText = "已选定" + checked.length + "个";
+				if(checked.length != 0) {
+					vm_del.opacity = 1;
+				} else {
+					vm_del.opacity = 0.5;
+				}
+			}
+
+			/**
+			 * 批量删除文件
+			 * @param {Object} wd
+			 */
+			function deleteFileArray(wd) {
+				for(var i in delFileArray) {
+					//console.log("delFileArray:" + i + " " + JSON.stringify(delFileArray[i]));
+					if(delFileArray[i].del == undefined) {
+						deleteLocalFile(delFileArray[i], function(data) {
+							//console.log("deleteLocalFile:" + JSON.stringify(data));
+							delFileArray[i].del = data.code
+							if(data.code) { //成功
+								var ele = document.getElementById(data.file.type + "_" + data.file.fpath);
+								ele.parentNode.removeChild(ele);
+							} else {
+								vm_fail.failArray.push(data.file.fname);
+							}
+							if(i == (delFileArray.length - 1)) {
+								mui.toast("执行完成");
+								wd.close();
+								if(vm_fail.failArray.length != 0) {
+									vm_fail.show();
+								}
+							} else {
+								deleteFileArray(wd);
+							}
+						});
+						break;
+					}
+				}
+
+			}
+		</script>
+	</body>
+
+</html>

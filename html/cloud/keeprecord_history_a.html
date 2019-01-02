@@ -1,0 +1,666 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="author" content="莫尚霖,email:444811716@qq.com" />
+		<meta name="description" content="点到记事班级历史记录和统计详情" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/utils/pullToRefresh.css" />
+		<link rel="stylesheet" href="../../css/utils/preview.css" />
+		<style>
+			body,
+			.mui-content {
+				background-color: white;
+			}
+
+			.mui-pull-bottom-wrapper {
+				/*底部加载更多区域*/
+				background-color: white;
+			}
+
+			.mui-table-view {
+				font-size: 15px;
+				word-break: break-all;
+			}
+
+			.mui-table-view:before {
+				height: 0px;
+			}
+
+			.mui-table-view:after {
+				height: 2px;
+			}
+
+			.mui-table-view:first-child:before {
+				height: 0px;
+			}
+
+			.mui-table-view-cell:before,
+			.mui-table-view-cell:after {
+				left: 15px;
+				right: 15px;
+			}
+
+			.mui-table-view .history-date:before {
+				height: 0px;
+			}
+
+			.mui-table-view .history-date:after {
+				height: 2px;
+			}
+
+			.mui-table-view-cell:last-child:after {
+				height: 1px;
+			}
+
+			.history-title {
+				/*标题*/
+				display: inline;
+				color: #323232;
+				font-weight: 900;
+			}
+
+			.history-date {
+				/*日期*/
+				color: #FF9900;
+			}
+
+			.history-time {
+				/*时间*/
+				color: #B7B7B7;
+				font-size: 13px;
+			}
+
+			.history-content {
+				/*内容*/
+				color: #808080;
+				font-size: 14px;
+				margin-top: 5px;
+			}
+
+			.record-imge {
+				width: 100%;
+				margin-top: 5px;
+			}
+
+			.record-picture {
+				/*显示图片区域*/
+				overflow: hidden;
+				position: relative;
+				float: left;
+				text-align: center;
+				margin-top: 5px;
+				margin-bottom: 5px;
+			}
+
+			.record-picture-num {
+				/*剩余图片数量*/
+				position: absolute;
+				color: white;
+				background-color: rgba(0, 0, 0, .3);
+				width: 100%;
+				font-size: 25px;
+			}
+
+			.ellipsis-show {
+				/*内容*/
+				display: -webkit-box;
+				overflow: hidden;
+				white-space: normal !important;
+				text-overflow: ellipsis;
+				word-wrap: break-word;
+				-webkit-line-clamp: 4;
+				-webkit-box-orient: vertical;
+			}
+
+			.show-all {
+				display: none;
+				color: #CCCCCC;
+				font-size: 14px;
+			}
+
+			.statistics-publisher {
+				/*统计详情发布者*/
+				color: #13b7f6;
+			}
+
+			.video-thumb {
+				/*视频缩略图*/
+				width: 50%;
+				visibility: hidden;
+			}
+
+			.video-play {
+				/*播放按钮*/
+				position: absolute;
+				visibility: hidden;
+			}
+
+			.mui-popover {
+				width: 100%;
+				height: 0px;
+				border-radius: initial;
+				background-color: transparent;
+				border: none;
+				box-shadow: none;
+			}
+
+			.mui-backdrop {
+				background-color: black;
+			}
+
+			.video-time {
+				/*视频时间*/
+				position: absolute;
+				color: white;
+				right: 52%;
+				visibility: hidden;
+				bottom: 20px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title"></h1>
+		</header>
+		<!--下拉刷新容器-->
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper mui-fullscreen" style="z-index: 1;">
+			<div class="mui-scroll">
+				<div id="data_table">
+				</div>
+			</div>
+		</div>
+		<div id="videoPopover" class="mui-popover">
+			<video id="video" style="position: absolute;z-index: 999;" controls="controls" webkit-playsinline playsinline>
+				您的浏览器不支持 video 标签。
+			</video>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/mui.pullToRefresh.js"></script>
+		<script type="text/javascript" src="../../js/mui.pullToRefresh.material.js"></script>
+		<script type="text/javascript" src="../../js/mui.zoom.js"></script>
+		<script type="text/javascript" src="../../js/mui.previewimage.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script type="text/javascript" src="../../js/utils/playutil.js"></script>
+		<script type="text/javascript" src="../../js/utils/showvideoutil.js"></script>
+		<script type="text/javascript">
+			var previewImage; //查看图片的控件
+			var pullRefresh; //下拉，上拉控件
+			var main; //获取当前窗体对象
+			var mainData; //接收A页面传入参数值
+			var markDate = ''; //记录日期
+			var page; //记录页数
+			var myDate = new Date();
+			var personal = window.myStorage.getItem(window.storageKeyName.PERSONALINFO);
+			var publisherNick = {}; //记录发布者的昵称
+			publisherNick[personal.utid] = personal.unick;
+			var records = {
+				recordKey: [], //记录点到记事的Key
+				recordValue: {} //记录点到记事的Value
+			}; //记录所有的点到记事
+
+			mui.init({
+				gestureConfig: {
+					doubletap: true,
+				}
+			});
+			mui.plusReady(function() {
+				initData();
+				initControl();
+				initListener();
+				//获取数据
+				requestData(1, 0);
+			});
+
+			/**
+			 * 初始化数据
+			 */
+			function initData() {
+				main = plus.webview.currentWebview(); //获取当前窗体对象
+				mainData = main.data; //接收A页面传入参数值
+				//console.log(main.id + ' ' + JSON.stringify(mainData));
+				var title = document.getElementById("title")
+				if(mainData.type == 'history') {
+					title.innerText = '历史记录';
+				} else if(mainData.type == 'statistics') {
+					title.innerText = '统计详情';
+				}
+			}
+
+			/**
+			 * 初始化控件
+			 */
+			function initControl() {
+				//初始化图片查看控件
+				previewImage = mui.previewImage();
+
+				//初始化下拉，上拉控件
+				var deceleration = mui.os.ios ? 0.003 : 0.0009;
+				mui('.mui-scroll-wrapper').scroll({
+					bounce: false,
+					indicators: true, //是否显示滚动条
+					deceleration: deceleration
+				});
+				pullRefresh = mui('.mui-scroll-wrapper .mui-scroll').pullToRefresh({
+					down: {
+						callback: function() {
+							requestData(1, 1);
+						}
+					},
+					up: {
+						contentinit: '', //默认没有更多显示空白
+						contentnomore: '', //隐藏没有更多提示
+						callback: function() {
+							if(page) {
+								requestData(page.pageIndex + 1, 2);
+							} else {
+								pullRefresh.endPullUpToRefresh();
+								mui.toast('数据异常，请下拉刷新后重新尝试');
+							}
+						}
+					}
+				});
+				//初始化播放器
+				ShowVideoUtil.initVideo(document.getElementById("video"));
+			}
+
+			/**
+			 * 初始化监听
+			 */
+			function initListener() {
+				//点击图片的数字
+				mui('#data_table').on('tap', '.record-picture-num', function() {
+					previewImage.open(document.getElementById("img_" + this.getAttribute('data-id')))
+				});
+
+				//显示全部，收起
+				mui('#data_table').on('tap', '.show-all', function() {
+					var str = this.innerText;
+					var id = this.id.replace('_show', '');
+					var content = document.getElementById(id + "_content");
+					if(str == '显示全部') {
+						this.innerText = '收起';
+						content.style.webkitLineClamp = 'inherit';
+					} else if(str == '收起') {
+						var offsetHeight_0 = content.offsetHeight;
+						this.innerText = '显示全部';
+						content.style.webkitLineClamp = '3';
+						var offsetHeight_1 = content.offsetHeight;
+						var scroll = mui('#pullrefresh').scroll(); //滑动控件
+						var move = scroll.y + (offsetHeight_0 - offsetHeight_1);
+						if(move >= 0) {
+							mui('.mui-scroll-wrapper').scroll().scrollTo(0, 0, 0);
+						} else {
+							mui('.mui-scroll-wrapper').scroll().scrollTo(0, move, 0);
+						}
+					}
+				});
+
+				//双击标题返回列表顶部
+				document.getElementById('title').addEventListener('doubletap', function() {
+					var scrollTop = mui('#pullrefresh').scroll(); //话题列表区域
+					scrollTop.scrollTo(0, 0, 100);
+				});
+
+				/**
+				 * 播放视频
+				 */
+				mui('#data_table').on('tap', '.video-play', function() {
+					var ids = this.id.split('_');
+					ShowVideoUtil.showVideo(document.getElementById("video"), 'videoPopover', records.recordValue[ids[2]].EncAddr, records.recordValue[ids[2]].EncImgAddr);
+				});
+			}
+
+			/**
+			 * 获取针对某班的点到记事列表
+			 * @param {Object} pageIndex 当前页数
+			 */
+			function requestData(pageIndex, type) {
+				var wd = null;
+				if(type == 0) {
+					wd = events.showWaiting();
+				}
+				if(mainData.type == 'history') {
+					//66.（点到记事）获取针对某班的点到记事列表
+					var comData = {
+						classId: mainData.gid, //班级ID
+						pageIndex: pageIndex, //当前页数
+						pageSize: 10, //每页记录数
+						publisherId: personal.utid //发布者ID,0代表全部
+					};
+					postDataPro_getNotesForClass(comData, wd, function(data) {
+						//console.log('66 获取针对某班的点到记事列表 getNotesForClass ' + JSON.stringify(data));
+						requestDataCallBack(pageIndex, wd, data, type);
+					});
+				} else if(mainData.type == 'statistics') {
+					//94.（点到记事）获取某学生的点到记事统计
+					var comData = {
+						studentId: mainData.stu.stuid, //学生ID
+						classId: mainData.gid, //班级ID
+						qryMonth: mainData.statistics.month, //查询月
+						checkType: mainData.statistics.checkType, //点到情况
+						pageIndex: pageIndex, //当前页数
+						pageSize: 10, //每页记录数
+					};
+					postDataPro_getNotesStatisticForStudent(comData, wd, function(data) {
+						//console.log('94 获取某学生的点到记事统计 getNotesStatisticForStudent ' + JSON.stringify(data));
+						requestDataCallBack(pageIndex, wd, data, type);
+					});
+				}
+			}
+
+			/**
+			 * 生成界面
+			 * @param {Object} data
+			 */
+			function createItem(data) {
+				////console.log('createItem ' + JSON.stringify(data));
+				records.recordKey.push(data.TabId);
+				records.recordValue[data.TabId] = data;
+				var Date = data.PublishDate.split(' '); //发布的日期和时间
+				var dateItem = Date[0];
+				var time = Date[1].split(':');
+				var timeItem = time[0] + ':' + time[1];
+				if(markDate != dateItem) { //新的日期
+					markDate = dateItem;
+					var element_0 = document.createElement('ul');
+					element_0.className = 'mui-table-view';
+					element_0.id = dateItem;
+					var mTime = dateItem.split('-');
+					if(mTime[0] == myDate.getFullYear()) { //记录是今年
+						mTime[0] = '';
+					} else {
+						mTime[0] = mTime[0] + '年';
+					}
+					var showTime = mTime[0] + mTime[1] + '月' + mTime[2] + '日';
+					element_0.innerHTML = '<div class="mui-table-view-cell history-date">' + showTime + '</div><div id="' + dateItem + '_data"></div>';
+					document.getElementById("data_table").appendChild(element_0);
+				}
+
+				//统计详情发布者昵称
+				var html_statistics = '';
+				if(mainData.type == 'statistics') {
+					var publisher = 'display: none;';
+					if(publisherNick[data.PublisherId]) {
+						//有发布者昵称
+						publisher = 'display: inline;'
+					}
+					html_statistics = '<div class="statistics-publisher" style="' + publisher + '">\
+										<div class="mui-pull-left">&nbsp;[</div>\
+										<div id="' + data.TabId + '_' + data.PublisherId + '_publisher" class="mui-pull-left mui-ellipsis"></div>\
+										<div>]</div>\
+									</div>';
+				}
+
+				var html_first = '<div class="mui-media-body">\
+									<div id="' + data.TabId + '_title' + '" class="history-title mui-pull-left">一二三四五六七八九十 旷课</div>\
+									<div id="' + data.TabId + '_time' + '" class="mui-pull-right history-time">' + timeItem + '</div>\
+									' + html_statistics + '\
+								</div>\
+								<div id="' + data.TabId + '_content' + '" class="mui-media-body history-content ellipsis-show"></div>\
+								<div id="' + data.TabId + '_show' + '" class="show-all">显示全部</div>';
+				var html_media = ''; //多媒体
+				var width = Math.ceil((document.getElementById("data_table").offsetWidth - 30) * 0.32);
+				var height = parseInt(width * 3 / 4);
+				var marginBottom = Math.floor((document.getElementById("data_table").offsetWidth - 30) * 0.02);
+				var marginRight;
+				var title = ''; //标题
+				var content = ''; //内容
+				if(data.EncType == 1) { //附件类型,1图片2音视频3仅文字
+					var imageArray = data.EncAddr.split('|');
+					var thumbArray = data.EncImgAddr.split('|');
+
+					var html_0 = '<div class="record-imge">';
+					var html_1 = '';
+					var html_2 = ''; //显示剩余的图片数量
+					var html_3 = ''; //是否显示图片
+					for(var i = 0; i < imageArray.length; i++) {
+						if(i == 2 || i == 5 || i == 8) {
+							marginRight = 0;
+						} else {
+							marginRight = marginBottom;
+						}
+						if(i > 2) {
+							html_3 = 'display: none;';
+						}
+						if(i == 2 && imageArray.length > 3) {
+							html_2 = '<div data-id="' + data.TabId + '_' + i + '" class="record-picture-num" style="line-height: ' + (height + 1) + 'px;">+' + (imageArray.length - 3) + '</div>'
+						}
+						html_1 = html_1 + '<div class="record-picture" style="width: ' + width + 'px; height: ' + height + 'px; margin-right: ' + marginRight + 'px;' + html_3 + '">\
+									' + html_2 + '<img id="img_' + data.TabId + '_' + i + '" src="' + thumbArray[i] + '" data-preview-src="' + imageArray[i] + '" data-preview-group="' + data.TabId + '" style="width:100%;visibility: hidden;" onerror="events.imageOnError(this,this.getAttribute(\'data-preview-src\'));this.style.visibility=\'visible\';" onload="if(this.offsetHeight<=this.offsetWidth){if(this.offsetHeight<' + height + '){this.style.height=\'' + height + 'px\';this.style.width=\'initial\';}this.style.marginLeft=-parseInt((this.offsetWidth-' + width + ')/2)+\'px\';}else{this.style.marginTop=-parseInt((this.offsetHeight-' + height + ')/2)+\'px\';};this.style.visibility=\'visible\';">\
+								</div>';
+					}
+					html_media = html_0 + html_1 + '</div>';
+				} else if(data.EncType == 2) { //视频
+					var play_width = 55;
+					var html_0 = '<div class="record-video">\
+								<div id="video_time_' + data.TabId + '" class="video-time">' + data.EncLen + '\'\'</div>\
+								<img id="video_play_' + data.TabId + '" style="width:' + play_width + 'px;height:' + play_width + 'px;" class="video-play" onload="videoThumbLoad(this);" src="../../image/utils/playvideo.png" />\
+								<img id="video_thumb_' + data.TabId + '" class="video-thumb" src="' + data.EncImgAddr + '" onload="videoThumbLoad(this);" onerror="videoThumbError(this);">\
+							</div>';
+					html_media = html_0;
+				}
+				var element_1 = document.createElement('li');
+				element_1.className = 'mui-table-view-cell';
+
+				//统计详情
+				if(mainData.type == 'statistics') {
+					data.stuname = mainData.stu.stuname
+				}
+				if(data.stuname == undefined) {
+					data.stuname = '';
+					//console.log('stuname 异常 无此人资料' + data.StudentId);
+					////console.log('createItem ' + JSON.stringify(data));
+				}
+				if(data.NoteType == 1) { //点到
+					element_1.innerHTML = html_first;
+					title = data.stuname + ' ' + data.CheckTypeStr;
+					if(data.MsgContent != '') {
+						content = '说明:' + data.MsgContent;
+					}
+				} else if(data.NoteType == 2) { //记事
+					element_1.innerHTML = html_first + html_media;
+					title = data.stuname;
+					content = data.MsgContent;
+				} else {
+					//console.log('NoteType 异常' + data.NoteType);
+					element_1.innerHTML = html_first;
+					title = data.stuname;
+					content = data.MsgContent;
+				}
+
+				document.getElementById(dateItem + '_data').appendChild(element_1);
+				document.getElementById(data.TabId + '_title').innerText = title;
+				if(content) {
+					var height_0;
+					var height_1;
+					var contentEl = document.getElementById(data.TabId + '_content');
+					contentEl.innerText = content;
+
+					height_0 = contentEl.offsetHeight;
+					contentEl.style.webkitLineClamp = '3';
+					height_1 = contentEl.offsetHeight;
+					if(height_0 > height_1) {
+						//内容高度大于三行
+						document.getElementById(data.TabId + "_show").style.display = 'inline';
+					}
+				}
+				//统计详情显示发布者
+				if(mainData.type == 'statistics') {
+					//如果有这个人
+					if(publisherNick[data.PublisherId]) {
+						var publisherName = document.getElementById(data.TabId + '_' + data.PublisherId + '_publisher');
+						var title_width = document.getElementById(data.TabId + '_title').offsetWidth;
+						var time_left = document.getElementById(data.TabId + '_time').offsetLeft;
+						var width = Math.floor(time_left - 30 - title_width);
+						publisherName.style.maxWidth = width + 'px';
+						publisherName.innerText = publisherNick[data.PublisherId];
+					}
+				}
+			}
+
+			/**
+			 * 请求数据后的回调
+			 * @param {Object} data
+			 */
+			function requestDataCallBack(pageIndex, wd, data, type) {
+				if(data.RspCode == 0) { //成功获取
+					//记录页数
+					page = {
+						pageIndex: pageIndex, //当前页数
+						totalPage: data.RspData.TotalPage //总页数
+					};
+					//console.log('page ' + JSON.stringify(page));
+					if(pageIndex == 1) { //下拉刷新或者获取的第一页的内容
+						document.getElementById('data_table').innerHTML = '';
+						markDate = ''; //日期
+						pullRefresh.refresh(true); //更新当前控件
+						records = {
+							recordKey: [], //记录点到记事的Key
+							recordValue: {} //记录点到记事的Value
+						}; //记录所有的点到记事
+					}
+					endPullUp();
+
+					var tempRspData = data.RspData.Data;
+					//生成界面
+					if(mainData.type == 'history') {
+						for(var i = 0; i < tempRspData.length; i++) {
+							mui.extend(tempRspData[i], mainData.qunDataInfos[tempRspData[i].StudentId]);
+							createItem(tempRspData[i]);
+						}
+					} else if(mainData.type == 'statistics') {
+						var pubIdArray = []; //保存key
+						var pubIdOb = {}; //保存value
+						for(var i = 0; i < tempRspData.length; i++) {
+							var id = tempRspData[i].PublisherId;
+							//没有查这个人的昵称
+							if(!publisherNick[id]) {
+								//这个人没有重复
+								if(!pubIdOb[id]) { //需要查询的
+									pubIdArray[pubIdArray.length] = id;
+									pubIdOb[id] = id;
+								}
+							}
+						}
+						//获取昵称
+						getNick(pubIdArray, wd, function() {
+							for(var i = 0; i < tempRspData.length; i++) {
+								createItem(tempRspData[i]);
+							}
+							////console.log(document.getElementById("data_table").innerHTML);
+							if(type == 0) {
+								wd.close();
+							}
+							if(type == 1) { //结束下拉刷新
+								pullRefresh.endPullDownToRefresh();
+							}
+							endPullUp();
+						});
+					}
+
+					if(data.RspData.Data.length == 0 && pageIndex == 1) {
+						if(mainData.type == 'history') {
+							//mui.toast('历史记录为空');
+							document.getElementById("data_table").innerHTML = '\
+								<div style="text-align: center;color: #808080;">\
+									<img src="../../image/qiuzhi/qiuzhi_noanswer.png" style="width: 50%;margin-top:' + parseInt(plus.screen.resolutionHeight / 5) + 'px ;" />\
+									<div>历史记录为空 </div>\
+								</div>';
+						} else if(mainData.type == 'statistics') {
+							mui.toast('统计详情记录为空');
+						}
+					}
+				} else {
+					mui.toast(data.RspTxt);
+				}
+
+				if(mainData.type == 'history') {
+					if(type == 0) {
+						wd.close();
+					}
+					if(type == 1) { //结束下拉刷新
+						pullRefresh.endPullDownToRefresh();
+					}
+					endPullUp();
+				}
+			}
+
+			/**
+			 * 获取昵称
+			 * @param {Object} utids
+			 * @param {Object} callback
+			 */
+			function getNick(utids, wd, callback) {
+				if(utids.length == 0) {
+					callback();
+					return false;
+				}
+				var utidStr = utids.join(',');
+				comData = {
+					vvl: utidStr, //用户id，查询的值,p传个人ID,g传ID串
+					vtp: 'g' //查询类型,p(个人)g(id串)
+				};
+				//21.通过用户ID获取用户资料
+				postDataPro_PostUinf(comData, wd, function(data) {
+					//console.log('21 通过用户ID获取用户资料 PostUinf ' + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						for(var i = 0; i < data.RspData.length; i++) {
+							publisherNick[data.RspData[i].utid] = data.RspData[i].unick;
+						}
+					} else {
+						mui.toast(data.RspTxt);
+					}
+					callback();
+				});
+			}
+
+			/**
+			 * 结束上拉加载更多
+			 */
+			function endPullUp() {
+				if(page && page.pageIndex >= page.totalPage) {
+					//console.log('没有下一页');
+					pullRefresh.endPullUpToRefresh(true);
+				} else {
+					pullRefresh.endPullUpToRefresh();
+				}
+			}
+
+			/**
+			 * 视频的缩略图加载成功
+			 * @param {Object} img
+			 */
+			function videoThumbLoad(img) {
+				var ids = img.id.split('_');
+				img.setAttribute('data-load', 1);
+				var img_a;
+				if(ids[1] == 'play') {
+					img_a = document.getElementById("video_thumb_" + ids[2]);
+				} else {
+					img_a = document.getElementById("video_play_" + ids[2]);
+				}
+				if(img.getAttribute('data-load') && img_a.getAttribute('data-load')) {
+					ShowVideoUtil.videoThumbLoad(document.getElementById("video_thumb_" + ids[2]), document.getElementById("video_play_" + ids[2]), 0, document.getElementById("video_time_" + ids[2]));
+				}
+			}
+
+			/**
+			 * 视频的缩略图加载失败
+			 * @param {Object} img
+			 */
+			function videoThumbError(img) {
+				var ids = img.id.split('_');
+				ShowVideoUtil.videoThumbError(img, document.getElementById("video_play_" + ids[2]), records.recordValue[ids[2]].EncAddr);
+			}
+		</script>
+	</body>
+
+</html>

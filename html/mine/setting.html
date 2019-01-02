@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<style type="text/css">
+			.mui-table-view-cell:after,
+			before {
+				background-color: #dddddd;
+			}
+			
+			.mui-table-view:before {
+				background-color: #dddddd;
+			}
+			
+			.mui-table-view:after {
+				background-color: #dddddd;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">设置</h1>
+		</header>
+		<div class="mui-content">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell" id="0">
+					<a id="change-phoneNum" class="mui-navigate-right" style="font-size: 15px;">
+						<p class="mui-pull-right" id='change_phoneNum' style="font-size: 13px;margin-right: 30px;"></p>
+						<div class="mui-media-body" style="font-size: 15px;">
+							绑定手机
+						</div>
+					</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a id="change-passwords" class="mui-navigate-right" style="font-size: 15px;">
+						修改密码
+					</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a class="mui-navigate-right" id="quit" style="font-size: 15px;">
+						退出登录
+					</a>
+				</li>
+			</ul>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<!--共用事件-->
+		<script src="../../js/utils/events.js" type="text/javascript" charset="utf-8"></script>
+		<!--本地存储-->
+		<script src="../../js/libs/myStorage/myStorage.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/storageKeyName.js" type="text/javascript" charset="utf-8"></script>
+		<!--共用协议-->
+		<script src="../../js/publicProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/qiuzhi/delContent_pop.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: true //启用右滑关闭功能
+			});
+			//存储个人信息
+			var tempInfo;
+			mui.plusReady(function() {
+				tempInfo = window.myStorage.getItem(window.storageKeyName.PERSONALINFO);
+				//console.log('tempInfo.uid:' + tempInfo.uid);
+				document.getElementById('change_phoneNum').innerText = tempInfo.uid;
+
+				//点击绑定手机cell，弹出
+				mui('.mui-table-view').on('tap', '.mui-table-view-cell', function() {
+					var index = this.id.replace('li', '');
+					//console.log('index:' + index);
+					if(index == '0') {
+						var tempInfo1 = window.myStorage.getItem(window.storageKeyName.PERSONALINFO);
+						mui.confirm(tempInfo1.uid, '您已绑定手机号', ['取消', '更换'], function(e) {
+							var index = e.index;
+							switch(index) {
+								case 0: //取消
+									break;
+								case 1: //返回
+									//flag为2，表示是更改绑定手机
+									events.openNewWindowWithData('../register/register_phoneNumber.html', '2');
+									break;
+							}
+						}, 'div');
+					}
+				});
+				//修改密码
+				events.addTap('change-passwords', function() {
+					//					loadURL();
+					events.openNewWindowWithData('../register/modify_password.html', '1');
+				});
+
+				function loadURL() {
+					var Webview = plus.ios.importClass("UIWebview");
+					var NSURLRequest = plus.ios.import('NSURLRequest');
+					var NSURL = plus.ios.import('NSURL');
+					// 获取当前Webview对象的实例
+					var wv = plus.ios.currentWebview();
+					// 创建请求对象
+					var req = NSURLRequest.requestWithURL(NSURL.URLWithString('http://www.dcloud.io/'));
+					// 跳转页面
+					plus.ios.invoke(wv, "loadRequest:", req);
+					// 释放对象(可选)
+					plus.ios.deleteObject(req);
+					plus.ios.deleteObject(wv);
+
+				}
+				//退出
+				events.addTap('quit', function() {
+					//console.log('2222');
+					var btnArray = [{
+						title: "确定"
+					}];
+					plus.nativeUI.actionSheet({
+						title: "确定退出？",
+						cancel: "取消",
+						buttons: btnArray
+					}, function(e) {
+						var index = e.index;
+						switch(index) {
+							case 0: //取消
+								break;
+							case 1: //退出登录
+								var tempInfo1 = window.myStorage.getItem(window.storageKeyName.PERSONALINFO);
+								//判断是否设置了密码
+								//console.log('tempinfo1:' + JSON.toString(tempInfo1));
+								if(Number(tempInfo1.ispw) == 1) { //有密码
+									//发送注销协议
+									//25.用户注销
+									//需要参数
+									var comData = {
+
+									};
+									// 等待的对话框
+									var wd = events.showWaiting();
+									postDataPro_PostLoginOut(comData, wd, function(data) {
+										wd.close();
+										//console.log('注销success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+										if(data.RspCode == 0) {
+											window.myStorage.setItem(window.storageKeyName.PERSONALINFO, null);
+											events.defaultLogin(function(data) {
+												if(data.value) {
+													//退出登录
+													//													events.logOff();
+													//													events.infoChanged();
+													//													mui.fire(plus.webview.getWebviewById("index.html"), 'quit');
+													//													mui.back();
+													plus.webview.open('../../html/index/index.html');
+													var wvs = plus.webview.all();
+													for(var i = 0, len = wvs.length; i < len; i++) {
+														if(wvs[i].getURL().indexOf('sciedu_home.html') != -1 ||
+															wvs[i].getURL().indexOf('collect.html') != -1 ||
+															wvs[i].getURL().indexOf('mine.html') != -1) {
+															continue;
+														}
+														plus.webview.close(wvs[i]);
+													}
+													var curr = plus.webview.currentWebview();
+													curr.close();
+												}
+											});
+										} else {
+											mui.toast(data.RspTxt);
+										}
+									});
+
+								} else { //无密码
+									events.openNewWindowWithData('../register/modify_password.html', '2');
+								}
+								break;
+						}
+					});
+				});
+			});
+		</script>
+	</body>
+
+</html>

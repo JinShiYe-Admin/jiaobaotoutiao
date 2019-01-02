@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">回复</h1>
+			<a id="publish" class="mui-pull-right">发布</a>
+		</header>
+		<div class="mui-content">
+			<textarea id="comment-area" rows="10" maxlength="300" placeholder="请输入评论/回复内容，最多300字"></textarea>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript">
+			var commentFlag = 0; //0留言 1回复
+			var commentInfo;
+			mui.init();
+			mui.plusReady(function() {
+				var data = plus.webview.currentWebview().data;
+				//console.log("获取的上级页面传过来的值：" + JSON.stringify(data));
+				commentFlag = data.type;
+				commentInfo = data.data;
+				setListener();
+			})
+			/**
+			 * 设置监听
+			 */
+			function setListener() {
+				events.addTap('publish', function() {
+					publishComment();
+				})
+			}
+			/**
+			 * 发布留言或回复
+			 */
+			function publishComment() {
+				var value = getCommentValue();
+				if(!value) {
+					return;
+				}
+				if(commentFlag == 0) { //留言
+					addMsg(value, commentedBack);
+				} else if(commentFlag == 1) { //回复
+					addReply(value, commentedBack);
+				}
+			}
+			/**
+			 * 评论成功的回调
+			 * @param {Object} data 数据
+			 */
+			function commentedBack(data) {
+				mui.fire(plus.webview.currentWebview().opener(), 'commented', data);
+				mui.back();
+			}
+			/**
+			 * 获取评论内容
+			 */
+			function getCommentValue() {
+				var value = events.trim(document.getElementById("comment-area").value);
+				if(value.length == 0) {
+					if(commentFlag == 0) {
+						mui.toast("请输入留言内容！")
+					} else if(commentFlag == 1) {
+						mui.toast("请输入回复内容！");
+					}
+					return;
+				}
+				if(value.length > 300) {
+					mui.toast("内容长度不可超过300字！");
+					return;
+				}
+				return value;
+
+			}
+			/**
+			 *增加留言 
+			 */
+			function addMsg(msg, callback) {
+				var wd = events.showWaiting();
+				postDataPro_addUserSpaceComment({
+					userId: events.getUtid(), //用户ID
+					userSpaceId: commentInfo.userSpaceId, //用户空间ID
+					commentContent: msg //评论内容
+				}, wd, function(data) {
+					wd.close();
+					if(data.RspCode == 0) {
+						callback()
+					} else {
+						mui.toast("评论失败，请重新试过!");
+					}
+				})
+			}
+			/**
+			 * 增加回复 
+			 */
+			function addReply(reply, callback) {
+				var wd = events.showWaiting();
+				var comData={
+					userId: events.getUtid(), //用户ID
+					commentContent: reply //回复内容
+				};
+				jQuery.extend(comData,commentInfo);
+				postDataPro_addUserSpaceCommentReply(comData, wd, function(data) {
+					wd.close();
+					if(data.RspCode == 0) {
+						callback();
+					} else {
+						mui.toast("回复失败，请重新试过!");
+					}
+				})
+			}
+		</script>
+	</body>
+
+</html>

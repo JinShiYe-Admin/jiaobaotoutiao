@@ -1,0 +1,90 @@
+/*日期样式*/
+
+.time {
+	/*浮动到最右边*/
+	float: right;
+}
+
+
+/*家长圈的标题样式*/
+
+.parent {
+	/*垂直距离*/
+	vertical-align: 40%;
+	/*左内边距*/
+	padding-left: 10px;
+	/*右内边距*/
+	padding-right: 10px;
+}
+
+
+/*班级选择样式*/
+
+.class1 {
+	/*无边框*/
+	border: none;
+	/*字体颜色*/
+	color: cornflowerblue;
+	/*背景色为透明色*/
+	background-color: transparent;
+	/*垂直距离*/
+	vertical-align: 40%;
+}
+.class2 {
+	/*无边框*/
+	border: none;
+	/*字体颜色*/
+	color: black;
+	/*背景色为透明色*/
+	background-color: transparent;
+	/*垂直距离*/
+	vertical-align: 40%;
+}
+
+
+/*班级未读数量提醒*/
+
+.custom-badge1 {
+	/*做外边距*/
+	margin-left: -5px;
+	/*垂直距离*/
+	vertical-align: 120%;
+}
+
+.custom-badge2 {
+	/*做外边距*/
+	margin-left: -13px;
+	/*垂直距离*/
+	vertical-align: 120%;
+}
+.custom-badge3 {
+	/*/*做外边距*/
+	margin-left: -50px;
+	/*垂直距离*/
+	vertical-align: 120%;*/
+}
+
+
+/*班级之间的竖线*/
+
+.vertical-line {
+	margin-left: 23%;
+	/*高度*/
+	height: 20px;
+	/*宽度*/
+	width: 1px;
+	/*设置成行内元素*/
+	display: inline;
+	/*垂直距离*/
+	vertical-align: 40%
+}
+
+
+/*红点*/
+
+.red-point {
+	/*外边距*/
+	margin-left: -15px;
+	/*垂直距离*/
+	vertical-align: 100%;
+}

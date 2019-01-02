@@ -1,0 +1,176 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link rel="stylesheet" type="text/css" href="../../css/mui.min.css" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<style>
+			.mui-btn {
+				padding: 10px;
+			}
+			
+			/*修改input中placeholder的颜色*/
+			 input::-webkit-input-placeholder {
+				/* WebKit browsers */
+				color: #999999;
+			}
+			.mui-input-row label{
+				width: auto;
+			}
+			.mui-input-row label~input{
+				width: 75%;
+			}
+			input[type=tel]{
+				height: 45px;
+			}
+			.mui-input-row label{
+				padding: 15px 15px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" id="navTitle"></h1>
+		</header>
+		<div class="mui-content">
+			<div id="tishi" style="padding: 28px;text-align: center;">
+				<a style="color: #000000;font-size: 20px;" id="tishiContent">请输入您的手机号</a>
+			</div>
+			<!--<form class="mui-input-group" style="border:0px 0px 0px 0px;">-->
+			<div class="mui-input-row" style="background-color: white;">
+				<label style="font-size: 15px;">手机号</label>
+				<div style="width: 1px;height: 35px;margin-top: 7px;display: inline-block;background-color: darkgray;"></div>
+				<input type="tel" id="phoneNumber" placeholder="请输入手机号" place>
+			</div>
+			<div class="mui-content-padded">
+				<button id='register' class="mui-btn mui-btn-block mui-btn-primary" style="background: #13b7f6; border: none ; ">下一步</button>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js" type="text/javascript" charset="utf-8"></script>
+		<!--界面中用到的事件-->
+		<script src="../../js/utils/events.js" type="text/javascript" charset="utf-8"></script>
+		<!--本地存储-->
+		<script src="../../js/libs/myStorage/myStorage.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/storageKeyName.js" type="text/javascript" charset="utf-8"></script>
+		<!--加密-->
+		<script src="../../js/libs/RSA/Barrett.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/libs/RSA/BigInt.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/libs/RSA/RSA.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils/RSAEncrypt.js" type="text/javascript" charset="utf-8"></script>
+		<!---->
+		<script src="js/mui.enterfocus.js" type="text/javascript" charset="utf-8"></script>
+		<!--网络请求-->
+		<script src="../../js/utils/postData.js" type="text/javascript" charset="utf-8"></script>
+		<!--签名-->
+		<script src="../../js/libs/crypto-js/require.js"></script>
+		<script src="../../js/utils/sortSign.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils/signHmacSHA1.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/libs/jquery.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function() {
+				var regFlag; //0注册，1验证码登录，2更改绑定手机号
+				//存储个人信息
+				var tempInfo = window.myStorage.getItem(window.storageKeyName.PERSONALINFO);
+				//获取到手机号
+				var phoneNum = document.getElementById("phoneNumber");
+				var navTitle = document.getElementById("navTitle"); //标题
+				var tishiContent = document.getElementById("tishiContent"); //提示信息
+				var registerBtn = document.getElementById("register"); //注册按钮
+				var curPage = plus.webview.currentWebview();
+				regFlag = curPage.data;
+				if(regFlag == 0 || regFlag == 1) { //注册0、验证码登录1
+
+				} else { //更改绑定手机号2
+					navTitle.innerText = '更换手机号';
+					tishiContent.innerText = '更换手机后，下次登录可使用新手机号登录。当前手机号:' + tempInfo.uid;
+					//					tishiContent.style.color = '#7f7f7f';
+				}
+				phoneNum.value = '';
+				//				events.preload('yanZhengMa.html');
+				events.addTap('register', function() {
+					document.activeElement.blur();
+					if(!phoneNum.value) {
+						mui.toast('请输入手机号码');
+						return;
+					}
+					var myreg = /^[1][3-9]\d{9}$/
+
+					if(!myreg.test(phoneNum.value)) {
+						mui.toast('请输入有效的手机号码！');
+						return false;
+					}
+					//握手协议
+					//需要加密的数据
+					var enData0 = {};
+					//不需要加密的数据
+					var comData;
+					if(regFlag == 0) { //注册
+						comData = {
+							uuid: plus.device.uuid,
+							shaketype: 'reg',
+							appid: plus.runtime.appid
+						};
+					} else if(regFlag == 1) { //验证码登录1
+						comData = {
+							uuid: plus.device.uuid,
+							shaketype: 'login',
+							appid: plus.runtime.appid
+						};
+					} else if(regFlag == 2) { //更改绑定手机号
+						comData = {
+							uuid: plus.device.uuid,
+							shaketype: 'bind',
+							appid: plus.runtime.appid
+						};
+					}
+					// 等待的对话框
+					var wd = events.showWaiting();
+					//发送网络请求，data为网络返回值
+					postDataEncry(storageKeyName.MAINURL + 'PostShakeHand', enData0, comData, 0, wd, function(data) {
+						wd.close();
+						//console.log('90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+						if(data.RspCode == 0) {
+							//存储到手机本地
+							window.myStorage.setItem(window.storageKeyName.SHAKEHAND, data.RspData);
+							//获取验证码协议
+							//需要加密的数据
+							var enData = {
+								uid: document.getElementById("phoneNumber").value
+							};
+							//发送网络请求，data为网络返回值
+							postDataEncry(storageKeyName.MAINURL + 'PostCode', enData, comData, 0, wd, function(data) {
+								//成功，关闭等待框
+								wd.close();
+								////console.log('11111success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+								if(data.RspCode != 0000) {
+									mui.toast(data.RspTxt);
+									return;
+								} else {
+									//将输入的手机号，传到验证码界面
+									var tempValue = {
+										phone: phoneNum.value,
+										flag: regFlag
+									};
+									var tempV = {
+										tempValue: tempValue,
+										comData: comData
+									}
+									events.openNewWindowWithData('yanZhengMa.html', tempV);
+								}
+							});
+						} else {
+							mui.toast(data.RspTxt);
+						}
+					});
+				});
+			});
+		</script>
+	</body>
+
+</html>

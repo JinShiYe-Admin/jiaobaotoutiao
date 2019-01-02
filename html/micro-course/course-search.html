@@ -1,0 +1,99 @@
+<!--课程搜索-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/mine/search.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">
+				<div class="search-form">
+					<div class="mui-input-row  ">
+						<input id="search-group" type="search" class="mui-input-clear search-input" placeholder="搜索你喜欢的课程">
+						<input id="search-btn" type="submit" class="search-btn" value="搜索" />
+					</div>
+				</div>
+			</h1>
+		</header>
+		<!--下拉刷新容器-->
+		<div id="refreshContainer" class="mui-content">
+			<div class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<!--数据列表-->
+					<ul id="list-container" class="mui-table-view">
+
+					</ul>
+				</div>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<script src="../../js/micro-course/course-search.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			var freshContainer;
+			var freshFlag = 0; //0 默认 1刷新 2加载更多
+			var listContainer = document.getElementById("list-container");
+			mui('.mui-scroll-wrapper').scroll({
+				bounce: false,
+				indicators: true //是否显示滚动条
+			});
+			var setFresh = function() {
+				//上拉下拉注册
+				mui(".mui-scroll-wrapper>.mui-scroll").pullToRefresh({
+					down: {
+						callback: function() {
+							freshContainer = this;
+							oldPageIndex = pageIndex;
+							freshFlag = 1;
+							pageIndex = 1;
+							wd = events.showWaiting();
+							course_search.getData(pageIndex, keyWords, listContainer, course_search.setData);
+						}
+					},
+					up: {
+						callback: function() {
+							freshContainer = this;
+							//console.log('我在底部pageIndex:' + pageIndex + ':总页数:' + totalPage);
+							if(pageIndex < totalPage) {
+								freshFlag = 2;
+								wd = events.showWaiting();
+								pageIndex++;
+								course_search.getData(pageIndex, keyWords, listContainer, course_search.setData);
+							} else {
+								freshContainer.endPullUpToRefresh();
+								mui(".mui-pull-loading")[0].innerHTML = "没有更多了";
+							}
+						}
+					}
+				});
+			}
+			setFresh();
+			mui.plusReady(function() {
+				function endFresh() {
+					if(freshContainer) {
+						if(freshFlag == 1) {
+							freshContainer.endPullDownToRefresh();
+							mui(".mui-pull-loading")[0].innerText = "上拉加载更多";
+						} else if(freshFlag == 2) {
+							freshContainer.endPullUpToRefresh();
+						} else {
+							mui(".mui-pull-loading")[0].innerText = "上拉加载更多";
+						}
+					}
+					freshFlag = 0;
+				}
+			})
+		</script>
+	</body>
+
+</html>

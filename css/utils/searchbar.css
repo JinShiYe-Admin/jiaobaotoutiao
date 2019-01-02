@@ -1,0 +1,23 @@
+/*搜索框样式表*/
+
+.searchbar {
+	/*距离上 右 下 左的距离*/
+	margin: 10px 80px 0px 0px;
+}
+
+
+/*更改搜索框背景色*/
+
+.mui-search .mui-placeholder {
+	background: white;
+}
+
+
+/*搜索按钮*/
+
+.searchbtn {
+	float: right;
+	margin: 10px 0px 0px 0px;
+	background-color: rgb(132, 183, 6);
+	color: white;
+}

@@ -1,0 +1,423 @@
+<!--
+	作者：444811716@qq.com
+	时间：2017-02-07
+	描述：群成员
+-->
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<style>
+			body,
+			.mui-content {
+				background-color: white;
+			}
+
+			.mui-table-view {
+				text-align: center;
+				margin-top: 38px;
+			}
+
+			.mui-table-view-cell {
+				height: 90px;
+				padding: 10px 0px;
+			}
+
+			.mui-table-view:before,
+			.mui-table-view:after,
+			.mui-table-view-cell:after {
+				height: 0px;
+			}
+
+			.mui-bar-tab {
+				/*成员分类区域*/
+				background-color: #F2F2F2;
+				top: 0px;
+				float: left;
+				height: 38px;
+				box-shadow: none;
+			}
+
+			.mui-bar-tab .mui-tab-item {
+				/*成员分类*/
+				display: inline;
+				font-size: 17px;
+				line-height: 38px;
+				color: #5E5E5E;
+				margin-left: 10px;
+				border-right: 1px solid #C9C9C9;
+				padding-right: 10px;
+			}
+
+			.mui-bar-tab .mui-tab-item.mui-active {
+				/*选择成员分类*/
+				color: #007aff;
+			}
+
+			.member-item,
+			.member-add {
+				width: 20%;
+				float: left;
+				background: white;
+			}
+
+			.member-add span {
+				font-size: 40px;
+				/*font-weight: 600;*/
+				color: #CECECE;
+			}
+
+			.mui-ellipsis {
+				padding: 0px;
+				color: #868686;
+			}
+
+			img {
+				border-radius: 50%;
+				height: 40px;
+				width: 40px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<nav class="mui-bar mui-bar-tab">
+			<a id="stu" class="mui-tab-item mui-active">
+				<span class="mui-tab-label">学生</span>
+			</a>
+			<a id="tea" class="mui-tab-item">
+				<span class="mui-tab-label">老师</span>
+			</a>
+			<a id="par" class="mui-tab-item">
+				<span class="mui-tab-label">家长</span>
+			</a>
+		</nav>
+		<div class="mui-content">
+			<div id="stu_sw" class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<ul id="stulist" class="mui-table-view">
+						<li class="mui-table-view-cell mui-media member-add">
+							<span class="mui-media-body mui-icon mui-icon-plus"></span>
+							<div class="mui-media-body mui-ellipsis">邀请</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div id="tea_sw" class="mui-scroll-wrapper" style="display: none;">
+				<div class="mui-scroll">
+					<ul id="tealist" class="mui-table-view">
+						<li class="mui-table-view-cell mui-media member-add">
+							<span class="mui-media-body mui-icon mui-icon-plus"></span>
+							<div class="mui-media-body mui-ellipsis">邀请</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div id="par_sw" class="mui-scroll-wrapper" style="display: none;">
+				<div class="mui-scroll">
+					<ul id="parlist" class="mui-table-view">
+						<li class="mui-table-view-cell mui-media member-add">
+							<span class="mui-media-body mui-icon mui-icon-plus"></span>
+							<div class="mui-media-body mui-ellipsis">邀请</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script>
+			mui.init({
+				gestureConfig: {
+					longtap: true, //默认为false
+				}
+			});
+
+			mui.plusReady(function() {
+				//---滑动start---
+				mui(".mui-scroll-wrapper").scroll({
+					scrollY: true, //是否竖向滚动
+					scrollX: false, //是否横向滚动
+					indicators: true, //是否显示滚动条
+					deceleration: 0.0006, //阻尼系数,系数越小滑动越灵敏
+					bounce: true, //是否启用回弹
+				});
+				//---滑动end---
+				if(plus.webview.getWebviewById('group-pInfo.html') == null) {
+					events.preload('../quan/group-pInfo.html');
+				}
+				var main = plus.webview.currentWebview(); //获取当前窗体对象
+				var data = main.data; //接收A页面传入参数值
+				//console.log('qun_manage_member_sub.html:' + JSON.stringify(data));
+
+				var typeId = 'stu'; //记录选择的成员分类
+				getMember(data.gid, '-1'); //获取所有成员
+
+				//切换成员分类后切换列表
+				mui('.mui-bar').on('tap', '.mui-tab-item', function() {
+					document.getElementById(typeId + '_sw').style.display = 'none';
+					document.getElementById(this.id + '_sw').style.display = 'inline';
+					typeId = this.id;
+				});
+
+				//点击邀请监听
+				mui('.mui-content').on('tap', '.member-add', function() {
+					var par = this.parentNode;
+					var mstype = '';
+					//console.log(par.id);
+					switch(par.id) {
+						case 'stulist':
+							mstype = 'student';
+							break;
+						case 'tealist':
+							mstype = 'teacher';
+							break;
+						case 'parlist':
+							mstype = 'parents';
+							break;
+						default:
+							//console.log('邀请群成员设置成员类型出错');
+							break;
+					}
+					events.openNewWindowWithData('qun_manage_invite.html', {
+						gid: data.gid, //群ID
+						gname: data.gname, //群名
+						mstype: mstype, //被邀请成为的类型
+						vtp: '1' //邀请人的类型（用户管理角色,0家长,1管理员,2老师,3学生）
+					});
+				});
+
+				//点击成员
+				mui('.mui-content').on('tap', '.member-item', function() {
+					////console.log('member-item ' + this.getAttribute('data-info'));
+					////console.log('member-item ' + this.getAttribute('data-beizhu'));
+					var info = JSON.parse(this.getAttribute('data-info'));
+					var beizhu = JSON.parse(this.getAttribute('data-beizhu'));
+					mui.extend(true, info, beizhu);
+					mui.extend(info, data);
+					////console.log('info ' + JSON.stringify(info));
+					events.fireToPageWithData('group-pInfo.html', 'postPInfo', info);
+				});
+
+				//长按成员
+				mui('.mui-content').on('longtap', '.member-item', function() {
+					////console.log('member-item ' + this.getAttribute('data-info'));
+					////console.log('member-item ' + this.getAttribute('data-beizhu'));
+					var info = JSON.parse(this.getAttribute('data-info'));
+					var beizhu = JSON.parse(this.getAttribute('data-beizhu'));
+					mui.extend(true, info, beizhu);
+					mui.extend(info, data);
+					//console.log('info ' + JSON.stringify(info));
+
+					if(info.mstype == '1') {
+						mui.toast('不能删除群主');
+					} else {
+						var btnArray = ['否', '是'];
+						mui.confirm('确认删除？', '删除群成员', btnArray, function(e) {
+							if(e.index == 1) {
+								var wd = events.showWaiting();
+								//31.群成员退出群或者剔除群成员
+								//所需参数
+								var comData = {
+									vvl: info.gutid, //群成员群ID，gutid
+								};
+								postDataPro_PostGuD(comData, wd, function(data) {
+									wd.close();
+									//console.log('90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+									if(data.RspCode == 0) {
+										delMember(info.utid);
+										mui.toast('删除成功');
+									} else {
+										mui.toast(data.RspTxt);
+									}
+								});
+
+							} else {
+								//console.log('不删除');
+							}
+						});
+
+					}
+				});
+			});
+
+			/**
+			 * 界面中创建一个成员
+			 * @param {Object} data 类型
+			 * @param {Object} data2 成员的数据
+			 */
+			function addMemItem(data, data2) {
+				////console.log('addMemItem ' + JSON.stringify(data2));
+				var element = document.createElement('li');
+				element.id = data + data2.utid;
+				element.setAttribute('data-info', JSON.stringify(data2));
+				element.className = 'mui-table-view-cell mui-media member-item';
+				element.innerHTML = '<img src="' + updateHeadImg(data2.uimg, 2) + '" />\
+									 <div id="name_' + data + data2.utid + '" class="mui-media-body mui-ellipsis"></div>';
+				document.getElementById(data + 'list').appendChild(element);
+
+				//设置昵称
+				var name = '';
+				if(data2.ugname == null || data2.ugname == '') { //没有群昵称
+					//使用用户昵称
+					name = data2.ugnick;
+				} else {
+					name = data2.ugname;
+				}
+				document.getElementById("name_" + data + data2.utid).innerText = name;
+
+				//群主红名
+				if(data2.mstype == 1) {
+					document.getElementById("name_" + data + data2.utid).style.color = 'red';
+				}
+			}
+
+			/**
+			 * 修改备注
+			 * @param {Object} data
+			 */
+			function changeBZName(data) {
+				var idList = [];
+				if(document.getElementById("name_stu" + data.butid)) {
+					idList.push("name_stu" + data.butid);
+				}
+				if(document.getElementById("name_tea" + data.butid)) {
+					idList.push("name_tea" + data.butid);
+				}
+				if(document.getElementById("name_par" + data.butid)) {
+					idList.push("name_par" + data.butid);
+				}
+				mui.each(idList, function(index, element) {
+					var nameElement = document.getElementById(element);
+					nameElement.innerText = data.bunick;
+					var parNode = nameElement.parentNode;
+					parNode.setAttribute('data-beizhu', JSON.stringify(data));
+				});
+			}
+
+			/**
+			 * 删除成员
+			 * @param {Object} utid
+			 */
+			function delMember(utid) {
+				var idList = [];
+				if(document.getElementById("stu" + utid)) {
+					idList.push("stu" + utid);
+				}
+				if(document.getElementById("tea" + utid)) {
+					idList.push("tea" + utid);
+				}
+				if(document.getElementById("par" + utid)) {
+					idList.push("par" + utid);
+				}
+				mui.each(idList, function(index, element) {
+					var li = document.getElementById(element);
+					var parNode = li.parentNode;
+					parNode.removeChild(li);
+				});
+			}
+
+			/**
+			 * 通过群ID获取群的正常用户
+			 * @param {Object} gid 群ID
+			 * @param {Object} vvl1 //群员类型，0家长,1管理员,2老师,3学生,-1取全部
+			 */
+			function getMember(gid, vvl1) {
+				var wd = events.showWaiting();
+				var stuList = []; //学生列表
+				var adminList = []; //管理员列表
+				var teaList = []; //老师列表
+				var parList = []; //家长列表
+				var tempList = []; //获取备注的用户
+				//13.通过群ID获取群的正常用户
+				//需要参数
+				var getMemData = {
+					top: '-1', //选择条数,-1取全部
+					vvl: gid, //群ID，查询的值
+					vvl1: vvl1, //群员类型，0家长,1管理员,2老师,3学生,-1取全部
+				};
+				postDataPro_PostGusers(getMemData, wd, function(data) {
+					//console.log('13_postDataPro_PostGusers_通过群ID获取群的正常用户.90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						mui.each(data.RspData, function(index, element) {
+							//console.log(JSON.stringify(element));
+							tempList.push(element.utid);
+							switch(element.mstype) {
+								case 0:
+									parList.push(element);
+									break;
+								case 1:
+									adminList.push(element);
+									break;
+								case 2:
+									teaList.push(element);
+									break;
+								case 3:
+									stuList.push(element);
+									break;
+								default:
+									//console.log('用户在群类型异常');
+									break;
+							}
+						});
+					} else {
+						mui.toast(data.RspTxt);
+					}
+					mui.each(parList, function(index, element) {
+						addMemItem('par', element);
+					});
+					mui.each(adminList, function(index, element) {
+						addMemItem('tea', element);
+					});
+					mui.each(teaList, function(index, element) {
+						addMemItem('tea', element);
+					});
+					mui.each(stuList, function(index, element) {
+						addMemItem('stu', element);
+					});
+
+					//获取备注
+					var str = tempList.join(',');
+					getBeiZhu(str);
+					wd.close();
+				});
+			}
+
+			/**
+			 * 获取备注
+			 * @param {Object} strUtid
+			 */
+			function getBeiZhu(strUtid) {
+				var wd = events.showWaiting();
+				//获取备注
+				//35.个人获取对某人或一群人的备注
+				//所需参数
+				var comData = {
+					vvl: strUtid //被备注用户ID,utid或utid串
+				};
+				postDataPro_PostUmk(comData, wd, function(data) {
+					//console.log('35_postDataPro_PostUmk_个人获取对某人或一群人的备注.90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						mui.each(data.RspData, function(index, element) {
+							changeBZName(element);
+						});
+					} else if(data.RspCode == 9) {
+
+					} else {
+						mui.toast(data.RspTxt);
+					}
+					wd.close();
+				});
+			}
+		</script>
+	</body>
+
+</html>

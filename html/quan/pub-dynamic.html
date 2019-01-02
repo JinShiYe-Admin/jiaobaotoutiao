@@ -1,0 +1,543 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/utils/preview.css" rel="stylesheet" />
+
+		<link href="../../css/quan/custom-textarea.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<link href="../../css/homework/publish-answer.css" rel="stylesheet" />
+	</head>
+
+	<body style="background-color: white;">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left "></a>
+			<h1 id="title" class="mui-title"></h1>
+			<a id="publish" class="mui-icon mui-pull-right mui-plus-visible" style="padding-left: 30px;padding-top: 15px;font-size: 14px;">发布</a>
+		</header>
+		<div id="contentDiv" class="mui-content" style="background-color: white;">
+			<textarea id="askTitle" name="topic" placeholder="标题（最多30字）" style="height: 40px;margin-top: 0px;border-bottom-color: #e4e4e4;overflow:hidden"></textarea>
+			<div id="inputDiv" class="input-content" style="margin-top: -20px;border-color: white;height: 20rem;">
+				<textarea id="input-content" placeholder="请输入内容（最多2000字）" style="border-color: white;height: 15rem;"></textarea>
+				<div id="take_pic" class="take_pic">
+					<a class="mui-icon iconfont icon-xiangji1"></a>
+				</div>
+
+				<div id="get_gallery" class="get_gallery">
+					<a class="mui-icon iconfont icon-tuku"></a>
+				</div>
+				<div id="get_record" class="get_record">
+					<a class="mui-icon iconfont icon-yuyin3"></a>
+				</div>
+				<div id="take_camero" class="take_camero">
+					<a class="mui-icon iconfont icon-shipin"></a>
+				</div>
+
+			</div>
+			<hr style="margin-top: 5px; height:1px;border:none;border-top:1px solid #e4e4e4;" />
+			<div id="pictures" style="width: 100%;"></div>
+
+		</div>
+
+	</body>
+	<script src="../../js/mui.min.js"></script>
+	<script src="../../js/utils/events.js"></script>
+	<script src="../../js/mui.zoom.js"></script>
+	<script src="../../js/mui.previewimage.js"></script>
+	<script src="../../js/utils/camera.js"></script>
+	<script src="../../js/utils/files.js"></script>
+	<script src="../../js/utils/ASFiles.js"></script>
+	<script src="../../js/publicProtocol.js"></script>
+	<script src="../../js/utils/recordvideoutil.js"></script>
+	<script src="../../js/utils/load.js"></script>
+	<script src="../../js/utils/video.js"></script>
+	<script src="../../js/utils/gallerypick.js"></script>
+	<script src="../../js/utils/CloudFileUtil.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/utils/compress.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/utils/cryption.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/qiniu/qiniu.js" type="text/javascript" charset="utf-8"></script>
+
+	<script>
+	</script>
+	<script type="text/javascript">
+		mui.init({
+			beforeback:function(){
+				document.activeElement.blur();
+				return true;
+			}
+		})
+	</script>
+	<script>
+		var utids = [];
+		var pageFlag;;
+		mui.plusReady(function() {
+			events.blurBack();
+			mui.previewImage(); //浏览图片详情
+			pageFlag = plus.webview.currentWebview().data
+			var userInfo = window.myStorage.getItem(window.storageKeyName.PERSONALINFO); //用户id
+
+			getGroupList();
+			//			var groupInfo;
+			//			//界面监听传值
+			//			window.addEventListener('postGroupInfo', function(e) {
+			//
+			//				groupInfo = e.detail.data;
+			//				//console.log('发布动态页面获取的值：' + JSON.stringify(groupInfo));
+			//			});
+			var title = document.getElementById('title');
+			title.innerText = events.shortForString(userInfo.unick, 12)
+			if(pageFlag == 'jxq') {
+				var askTitle = document.getElementById("askTitle");
+				askTitle.parentElement.removeChild(askTitle)
+				document.getElementById("inputDiv").style.marginTop = '0px';
+				document.getElementById("input-content").placeholder = '这一刻的想法'
+				document.getElementById("contentDiv").className = 'mui-content';
+				//console.log('jxq')
+
+				//				document.getElementById("show").checked = false;
+			} else {
+				var askTitle = document.getElementById("askTitle");
+				//console.log(askTitle.outerHTML)
+				document.getElementById("contentDiv").className = 'mui-content';
+				//console.log('zx')
+				//				document.getElementById("show").checked = true;
+			}
+
+			//				events.addTap('take_pic', function() {
+			//					mui.toast('此功能暂未开放');
+			////					camera.getPic(camera.getCamera(), function(path) {
+			//
+			////					});
+			//				});
+			CloudFileUtil.setDelPicListener();
+			CloudFileUtil.setPlayVideoListener();
+
+			//录音按钮
+			events.addTap('get_record', function() {
+				mui.toast('功能暂未开放！');
+			});
+
+			events.addTap('take_camero', function() {
+				document.activeElement.blur();
+				var item = this;
+				//				jQuery(item).css('pointerEvents', 'none');
+				//console.log("item不能点击了！" + item.id);
+				if(CloudFileUtil.files.length > 0) {
+					switch(CloudFileUtil.files[0].type) {
+						case 1:
+							mui.toast("只能上传一种附件！");
+							break;
+						case 2:
+							mui.toast("只能上传一个视频！");
+							break;
+						default:
+							break;
+					}
+					//					jQuery(item).css('pointerEvents', 'all');
+					return;
+				}
+				var btnArr = [{
+					title: "录制视频",
+					dia: 0
+				}, {
+					title: "本地视频",
+					dia: 0
+				}];
+				var funArr = [recordVideo, pickLocalVideo];
+				events.showActionSheet(btnArr, funArr);
+
+			});
+			/**
+			 * 选择本地视频
+			 */
+			function pickLocalVideo() {
+				Gallery.pickVideo(function(e) {
+					if(e.flag === 1) {
+						uploadFile(e.path);
+					}
+				})
+			}
+			/**
+			 * 录像
+			 */
+			function recordVideo() {
+				video.recordVideo({}, function(path) {
+					events.showWaiting();
+					//console.log("保存在本地的路径：" + path);
+					uploadFile(path);
+				}, function(errData) {
+					//console.log(errData.code);
+					if(errData.code != 0) {
+						mui.toast(errData.message);
+					}
+					jQuery("#take_camero").css('pointerEvents', 'all');
+					//console.log("item能点击了！")
+				})
+			}
+			/**
+			 * 上传文件
+			 * @param {Object} path
+			 */
+			function uploadFile(path) {
+				load.getManageOptions(2, path, function(mData, thumb) {
+					//console.log("视频获取的各项参数：" + JSON.stringify(data));
+					mData.saveSpace = storageKeyName.PERSONALSPACE;
+					mData.spaceId = 6;
+					var data = CloudFileUtil.getSingleImgUploadOptions(path, mData.spaceId, mData.spaceType, mData.saveSpace, mData.options);
+					CloudFileUtil.getQNUpTokenWithManage(storageKeyName.QNGETUPLOADTOKEN, data.options, function(datas) {
+						//console.log("获取的数据：" + JSON.stringify(datas));
+						if(datas.Status == 1) {
+							var tokenInfo = datas.Data;
+							//上传文件
+							CloudFileUtil.uploadFile(tokenInfo, path, function(uploadData, status) {
+								//console.log("获取的上传数据：" + JSON.stringify(uploadData));
+								//console.log("获取的token信息：" + JSON.stringify(tokenInfo));
+								var img = { //图片信息
+									url: tokenInfo.Domain + tokenInfo.Key,
+									thumb: tokenInfo.OtherKey[data.thumbKey],
+									clip: tokenInfo.OtherKey[data.thumbKey] + "?imageMogr2/gravity/Center/crop/!" + mData.options.thumbSize.width + "x" + mData.options.thumbSize.width * 0.45,
+									localPath: path,
+									type: 2
+								}
+								img.duration = events.getVideoDuration(img.url);
+								//		//console.log("获取的图片信息：" + JSON.stringify(img));
+								//关闭等待框
+								plus.nativeUI.closeWaiting();
+								//放置图片
+								CloudFileUtil.setPic(img, 0, thumb);
+								jQuery("#take_camero").css('pointerEvents', 'all');
+							});
+						}
+
+					}, function(xhr, type, errorThrown) {
+						//console.log("错误类型：" + type + errorThrown);
+						plus.nativeUI.closeWaiting(); //关闭等待框
+						jQuery("#take_camero").css('pointerEvents', 'all');
+					});
+				})
+			}
+
+			events.addTap('get_gallery', function() {
+				if(CloudFileUtil.files.length > 0 && CloudFileUtil.files[0].type != 1) {
+					mui.toast("只允许上传一种附件！");
+					return;
+				}
+				if(CloudFileUtil.files.length < 9) {
+					var picCount = 0; //上传图片计数
+					gallery.getMultiplePic(9 - CloudFileUtil.files.length, function(paths) { //回调函数
+						plus.nativeUI.showWaiting(storageKeyName.UPLOADING); //等待框
+						//console.log("保存的路径：" + JSON.stringify(paths));
+						var saveSpace = storageKeyName.PERSONALSPACE; //保存路径
+						compress.compressPics(paths, function(compressedPaths) {
+							//console.log('获取的图片路径：' + JSON.stringify(compressedPaths));
+							var data = CloudFileUtil.getMultipleUploadDataOptions(compressedPaths, 6, 200, 0, saveSpace); //获取获取token的各参数
+							CloudFileUtil.getQNUpTokenWithManage(storageKeyName.QNGETUPLOADTOKEN, data.options, function(datas) {
+									//console.log("传回来的值：" + JSON.stringify(datas)) //回调数据
+									if(datas.Status == 1) { //成功
+										var tokenInfos = datas.Data; //参数信息
+										var imgs = [];
+										//上传图片
+										CloudFileUtil.uploadFiles(compressedPaths, tokenInfos, function(uploadData, status, index) {
+											//console.log(JSON.stringify(uploadData));
+											imgs[index] = {
+												url: tokenInfos[0].Domain + JSON.parse(uploadData.responseText).key,
+												thumb: (tokenInfos[0].Domain + JSON.parse(uploadData.responseText).key).replace(saveSpace, saveSpace + "thumb/"),
+												type: 1
+											}
+											picCount++;
+
+											if(picCount == compressedPaths.length) { //所有图片已上传
+												plus.nativeUI.closeWaiting(); //关闭等待框
+												for(var i in imgs) {
+													CloudFileUtil.setPic(imgs[i]); //放置图片
+												}
+
+											}
+										});
+
+									}
+								},
+								//错误的回调
+								function(xhr, type, errorThrown) {
+									//console.log("错误类型：" + type + errorThrown);
+									plus.nativeUI.closeWaiting();
+								});
+						});
+
+					});
+				} else {
+					mui.toast('上传图片附件不得多于9张！');
+				}
+
+			});
+			if(document.getElementById("askTitle")) {
+				document.getElementById("askTitle").addEventListener('input', function() {
+					this.value = this.value.replace(new RegExp(/(\n)/g), '')
+
+				})
+			}
+
+			//发布按钮
+			events.addTap('publish', function() {
+				var self = this;
+				self.disabled = true;
+				var tempInfo = window.myStorage.getItem(window.storageKeyName.PERSONALINFO);
+				var textView = document.getElementById('input-content');
+				//console.log('textView：' + textView)
+				var askTitle = document.getElementById("askTitle");
+				var pubScopes;
+				var msgTitle;
+
+				if(pageFlag == 'jxq') {
+					pubScopes = '[1]';
+					msgTitle = '';
+				} else {
+					pubScopes = '[2]';
+					if(!askTitle.value || askTitle.value == '' || events.isNull(askTitle.value)) {
+						mui.toast('请输入标题');
+						self.disabled = false;
+						return;
+					} else if(askTitle.value.length > 30) {
+						mui.toast('标题不能超过30字');
+						self.disabled = false;
+						return;
+					}
+					msgTitle = askTitle.value;
+				}
+				var tempText = textView.value;
+				if(!tempText || tempText == '' || events.isNull(tempText)) {
+					mui.toast('请输入内容');
+					self.disabled = false;
+					return;
+				} else if(tempText.length > 2000) {
+					mui.toast('内容不能超过2000字');
+					self.disabled = false;
+					return;
+				} else {
+					//					tempText = replaceAllBL(tempText)
+				}
+				var pubArea;
+
+				var TAs = getTypeAddress();
+				if(tempInfo.uarea.acode == undefined) {
+					pubArea = '';
+
+				} else {
+
+					pubArea = tempInfo.uarea.acode
+
+				}
+
+				var postData = {
+					msgTitle: msgTitle,
+					userId: userInfo.utid,
+					msgContent: tempText,
+					noteType: '2',
+					encType: TAs.encType,
+					encAddr: TAs.encAddr,
+					encImg: TAs.encImg,
+					encLen: TAs.encLen,
+					encIntro: '',
+					pubScopes: pubScopes,
+					pubArea: pubArea
+				}
+				for(var z = 0; z < utids.length; z++) {
+					//console.log(tempInfo.utid);
+					//console.log(utids[z]);
+					if(utids[z] == tempInfo.utid) {
+						utids.splice(z, 1);
+						break;
+					}
+				}
+				postData.userIds = arrayToStr(utids);
+				//console.log(JSON.stringify(postData))
+				var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+				postDataPro_addUserSpace(postData, wd, function(data) {
+					wd.close();
+					if(data.RspCode == 0) {
+						mui.toast('发布成功！');
+						//console.log('推送个人空间成功' + JSON.stringify(data));
+						if(askTitle) {
+							askTitle.value = '';
+						}
+
+						textView.value = '';
+						if(pageFlag == 'jxq') {
+							events.fireToPageNone('zone_main.html', 'refreshZonep');
+						} else {
+							events.fireToPageNone('../show/show-home.html', 'updatesShow');
+						}
+
+						mui.back();
+					} else {
+						self.disabled = false;
+					}
+
+				})
+			})
+		})
+		//去除前后空格
+		function Trim(str) {
+			return str.replace(/(^\s*)|(\s*$)/g, "");
+		}
+		//获取所有的群
+		function getGroupList() {
+			var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid; //用户id
+			//	//需要参数
+			var comData = {
+				vtp: 'ag', //要获取的项:cg(创建的群),ug(参与群),mg(协管的群),ag(所有的群)
+				vvl: personalUTID, //查询的各项，对应人的utid，可以是查询的任何人
+			};
+			// 等待的对话框
+			var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+			//	获取用户群
+			postDataPro_PostGList(comData, wd, function(data) {
+				wd.close();
+				//console.log('获取用户群_PostGList:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+				if(data.RspCode == 0) {
+					datasource = data.RspData; //底部列表数据
+					var gids = [];
+					for(var i = 0; i < datasource.length; i++) {
+						gids.push(datasource[i].gid);
+					}
+					gids = arrayDupRemoval(gids);
+					gids = arrayToStr(gids);
+					getAllClassMember(gids)
+				} else if(data.RspCode == 9) { //没有群
+					//console.log('显示空白页')
+
+				} else {
+					mui.toast(data.RspTxt);
+				}
+			});
+
+		}
+
+		function getAllClassMember(gids) {
+			var gidStr = gids.replace('[', '');
+			gidStr = gidStr.replace(']', '');
+
+			//需要参数
+			var comData = {
+				top: '-1', //选择条数
+				vvl: gidStr, //群ID，查询的值
+				vvl1: '-1', //群员类型，0家长,1管理员,2老师,3学生,-1取全部
+
+			};
+			var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+			// 通过群ID获取群的正常用户
+			postDataPro_PostGusers(comData, wd, function(data) {
+				wd.close();
+				//console.log('通过群ID获取群的正常用户_PostGusers:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+				if(data.RspCode == 0) {
+					var userList = data.RspData;
+					for(var i = 0; i < data.RspData.length; i++) {
+						utids.push(data.RspData[i].utid);
+					}
+					utids = arrayDupRemoval(utids);
+				} else {
+					mui.toast(data.RspTxt);
+				}
+			});
+
+		}
+
+		/**
+		 * 通过系统相机获取图片
+		 * 并显示在界面上
+		 */
+		events.addTap('take_pic', function() {
+			if(CloudFileUtil.files.length > 0 && CloudFileUtil.files[0].type != 1) {
+				mui.toast("只允许上传一种附件！");
+				return;
+			}
+			if(CloudFileUtil.files.length < 9) {
+				camera.getPic(camera.getCamera(), function(picPath) {
+					plus.nativeUI.showWaiting(storageKeyName.WAITING);
+					var saveSpace = storageKeyName.PERSONALSPACE; //保存空间
+					var data = CloudFileUtil.getSingleUploadDataOptions(picPath, 6, 200, 0, saveSpace);
+					CloudFileUtil.getQNUpTokenWithManage(storageKeyName.QNGETUPLOADTOKEN, data.options, function(datas) {
+						//console.log("获取的数据：" + JSON.stringify(datas));
+						if(datas.Status == 1) {
+							var tokenInfo = datas.Data;
+							//压缩照片
+							compress.compressPIC(picPath, function(event) {
+								//上传文件
+								CloudFileUtil.uploadFile(tokenInfo, event.target, function(uploadData, status) {
+									//console.log(JSON.stringify(uploadData));
+									var img = { //图片信息
+										url: tokenInfo.Domain + tokenInfo.Key,
+										thumb: tokenInfo.OtherKey[data.thumbKey],
+										type: 1
+									}
+									//关闭等待框
+									plus.nativeUI.closeWaiting();
+									//放置图片
+									CloudFileUtil.setPic(img);
+								});
+							})
+
+						}
+					}, function(xhr, type, errorThrown) {
+						//console.log("错误类型：" + type + errorThrown);
+						plus.nativeUI.closeWaiting(); //关闭等待框
+					});
+				})
+			} else {
+				mui.toast('上传图片附件不得多于9张！');
+			}
+		});
+		var imgs = [];
+
+		//删除图标的点击事件
+		//		mui('#pictures').on('tap', '.icon-guanbi', function() {
+		//			imgs.splice(imgs.indexOf(this.parentElement.img), 1);
+		//			//删除图片111
+		//			pictures.removeChild(this.parentElement);
+		//		})
+		/**
+		 * 获取接口数据文件及缩略图
+		 * encType: '',//附件类型,1图片2音视频3仅文字
+		 * encAddr: '',//附件地址
+		 * encImg: '',//附件缩略图地址
+		 */
+		var getTypeAddress = function() {
+			var TAs = {};
+			var encType;
+			var encAddrs = [];
+			var encImgs = [];
+			var theFile;
+			TAs.encLen = 0;
+			if(CloudFileUtil.files.length > 0) { //如果存在附件
+				for(var i in CloudFileUtil.files) {
+					theFile = CloudFileUtil.files[i];
+					if(i == 0) {
+						TAs.encType = theFile.type;
+						//音频 视频
+						if(TAs.encType == 2 || TAs.encType == 4) {
+							TAs.encLen = theFile.duration ? theFile.duration : 0;
+						}
+					}
+					encAddrs.push(theFile.url);
+					encImgs.push(theFile.thumb);
+				}
+
+				//console.log(JSON.stringify(encAddrs));
+				//console.log(JSON.stringify(encImgs));
+				TAs.encAddr = encAddrs.join('|');
+				TAs.encImg = encImgs.join('|');
+			} else { //不存在附件
+				TAs.encType = 0;
+				TAs.encAddr = '';
+				TAs.encImg = '';
+			}
+			return TAs;
+		}
+	</script>
+
+</html>

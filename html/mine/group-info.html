@@ -1,0 +1,208 @@
+<!--
+	@群信息界面
+	@athor an
+	@time 11.16
+-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/mine/group-info.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">群信息</h1>
+		</header>
+		<div class="mui-content">
+			<ul class="mui-table-view">
+				<!--群头像-->
+				<li class=" li-title">
+					<a id="title" class="title" href="#picture">
+						<img id="group-img" src="../../image/slide_navigation/img3.jpg" class="head-portrait" /><br />
+					</a>
+				</li>
+				<!--群名称-->
+				<li class="mui-table-view-cell mui-media" pos='0'>
+					<a href="javascript:;">
+						<p class="mui-pull-right" id="group-name">还没有名称</p>
+						<div class="mui-media-body">
+							群名称
+						</div>
+					</a>
+				</li>
+				<!--群说明-->
+				<li class="mui-table-view-cell mui-media" pos='1'>
+					<a href="javascript:;">
+						<p class="mui-pull-right" id="group-explain">还没有说明</p>
+						<div class="mui-media-body">
+							群说明
+						</div>
+					</a>
+				</li>
+				<!--群备注-->
+				<li class="mui-table-view-cell mui-media" pos='2'>
+					<a href="javascript:;">
+						<p class="mui-pull-right" id="group-remark">还没有备注</p>
+						<div class="mui-media-body">
+							群备注
+						</div>
+					</a>
+				</li>
+			</ul>
+		</div>
+		<!--头像点击弹出选项-->
+		<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a id="take-pic" href="#">拍照</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a id="open-album" href="#">相册</a>
+				</li>
+			</ul>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#picture"><b>取消</b></a>
+				</li>
+			</ul>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<!--公共接口-->
+		<script src="../../js/publicProtocol.js"></script>
+		<!--常亮-->
+		<script src="../../js/storageKeyName.js"></script>
+		<!--本地存储-->
+		<script src="../../js/libs/myStorage/myStorage.js"></script>
+		<!--公共事件-->
+		<script src="../../js/utils/events.js"></script>
+		<!--获取图片模块-->
+		<script src="../../js/utils/camera.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function() {
+				//获取群id
+					var groupId=6;
+				//	群信息
+					var groupInfo = {};
+					//通过群id获取群信息
+					requestGroupInfo(groupId,groupInfo);
+					//拍照
+					events.addTap('take-pic', function() {
+						camera.getPic(camera.getCamera(), function(picPath) {
+		
+						})
+					});
+					//打开相册
+					events.addTap('open-album', function() {
+						gallery.getSinglePic(function(picPath) {
+
+						})
+					})
+					//下级页面传递事件监听
+					window.addEventListener('groupInfoChanged', function() {
+						requestGroupInfo(groupId,groupInfo);
+					})
+			})
+			/**
+			 * 对服务器发起请求，获取群信息
+			 * @param {Object} groupId
+			 * @param {Object} groupInfo
+			 */
+			var requestGroupInfo=function(groupId,groupInfo){
+				var wd=plus.nativeUI.showWaiting(storageKeyName.WAITING)
+				postDataPro_PostGList({
+						vtp: 'ig',
+						vvl: 6
+					}, wd, function(data) {
+						wd.close();
+						//console.log(JSON.stringify(data))
+						//判断是否有值
+						if(data.RspCode=='0000'){
+							//获取群信息
+							groupInfo = data.RspData[0];
+							//console.log('获取的群信息:' + JSON.stringify(groupInfo))
+							//填充群信息
+							setContent(groupInfo)
+							//加载监听
+							cellEventlistner(groupId,groupInfo);
+						}else{
+							mui.toast(data.RspTxt);
+							mui.back()
+						}
+						
+					})
+			}
+			/**
+			 * 各项加载监听
+			 * @param {Object} groupId
+			 * @param {Object} groupInfo
+			 */
+			var cellEventlistner=function(groupId,groupInfo){
+					mui('.mui-table-view').on('tap', '.mui-table-view-cell', function() {
+						var data = {};
+						//console.log('要传递的群名称：'+JSON.stringify(groupInfo))
+						data.groupId = groupId;
+						switch(parseInt(this.getAttribute('pos'))) {
+							case 0:
+								data.pos = 0;
+								data.title = '群名称';
+								data.content = groupInfo.gname
+								data.vtpValue = 'gname'
+								break;
+							case 1:
+								data.pos = 1;
+								data.title = '群说明';
+								data.content = groupInfo.gexplain
+								data.vtpValue = 'gexplain'
+								break;
+							case 2:
+								data.pos = 2;
+								data.title = '群备注';
+								data.content = groupInfo.gremark;
+								data.vtpValue = 'gremark'
+								break;
+							default:
+								break;
+						}
+						//console.log('传递的群信息：'+JSON.stringify(data))
+						events.openNewWindowWithData('edit-groupInfo.html', data);
+						data = null;
+					});
+			}
+			/**
+			 * 填充界面数据
+			 * @param {Object} groupInfo
+			 */
+			var setContent = function(groupInfo) {
+				var groupImg = document.getElementById('group-img')
+				var groupName = document.getElementById('group-name');
+				var groupExplain = document.getElementById('group-explain');
+				var groupRemark = document.getElementById('group-remark');
+				//群图片
+				if(groupInfo.gimg) {
+					groupImg.src = groupInfo.gimg;
+				}
+				//群名称
+				if(groupInfo.gname) {
+					groupName.innerText = groupInfo.gname;
+				}
+				//群说明
+				if(groupInfo.gexplain) {
+					groupExplain.innerText = groupInfo.gexplain;
+				}
+				//群备注
+				if(groupInfo.gremark) {
+					groupRemark.innerText = groupInfo.gremark;
+				}
+			}
+		</script>
+	</body>
+
+</html>

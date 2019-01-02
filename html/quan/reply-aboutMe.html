@@ -1,0 +1,126 @@
+<!--發佈班級動態頁面-->
+<!--@anthor an-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<!--<link href="../../css/quan/class_space.css" rel="stylesheet" />-->
+		<link href="../../css/quan/custom-textarea.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<style>
+			body,
+			.mui-content {
+				min-height: 100%;
+				background-color: white;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">回复</h1>
+			<a id="publish" class="mui-icon mui-pull-right mui-plus-visible" style="padding-left: 30px;padding-top: 15px;font-size: 16px;">发布</a>
+		</header>
+		<div class="mui-content">
+			<textarea id="input-content" placeholder="请输入回复内容,最多200字" value=""></textarea>
+
+		</div>
+
+	</body>
+	<script src="../../js/mui.min.js"></script>
+	<script src="../../js/utils/events.js"></script>
+	<script src="../../js/publicProtocol.js"></script>
+	<script type="text/javascript">
+		mui.init()
+	</script>
+	<script>
+		var personIds = []; //人员id
+		//		var imgs;//图片
+		mui.plusReady(function() {
+			var groupInfo;
+			var curPage=plus.webview.currentWebview();
+			var replyToInfo = curPage.data;
+			//最大长度300字
+			jQuery('#input-content').prop('maxLength',300)
+			//发布事件的监听
+			events.addTap('publish', function() {
+				var inputContainer=document.getElementById('input-content');
+				if(inputContainer.value&&inputContainer.value.length>0){
+						if(events.limitInput(inputContainer.value,300)){
+							return;
+						}
+						postReply(inputContainer.value,replyToInfo,function(data){
+							mui.toast("回复成功");
+							mui.fire(curPage.opener(),'hasReplied',inputContainer.value);
+							mui.back();
+					})
+				}
+				
+			})
+		})
+		var postReply = function(value,repliedCell,callback) {
+			var pId=myStorage.getItem(storageKeyName.PERSONALINFO).utid;
+			var msgContent = document.getElementById('msg-content');
+			//console.log('类型:' + repliedCell.MsgType)
+			switch(repliedCell.MsgType) {
+				//1为其他用户评论
+				case 1:
+					//2为评论的回复
+				case 2:
+					//3为其他用户点赞
+				case 3:
+
+					var comData = {
+						userId: pId, //用户ID
+						upperId: repliedCell.TabId, //上级评论ID
+						replyUserId: repliedCell.MaxUser, //回复ID
+						userSpaceId: repliedCell.SpaceId, //用户空间ID
+						commentContent: value //回复内容
+					};
+					//console.log('开始post回复数据' + JSON.stringify(comData));
+					var wd = events.showWaiting();
+					postDataPro_addUserSpaceCommentReply(comData, wd, function(data) {
+						//console.log('发布回复后返回的数据：' + JSON.stringify(data))
+						wd.close();
+						if(data.RspCode == 0) {
+							callback();
+						}else{
+							mui.toast(data.RspTxt);
+						}
+					})
+					break;
+
+					//4为其他用户留言
+				case 4:
+					//5为留言的回复
+				case 5:
+					var comData = {
+						userId: pId, //用户ID
+						upperId: repliedCell.TabId, //上级评论ID
+						replyUserId: repliedCell.MaxUser, //回复ID
+						userOwnerId: repliedCell.UserOwnerId, //用户空间ID
+						msgContent: value //回复内容
+					};
+					var wd = events.showWaiting();
+					postDataPro_addUserSpaceMsgReply(comData, wd, function(data) {
+						wd.close();
+						if(data.RspCode == 0) {
+							callback();
+						}else{
+							mui.toast(data.RspTxt);
+						}
+					})
+					break;
+				default:
+					break;
+			}
+		}
+	</script>
+
+</html>

@@ -1,0 +1,153 @@
+<!--账号信息界面-->
+<!--@anthor an-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<style>
+			.mui-pull-right {
+				max-width: 70%;
+			}
+			
+			.head-portrait {
+				min-width: 4rem;
+				min-height: 4rem;
+				max-width: 4rem;
+				max-height: 4rem;
+				border-radius: 50%;
+			}
+			
+			.head-message {
+				height: 4rem;
+				padding-top: 1.2rem;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">账号信息</h1>
+		</header>
+		<div class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<!--这里放置真实显示的DOM内容-->
+				<ul class="mui-table-view">
+					<li class="mui-table-view-cell">
+						<a href="#picture">
+							<img class="mui-media-object mui-pull-right head-portrait" id="img" src="../../image/utils/default_personalimage.png">
+							<div class="mui-pull-left head-message" style="">
+								头像
+							</div>
+						</a>
+					</li>
+					<li class="mui-table-view-cell mui-media open-newPage" pos='10'>
+						<a href="javascript:;">
+							<p class="mui-pull-right" id='uname'>暂无</p>
+							<div class="mui-media-body">
+								账号
+							</div>
+						</a>
+					</li>
+					<li class="mui-table-view-cell open-newPage" pos='0'>
+						<a href="javascript:;">
+							<p class="mui-pull-right single-line" id='nick'>暂无</p>
+							<div class="mui-media-body">
+								昵称
+							</div>
+						</a>
+					</li>
+					<li class="mui-table-view-cell mui-media">
+						<a href="javascript:;">
+							<p class="mui-pull-right" id='account'>暂无</p>
+							<div class="mui-media-body">
+								手机号码
+
+							</div>
+						</a>
+					</li>
+					<li class="mui-table-view-cell mui-media" id="sex-container">
+						<a href="javascript:;">
+							<p class="mui-pull-right" id='sex'>暂无</p>
+							<div class="mui-media-body">
+								性别
+
+							</div>
+						</a>
+					</li>
+					<!--<li class="mui-table-view-cell mui-media open-newPage" pos='1'>
+						<a href="javascript:;">
+							<p class="mui-pull-right" id='email'>暂无</p>
+							<div class="mui-media-body">
+								电子邮箱
+
+							</div>
+						</a>
+					</li>-->
+					<li class="mui-table-view-cell mui-media open-newPage" pos='2'>
+						<a href="javascript:;">
+							<p class='signature single-line mui-pull-right' id="txt">暂无</p>
+							<div class="mui-media-body">
+								个性签名
+							</div>
+						</a>
+					</li>
+					<li id="uarea_li" class="mui-table-view-cell mui-media">
+						<a href="javascript:;">
+							<p class='signature single-line mui-pull-right' id="uarea">暂无</p>
+							<div class="mui-media-body">
+								地区
+							</div>
+						</a>
+					</li>
+					<li id="uarea_li1" class="mui-table-view-cell mui-media">
+						<a href="javascript:;">
+							<p class='signature single-line mui-pull-right' id="schoolName">暂无</p>
+							<div class="mui-media-body">
+								学校
+							</div>
+						</a>
+					</li>
+				</ul>
+			</div>
+
+		</div>
+		<!--<div id="picture" class="mui-popover mui-popover-action mui-popover-bottom">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a id="take-pic" href="#">拍照</a>
+				</li>
+				<li class="mui-table-view-cell">
+					<a id="open-album" href="#">相册</a>
+				</li>
+			</ul>
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a href="#picture"><b>取消</b></a>
+				</li>
+			</ul>
+		</div>-->
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/qiniu/qiniu.js"></script>
+		<script type="text/javascript" src="../../js/utils/cryption.js"></script>
+		<script src="../../js/libs/myStorage/myStorage.js"></script>
+		<script src="../../js/storageKeyName.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/utils/camera.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script src="../../js/utils/load.js"></script>
+		<script type="text/javascript" src="../../js/utils/CloudFileUtil.js"></script>
+		<script type="text/javascript" src="../../js/cloud/AndroidFileSystem.js"></script>
+		<script type="text/javascript" src="../../js/utils/UploadHeadImage.js"></script>
+		<script type="text/javascript" src="../../js/utils/compress.js"></script>
+		<script src="../../js/mine/account-info.js"></script>
+
+	</body>
+
+</html>

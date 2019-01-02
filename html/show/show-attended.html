@@ -1,0 +1,286 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/show/show-list.css" rel="stylesheet" />
+		<style>
+			.padding-top0 {
+				padding-top: 0;
+			}
+			
+			.padding-top20 {
+				padding-top: 20%;
+			}
+		</style>
+	</head>
+
+	<body style="background-color:white;">
+		<!--下拉刷新容器-->
+		<div id="show-att" class="mui-content mui-scroll-wrapper" v-bind:class="{'background-white':isAttended==0}">
+			<div class="mui-scroll">
+				<template v-if="listData.length==0||!isAttended">
+					<div class="" style="min-height:300px;text-align: center;" v-bind:class="[isRequired?'padding-top20':'padding-top0']">
+						<img v-if="isRequired" src="../../image/mine/invite_none_0.png" width="50%" height="auto">
+						<p style="margin: auto 0;padding: 10px;">
+							<span v-if="!isRequired" class="mui-spinner" style="vertical-align: center;height: 15px;width: 15px;margin-bottom: -4px;"></span> {{isRequired?'没有获取到展现内容~~':'数据加载中~~'}}
+						</p>
+					</div>
+				</template>
+				<!--数据列表-->
+				<template v-else-if="isAttended&&listData.length>0">
+					<div class="show-list">
+						<div v-for="cardData of listData" class="mui-table-view cityNews-container">
+							<li v-for="(item,index) of cardData" class="mui-table-view-cell news-container" v-on:tap="jumpToPage(item)">
+								<div class="img-container news-img" v-bind:data-original="getBackImg(item,index)" v-bind:style="{'background-image':'url('+'../../image/utils/default_load_2.gif'+')','background-position':'center','background-size':'cover','text-align':'center'}">
+									<img class="play-video" v-if="isVideo(item)" src="../../image/utils/playvideo.png" />
+								</div>
+								<div class="news-words">
+									<p class="news-title single-line">{{item.MsgTitle}}</p>
+									<div class="anthor-date">
+										<p class="news-anthor single-line">{{item.unick}}</p>
+										<p class="news-date">{{item.PublishDate}}</p>
+									</div>
+								</div>
+							</li>
+						</div>
+					</div>
+				</template>
+			</div>
+		</div>
+		<script src="../../js/utils/vue.min.js"></script>
+		<script type="text/javascript">
+			var showAtt = new Vue({
+				el: '#show-att',
+				data: {
+					listData: [],
+					detailReady: false,
+					isAttended: 0,
+					isRequired: false
+				},
+				watch: {
+					isAttended: function(val, oldVal) {
+						console.log("isAttended当前界面:" + val + ",以前值" + oldVal);
+						if(val) {
+							showCity.pageIndex = 1;
+							show_list.getShowList(showCity, function(showCity, data) {
+								console.log('获取的关注数据：', data);
+								showAtt.addData(showCity.pageIndex, data);
+								showCity.pageIndex++;
+							}, function(err) {
+								console.log("错误", err);
+							})
+							document.body.style.backgroundColor = "transparent";
+						} else {
+							mui('#show-att').pullRefresh().endPullupToRefresh(true);
+							mui('#show-att').pullRefresh().disablePullupToRefresh();
+						}
+					},
+					listData: function(val) {
+						this.$nextTick(function() {
+							jQuery('.news-img').lazyload();
+						})
+					}
+				},
+				methods: {
+					resetData: function() {
+						this.listData = [];
+					},
+					addData: function(pageIndex, dataArr) {
+						if(pageIndex == 1) {
+							this.listData = [];
+						}
+						for(var i = 0; i < dataArr.length; i += 6) {
+							this.listData.push(dataArr.slice(i, i + 6));
+						}
+					},
+					getBackImg: function(item, index) {
+						if(item.EncImgAddr) {
+							return item.EncImgAddr.split('|')[0]
+						}
+						if(parseInt(index) > 0) {
+							return '../../image/show/show-default-small.png';
+						}
+						return '../../image/show/show-default-large.png';
+					},
+					jumpToPage: function(item) {
+						if(myStorage.getItem(storageKeyName.ISSHOWDETAILREADY)) {
+							events.fireToPageWithData("show-detail.html", "showDetail", item);
+						} else {
+							setTimeout(function() {
+								arguments.callee(item);
+							}, 500);
+						}
+					},
+					isVideo: function(cell) {
+						var isVideo = false;
+						if(cell.EncType) {
+							switch(cell.EncType) {
+								case 2: //视频
+									isVideo = true;
+									break;
+								case 5: //图文混合
+									var addrs = cell.EncAddr.split(".");
+									switch(addrs[addrs.length - 1]) {
+										case "mp4":
+										case "MP4":
+											isVideo = true;
+											break;
+										default:
+											break;
+									}
+									break;
+								default:
+									break;
+							}
+						}
+						return isVideo
+					}
+				}
+			})
+		</script>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script src="../../js/libs/jquery.lazyload.min.js"></script>
+		<script src="../../js/show/show-list.js"></script>
+
+		<script type="text/javascript">
+			var showCity = {
+				pageFlag: 0, //关注
+				acode: 1,
+				aname: '关注',
+				aflag: 1, //0为根据省市编码获取数据，1为获取关注的人的列表
+				pageIndex: 1,
+				totalPage: 0
+			};
+			mui.init({
+				swipeBack: false,
+				keyEventBind: {
+					backbutton: false //关闭back按键监听
+				},
+				pullRefresh: {
+					container: '#show-att',
+					down: {
+						style: 'circle',
+						callback: pulldownRefresh
+					},
+					up: {
+						contentrefresh: '正在加载...',
+						callback: pullupRefresh
+					}
+				}
+			});
+
+			function pulldownRefresh() {
+				if(showAtt.isAttended === 0) {
+					mui('#show-att').pullRefresh().endPulldown();
+					return;
+				}
+				showCity.pageIndex = 1;
+				show_list.getShowList(showCity, function(showCity, data) {
+					console.log('获取的关注数据：', data);
+					showAtt.addData(showCity.pageIndex, data);
+					showCity.pageIndex++;
+					mui('#show-att').pullRefresh().endPulldown();
+					mui('#show-att').pullRefresh().refresh(true);
+				}, function(err) {
+					mui.toast(err.RspTxt);
+					mui('#show-att').pullRefresh().refresh(true);
+					mui('#show-att').pullRefresh().endPulldown();
+				})
+			}
+
+			function pullupRefresh() {
+				console.log("上拉加载更多")
+				if(showCity.pageIndex > showCity.totalPage) {
+					mui('#show-att').pullRefresh().endPullupToRefresh(true);
+					mui('#show-att').pullRefresh().disablePullupToRefresh();
+					return;
+				}
+
+				show_list.getShowList(showCity, function(showCity, data) {
+					console.log('获取的关注数据：', data);
+					showAtt.addData(showCity.pageIndex, data);
+					showCity.pageIndex++;
+					mui('#show-att').pullRefresh().endPullupToRefresh();
+				}, function(err) {
+					mui.toast(err.RspTxt);
+					mui('#show-att').pullRefresh().endPullupToRefresh();
+				})
+			}
+			mui.plusReady(function() {
+				showCity.pageIndex = 1;
+				show_list.getShowList(showCity, function(showCity, data) {
+					console.log("获取的showCity信息：" + data)
+					showAtt.addData(showCity.pageIndex, data);
+					showCity.pageIndex++;
+					if(data.length > 0) {
+						showAtt.isAttended = 1
+					} else {
+						showAtt.isAttended = 0
+					}
+					showAtt.isRequired = true;
+				}, function(err) {
+					showAtt.isAttended = 0
+					showAtt.isRequired = true
+					if(err && err.RspTxt) {
+						mui.toast(err.RspTxt);
+					}
+				})
+				console.log("showAtt.detailReady" + showAtt.detailReady);
+				setListener();
+			})
+
+			function setListener() {
+				window.addEventListener("detailReady", function() {
+					console.log("show-attended获取监听事件 detailReady");
+					showAtt.detailReady = true;
+				});
+				window.addEventListener("showAttended", function(e) {
+					mui('#show-att').pullRefresh().refresh(true);
+					if(e.detail.data == null) {
+						showAtt.isAttended = 0;
+					} else {
+						showAtt.isAttended = parseInt(e.detail.data);
+					}
+					console.log("获取的关注信息：", showAtt.isAttended)
+				});
+				window.addEventListener("infoChanged", function() {
+					mui('#show-att').pullRefresh().refresh(true);
+					console.log("信息更改？？？？？？？？？？？？？？？？？？？？？？？？")
+					showCity.pageIndex = 1;
+					show_list.getShowList(showCity, function(showCity, data) {
+						console.log("show-attended传过来的值:", data)
+						if(data && data.length > 0) {
+							if(showAtt.isAttended == 1) {
+								showCity.pageIndex = 1;
+								show_list.getShowList(showCity, function(showCity, data) {
+									console.log('获取的关注数据：', data);
+									showAtt.addData(showCity.pageIndex, data);
+									showCity.pageIndex++;
+								}, function(err) {
+									console.log("错误", err);
+								})
+							}
+							showAtt.isAttended = 1;
+						} else {
+							showAtt.isAttended = 0;
+						}
+
+					}, function(err) {
+						console.log("show-attended传过来的值:", err)
+						mui.toast(err.RspTxt);
+					})
+				})
+			}
+		</script>
+	</body>
+
+</html>

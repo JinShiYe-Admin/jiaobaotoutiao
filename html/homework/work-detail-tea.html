@@ -1,0 +1,95 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<style>
+			.mui-control-content {
+				background-color: white;
+				min-height: 215px;
+			}
+			
+			.mui-control-content .mui-loading {
+				margin-top: 50px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">作业详情</h1>
+		</header>
+		<div id="deatail-tea" class="mui-content">
+			<div>
+				<div>
+				</div>
+				<div>
+					<p></p>
+					<p></p>
+				</div>
+			</div>
+			<hr/>
+			<p></p>
+			<div>
+				<img />
+			</div>
+			<!--滑动组件-->
+			<div id="slider" class="mui-slider">
+				<div id="sliderSegmentedControl" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+					<a class="mui-control-item" href="#item1mobile">
+						已提交
+					</a>
+					<a class="mui-control-item" href="#item2mobile">
+						未提交
+					</a>
+				</div>
+				<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-6"></div>
+				<div class="mui-slider-group">
+					<div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+						<div id="scroll1" class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<ul class="mui-table-view">
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div id="item2mobile" class="mui-slider-item mui-control-content">
+						<div id="scroll2" class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<div class="mui-loading">
+									<div class="mui-spinner">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../../js/utils/vue.min.js"></script>
+		<script src="../../js/homework/detail-tea.js"></script>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script src="../../js/publicHomeworkProtocol.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function() {
+				var info = plus.webview.currentWebview().data;
+				detailTea.requireWorkDetail(info.HomeworkId);
+			})
+
+			function setListeners() {
+				window.addEventListener("commentIsReady", function() {
+					commentIsReady = true;
+				})
+			}
+		</script>
+	</body>
+
+</html>

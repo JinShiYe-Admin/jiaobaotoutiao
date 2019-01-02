@@ -1,0 +1,118 @@
+.title {
+	text-align: center;
+}
+
+
+/*头像圆角、宽度*/
+
+.head-portrait {
+	border-radius: 50%;
+	width: 40%;
+}
+
+
+/*四个cell钟，图标的颜色*/
+
+.icon-qunziliao {
+	color: #f69e94;
+}
+
+.icon-group {
+	color: #35b67f;
+}
+
+.icon-jiaqun {
+	color: #ffcf7b;
+}
+
+.icon-xiaoxi {
+	color: #5b99ee;
+}
+
+.icon-zone {
+	color: #ffc869;
+}
+
+.icon-jifen {
+	color: #f26d5f;
+}
+
+.icon-shezhi {
+	color: #6ea5f0;
+}
+
+.icon-about {
+	color: #62c89c;
+}
+.mine-icon{
+	width: 2.6rem;
+	vertical-align: middle;
+}
+
+
+/*li a{
+	font-size: 2rem;
+}*/
+
+li span:last-of-type {
+	font-size: 12px;
+	background-color: red;
+}
+
+
+/*h4{
+	font-size: 2.4rem;
+}*/
+
+.mui-table-view-divider {
+	height: 2rem;
+	background-color: #EBEBEB;
+}
+
+
+/*.mui-content>.mui-table-view:first-child{
+	margin-top: 0;
+}*/
+
+body,
+.mui-content {
+	background-color: #EBEBEB;
+}
+
+.title {
+	margin: 35px 15px 10px;
+}
+
+.title+.content {
+	margin: 10px 15px 35px;
+	color: #bbb;
+	text-indent: 1em;
+	font-size: 14px;
+	line-height: 24px;
+}
+
+.mui-table-view {
+	margin-bottom: 35px;
+}
+.title h4{
+	font-size: 1.7rem;
+	line-height: 2.0rem;
+	letter-spacing: 0.1rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 1;
+}
+.title p{
+	line-height: 1.8rem;
+}
+.mui-table-view-cell p,
+.mui-table-view-cell .mui-navigate-right>p{
+	font-size: 16px;
+	color: #323232;
+}
+.mui-table-view-cell p>img,
+.mui-table-view-cell .mui-navigate-right>p>img{
+	vertical-align: middle;
+}

@@ -1,0 +1,1672 @@
+<!--
+	作者：444811716@qq.com
+	时间：2016-10-26
+	描述：云盘主页
+-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/iconfont/iconfont.css" />
+		<link rel="stylesheet" href="../../css/cloud/file.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/utils/MUI-pullToRefresh.css" />
+		<style>
+			body,
+			.mui-content {
+				background-color: #f2f3f5;
+			}
+			
+			#topPopover {
+				position: fixed;
+				top: 46px;
+				right: 6px;
+				width: 150px;
+			}
+			
+			#topPopover .mui-popover-arrow {
+				left: auto;
+				right: 6px;
+			}
+			
+			.mui-popover {
+				height: 80px;
+				width: 150;
+			}
+			
+			.mui-backdrop {
+				/*选择排序的遮罩*/
+				background-color: rgba(0, 0, 0, 0.05);
+			}
+			
+			#refreshContainer .mui-table-view:before,
+			#refreshContainer .mui-table-view:after,
+			#refreshContainer .mui-table-view-cell:after {
+				height: 0px;
+			}
+			
+			#refreshContainer .mui-table-view {
+				background-color: white;
+			}
+			
+			.cloud-item {
+				background-color: white;
+			}
+			
+			.cloud-item-left {
+				width: 16%;
+				border-right: 1px solid #D9D9D9;
+				float: left;
+				text-align: center;
+				font-weight: bold;
+				font-size: 1.6rem;
+			}
+			
+			.cloud-item-right {
+				/*margin-left: 16%;*/
+				width: 84%;
+				float: right;
+			}
+			/*#cloudstorage_0,*/
+			/*#cloudrecord_0,*/
+			/*#cloudapps_0 {*/
+			/*每一项的第一行*/
+			/*background-color: red;*/
+			/*}*/
+			/*#cloudstorage_1,*/
+			/*#cloudrecord_1,*/
+			/*#cloudapps_1 {*/
+			/*每一项的第二行*/
+			/*background-color: blue;*/
+			/*}*/
+			
+			.mui-plus-pullrefresh .mui-scroll {
+				position: absolute;
+				/*width: 100%;*/
+			}
+			
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active {
+				color: black;
+				border: none;
+			}
+			
+			#refreshContainer .mui-table-view-cell {
+				display: inline-block;
+				width: auto;
+				padding: 1px 1px;
+			}
+			
+			.mui-slider-indicator .mui-table-view-cell.mui-active {
+				background: white;
+			}
+			
+			.cloud-red-point {
+				position: absolute;
+				background: red;
+				height: 10px;
+				width: 10px;
+				border-radius: 50%;
+				display: none;
+			}
+			
+			img {
+				border-radius: 50%;
+			}
+			
+			#cloudstorage_1 img {
+				border-radius: 0px;
+			}
+			
+			.icon-jiaxiabiao {
+				color: #0ABAF5;
+			}
+			
+			.icon-banxiabiao {
+				color: #FFBA00;
+			}
+			
+			.icon-re {
+				color: #FD681E;
+			}
+			
+			.icon-re,
+			.icon-banxiabiao,
+			.icon-jiaxiabiao {
+				position: absolute;
+				border: none !important;
+				top: 0px;
+			}
+			
+			.mui-popup-input input {
+				/*popup 输入框*/
+				height: 34px;
+				border-color: #E4E4E4;
+				margin-top: 5px;
+			}
+			
+			.mui-bar-nav.mui-bar .mui-icon.img-icon {
+				padding-top: 7px;
+			}
+			
+			.mui-backdrop {
+				bottom: -50px;
+			}
+			/*分情况来做,不是所有页面都需要字体随着屏幕大小改变而改变的.*/
+			
+			@media only screen and (min-width:320px) and (max-width:359px) {
+				.mui-popup {
+					top: 30%;
+				}
+			}
+			/*三星大屏幕机最低宽度:note2-note3,S2-S4*/
+			
+			@media only screen and (min-width:360px) {
+				.mui-popup {
+					top: 40%;
+				}
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-icon img-icon"><img src="../../image/utils/default_personalimage.png" style="width: 30px;height: 30px;border-radius: 50%;" /></a>
+
+			<h1 class="mui-title">云盘</h1>
+			<a id="add" class="mui-icon iconfont icon-jiahao mui-pull-right mui-icon-plusempty" style="font-size: 15px;margin-top:5px ;margin-right:-5px" href="#topPopover"></a>
+			<a class="mui-icon iconfont icon-iconhexinhuiyuan mui-pull-right" style="margin-right: 5px;display: none;"></a>
+		</header>
+		<div id="refreshContainer" class="mui-content mui-scroll-wrapper" style="visibility:hidden ;z-index:0">
+			<!--存储-->
+			<div id="cloudstorage" class="cloud-item">
+				<div id="cloudstoragename" class="cloud-item-left">
+					存<br/>储
+				</div>
+				<div class="cloud-item-right">
+					<div id="cloudstorage_0_sw" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+						<div id="cloudstorage_0" class="mui-scroll">
+						</div>
+					</div>
+					<div id="cloudstorage_1_sw" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+						<div id="cloudstorage_1" class="mui-scroll">
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--家校互动-->
+			<div id="cloudrecord" class="cloud-item">
+				<div id="cloudrecordname" class="cloud-item-left">
+					家<br />校<br />互<br />动
+				</div>
+				<div class="cloud-item-right">
+					<div id="cloudrecord_0_sw" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+						<div id="cloudrecord_0" class="mui-scroll"></div>
+					</div>
+					<div id="cloudrecord_1_sw" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+						<div id="cloudrecord_1" class="mui-scroll"></div>
+					</div>
+				</div>
+			</div>
+			<!--应用-->
+			<div id="cloudapps" class="cloud-item">
+				<div id="cloudappsname" class="cloud-item-left">
+					应<br/>用
+				</div>
+				<div class="cloud-item-right mui-table-view">
+					<div id="cloudapps_0_sw" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+						<div id="cloudapps_0" class="mui-scroll">
+						</div>
+					</div>
+					<div id="cloudapps_1_sw" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+						<div id="cloudapps_1" class="mui-scroll">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="topPopover" class="mui-popover">
+			<div class="mui-popover-arrow"></div>
+			<ul class="mui-table-view">
+				<li id="pubDynamic" class="mui-table-view-cell mui-media ">
+					<img class="mui-media-object mui-pull-left" style="width: 20px ;height: 20px;" src="../../image/quan/share.png" />
+					<div class="mui-media-body" id="titleFlag2" style="color: #323232;">晒一晒</div>
+				</li>
+
+				<li id="aboutme" class="mui-table-view-cell mui-media ">
+					<img class="mui-media-object mui-pull-left" style="width: 20px ;height: 20px;" src="../../image/quan/aboutme.png" />
+					<div class="mui-media-body  mui-pull-left" id="titleFlag2" style="color: #323232;margin-top: -10px;padding-top: 10px;"><span class="mui-pull-left">与我相关</span><span id="aboutme_noRead" class="mui-badge mui-badge-danger mui-pull-left" style="margin-left: 0px;margin-top: -5px;visibility: hidden;"></span></div>
+				</li>
+				<li id="Scan" class="mui-table-view-cell mui-media ">
+					<img class="mui-media-object mui-pull-left" style="width: 20px ;height: 20px;" src="../../image/quan/Scan.png" />
+					<div class="mui-media-body" id="titleFlag2" style="color: #323232;">扫一扫</div>
+				</li>
+			</ul>
+		</div>
+		<!--<script src="../../js/main/slide_navigation.js"></script>-->
+
+		<script type="text/javascript" src="../../js/publicHomeworkProtocol.js"></script>
+		<script type="text/javascript">
+			//每一行的高度
+			var cloudItemHeight = 0;
+			//第一行和第三行的比重
+			var cloudFirst = 3;
+			//第二行的比重
+			var cloudSecond = 3;
+			//第三行的比重
+			var cloudThird = 3;
+			//第一项的高度
+			var cloudFirstItemHeight = 0;
+			//第二项的高度
+			var cloudSecondItemHeight = 0;
+			//第三项的高度
+			var cloudThirdItemHeight = 0;
+			//每个图标的宽度
+			var maxWidth = 0;
+			//每个图标中图标图片的宽度
+			var imgeWith = 0.6;
+			//宽度和高度
+			var initStyle;
+			var noReadCount = 0;
+			var wd; //全局d等待框
+			var httpFlag = 0; //请求次数
+			init(); //初始化界面
+
+			/**
+			 * 初始化界面
+			 */
+			function init() {
+				//屏幕宽度
+				var screenWidth = localStorage.getItem('resolutionWidth') * 1;
+				//webview高度
+				var webHeight = localStorage.getItem('resolutionHeight') * 1 - (localStorage.getItem('getStatusbarHeight') * 1 + 45 + 50);
+
+				//每一行的高度
+				cloudItemHeight = (webHeight * 1 - (webHeight * 0.015 * 4)) / (cloudFirst + cloudSecond + cloudThird);
+				//每个图标的宽度
+				maxWidth = parseInt((screenWidth * 1 - screenWidth * 0.16 - 5) / 4.5);
+
+				initStyle = parseInt(maxWidth * imgeWith);
+
+				var allItem = document.querySelectorAll('.cloud-item');
+				for(var i = 0; i < allItem.length; i++) {
+					var sliderHeight = 0;
+					var name = '';
+					var sw_0 = '';
+					var sw_1 = '';
+					var scroll_0 = '';
+					var scroll_1 = '';
+					if(allItem[i].id == 'cloudstorage') { //云存储
+						allItem[i].style.height = parseInt(cloudItemHeight * cloudFirst) + 'px';
+						cloudFirstItemHeight = allItem[i].offsetHeight;
+						sliderHeight = cloudFirstItemHeight;
+						name = 'cloudstoragename';
+						sw_0 = 'cloudstorage_0_sw';
+						sw_1 = 'cloudstorage_1_sw';
+						scroll_0 = 'cloudstorage_0';
+						scroll_1 = 'cloudstorage_1';
+					} else if(allItem[i].id == 'cloudrecord') { //家校互动
+						allItem[i].style.height = parseInt(cloudItemHeight * cloudSecond) + 'px';
+						cloudSecondItemHeight = allItem[i].offsetHeight;
+						sliderHeight = cloudSecondItemHeight;
+						name = 'cloudrecordname';
+						sw_0 = 'cloudrecord_0_sw';
+						sw_1 = 'cloudrecord_1_sw';
+						scroll_0 = 'cloudrecord_0';
+						scroll_1 = 'cloudrecord_1';
+					} else if(allItem[i].id == 'cloudapps') { //应用
+						allItem[i].style.height = parseInt(cloudItemHeight * cloudThird) + 'px';
+						cloudThirdItemHeight = allItem[i].offsetHeight;
+						sliderHeight = cloudThirdItemHeight;
+						name = 'cloudappsname';
+						sw_0 = 'cloudapps_0_sw';
+						sw_1 = 'cloudapps_1_sw';
+						scroll_0 = 'cloudapps_0';
+						scroll_1 = 'cloudapps_1';
+					}
+					var style_0 = parseInt(webHeight * 0.015) + 1 + 'px';
+					var style_1 = parseInt(sliderHeight / 2) + 'px'
+					allItem[i].style.marginTop = style_0;
+					allItem[i].style.marginBottom = style_0;
+					document.getElementById(name).style.marginTop = parseInt(allItem[i].offsetHeight - allItem[i].children[0].offsetHeight) / 2 + 'px';
+					document.getElementById(sw_0).style.height = style_1;
+					document.getElementById(sw_1).style.height = style_1;
+					document.getElementById(scroll_0).style.height = style_1;
+					document.getElementById(scroll_1).style.height = style_1;
+				}
+				document.getElementById("refreshContainer").style.visibility = 'visible';
+			}
+		</script>
+
+		<script src="../../js/mui.js"></script>
+		<script src="../../js/main/off-canvas.js"></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/cloud/cloud.js"></script>
+		<script type="text/javascript" src="../../js/qiuzhi/delContent_pop.js"></script>
+
+		<script type="text/javascript">
+			//获取所有的群
+			var datasource = [];
+			//获取学生列表
+			var topStudentArr = [];
+			//未读数model
+			var noReadModel = {};
+			var updateFlag = 0;
+
+			var homeworkReady = false;
+			//存储档案文件夹
+			var studentDoc = {};
+
+			off_canvas.init();
+			//设置全局beforeSend
+			mui.ajaxSettings.beforeSend = function(xhr, setting) {
+				httpFlag++
+				console.log('发送前httpFlag==========' + httpFlag)
+			};
+
+			//设置全局complete
+			mui.ajaxSettings.complete = function(xhr, status) {
+				httpFlag--;
+				console.log('完成后httpFlag==========' + httpFlag)
+				if(httpFlag <= 0) { //所有请求完毕
+					httpFlag = 0;
+					wd.close();
+				}
+			}
+
+			mui.plusReady(function() {
+									//重复执行某个方法 
+					var timer = window.setInterval(updateUnread, 10000);
+					//去掉定时器的方法 
+//					window.clearInterval(t1);
+				var webHeight = localStorage.getItem('resolutionHeight') * 1 - (localStorage.getItem('getStatusbarHeight') * 1 + 50);
+				plus.webview.currentWebview().setStyle({
+					height: webHeight + 'px'
+				})
+				//发送协议
+				changeData();
+
+				addcloudapps_0(); //应用
+				off_canvas.add('../index/mine.html', 200);
+				document.querySelector(".img-icon>img").src = updateHeadImg(myStorage.getItem(storageKeyName.PERSONALINFO).uimg, 2);
+				document.querySelector(".icon-iconhexinhuiyuan").addEventListener("tap", function() {
+					var item = this;
+					if(events.judgeLoginMode(this)) {
+						return;
+					}
+					events.fireToPageNone('cloud_home.html', 'topPopover', {
+						flag: 1
+					})
+					events.singleWebviewInPeriod(item, "order-member.html");
+				})
+				window.addEventListener("infoChanged", function() {
+					document.querySelector(".img-icon>img").src = updateHeadImg(myStorage.getItem(storageKeyName.PERSONALINFO).uimg, 2)
+				})
+				//下拉刷新
+				mui("#refreshContainer").pullToRefresh({
+					down: {
+						callback: function() {
+							var self = this;
+							////console.log("下拉刷新");
+							mui.fire(plus.webview.getWebviewById("index.html"), 'aboutmNoRead');
+							//文件存储数组
+							changeData();
+							setTimeout(function() {
+								//结束下拉刷新
+								self.endPullDownToRefresh();
+							}, 1000);
+						}
+					},
+				});
+
+				//				events.preload("../homework/homework-tea.html", 300);
+				events.preload('storage_transport.html'); //预加载传输列表
+				//				events.addTap('add', function() {
+				//					mui('#topPopover').popover('toggle')
+				//				})
+				//监听popover的显示和隐藏
+				window.addEventListener("topPopover", function(e) {
+					mui('#topPopover').popover('hide')
+				});
+				//点击popover里cell
+				mui('.mui-popover').on('tap', 'li', function(e) {
+					var item = e.target;
+					var targetUrl = "";
+					var postdata = "";
+					mui('#topPopover').popover('toggle')
+					if(this.id == 'pubDynamic') {
+						targetUrl = "../quan/pub-dynamic.html";
+						postdata = 'jxq';
+					} else if(this.id == 'aboutme') {
+						targetUrl = "../quan/aboutme.html";
+						var noRead = document.getElementById('aboutme_noRead');
+						noRead.innerHTML = 0;
+						noRead.style.visibility = 'hidden';
+					} else {
+						targetUrl = '../mine/ReadQRCode.html';
+					}
+					events.singleWebviewInPeriod(item, targetUrl, postdata);
+				})
+				//				window.addEventListener("homeworkReady", function() {
+				//					homeworkReady = true;
+				//				});
+
+				//重新登录或者自动登录后获取的信息
+				window.addEventListener('infoChanged', function() {
+					changeData();
+					events.fireToPageNone('storage_upload.html', 'createFolder'); //在程序中创建utid的文件夹和对应的上传下载文件夹
+				});
+
+				//修改学生头像
+				window.addEventListener('stuImgeChanged', function(e) {
+					//设置页面信息
+					var data = e.detail;
+					document.getElementById("student_imge_" + data.id).src = data.img;
+				});
+
+				//修改云存储信息
+				window.addEventListener('cloudDataChange', function(e) {
+					var data = e.detail.data;
+					//console.log("cloudDataChange " + JSON.stringify(data));
+					switch(data.type) {
+						case "addFolder": //新增文件夹
+							addStorageFolder(data.data, 1);
+							break;
+						case "changeFolder": //修改文件夹的名称
+							var folderName = document.getElementById("fname_" + data.data.fid);
+							if(folderName) {
+								folderName.innerText = data.data.fname;
+							}
+							break;
+						case "deleteFolder": //删除文件夹
+							var folder = document.getElementById("fid_" + data.data.fid);
+							if(folder) {
+								folder.parentNode.removeChild(folder);
+							}
+							break;
+						default:
+							//console.log("default " + data.type);
+							break;
+					}
+				});
+
+				//创建群的监听
+				window.addEventListener('getGroupList', function() {
+					//获取所有的群
+					datasource = [];
+					//获取班级
+					getGroupList();
+				});
+
+				//退出登录后，清理云盘主页界面和数据
+				window.addEventListener('cleanCloudHome', function() {
+					//获取所有的群
+					datasource = [];
+					//获取学生列表
+					topStudentArr = [];
+					//清理界面
+					var id = ['cloudstorage_0', 'cloudstorage_1', 'cloudrecord_0', 'cloudrecord_1'];
+					for(var i = 0; i < id.length; i++) {
+						var element = document.getElementById(id[i]);
+						element.innerHTML = '';
+						var scroll = mui('#' + id[i] + '_sw').scroll();
+						scroll.scrollTo(0, 0, 0); //100毫秒滚动到顶
+					}
+				});
+
+				var self = plus.webview.currentWebview();
+				var androidHeight;
+				////console.log('getStyle ' + JSON.stringify(self.getStyle()));
+				////console.log('clientHeight ' + document.body.clientHeight);
+				//防止 父页面选项卡被输入法撑起
+				if(mui.os.android) {
+					androidHeight = plus.android.invoke(plus.android.currentWebview(), "getHeight");
+					window.addEventListener('resize', function() {
+						//console.log('clientHeight ' + document.body.clientHeight);
+						////console.log('resize getStyle ' + JSON.stringify(self.getStyle()));
+						////console.log('androidHeight ' + androidHeight);
+						var a = plus.android.invoke(plus.android.currentWebview(), "getHeight"); //webview高度
+						//var b = plus.navigator.getStatusbarHeight(); //状态栏高度
+						//var c = plus.screen.resolutionHeight; //屏幕高度
+						//var d = (c - a - b);
+						////console.log('webview高度：' + a + " 状态栏高度：" + b + " 屏幕高度：" + c + " 输入法高度:" + d)
+						if(a < androidHeight) {
+							//键盘弹出
+							self.setStyle({
+								bottom: '0px'
+							});
+						} else {
+							self.setStyle({
+								bottom: '50px'
+							});
+						}
+					}, false);
+				}
+
+				//-----------设置数据end-----------------
+
+				//-----------设置监听start---------------
+				//---云盘start---
+				//云盘第一行
+				mui('#cloudstorage_0').on('tap', '.mui-table-view-cell', function() {
+					var id = this.id;
+					if(id == 'shoujitongxunlu') { //手机通讯录
+						mui.toast('手机通讯录功能暂未开放');
+					} else if(id == 'shoujituku') { //手机图库
+						mui.toast('手机图库功能暂未开放');
+					} else { //档案
+						var data = studentDoc[id.replace('data_', '')];
+						//console.log(JSON.stringify(data));
+						events.openNewWindowWithData('record_student_main.html', data);
+					}
+				});
+
+				//云盘第一行,长按档案
+				mui('#cloudstorage_0').on('longtap', '.mui-table-view-cell', function(event) {
+					var id = this.id;
+					if(id != 'shoujitongxunlu' && id != 'shoujituku') { //档案
+						longTapData(id, event);
+					}
+				});
+
+				//云存储显示的文件
+				mui('#cloudstorage_1').on('tap', '.mui-table-view-cell', function() {
+					if(this.id != 'addFolder') {
+						events.openNewWindow('storage_main.html');
+					}
+				});
+
+				//增加文件夹
+				mui('#cloudstorage').on('tap', '#addFolder', function(e) {
+					e.detail.gesture.preventDefault(); //修复iOS 8.x平台存在的bug，使用plus.nativeUI.prompt会造成输入法闪一下又没了
+					var btnArray = ['取消', '确定'];
+					if(plus.os.name == 'iOS') {
+						plus.nativeUI.prompt(" ", function(e) {
+							addFolder(e);
+						}, "新建文件夹", "请输入新文件夹的名称", btnArray);
+					} else {
+						mui.prompt('', '请输入新文件夹的名称', '新建文件夹', btnArray, function(e) {
+							addFolder(e);
+						}, 'div');
+						var input = document.querySelector('.mui-popup-input input');
+						input.type = 'text';
+						input.maxLength = 20;
+					}
+				});
+
+				//新增文件夹方法
+				function addFolder(e) {
+					if(e.index == 1) { //点击确定
+						var reg = new RegExp('^[^\\\\\\/:*?\\"<>|]+$'); //特殊字符过滤的正则表达式
+						if(e.value.replace(/(^\s*)|(\s*$)/g, "") == "") {
+							mui.toast('文件夹名字不能为空');
+						} else if(!reg.test(e.value)) {
+							//特殊字符
+							mui.toast('名字中不能包含这些字符 \ / : * ? " < > | ');
+						} else if(e.value.length > 20) {
+							mui.toast('名字最多20个字');
+						} else {
+							//27.用户云盘文件上传或创建文件夹
+							//所需参数
+							var comData = {
+								pid: '0', //	父ID，该文件的上层ID
+								fname: e.value, //	文件名称，文件或文件夹名称,文件存扩展名之前的名称
+								ftype: '.file', //	文件类型，存文件的扩展名,如.file为文件夹
+								fpath: '', //	文件路径，文件路径,为文件用
+								fsize: '0' //	文件大小，文件用
+							};
+							// 等待的对话框
+							//var wd = events.showWaiting();
+							postDataPro_PostDiFiA(comData, wd, function(data) {
+								//wd.close();
+								//console.log('27.postDataPro_PostDiFiA:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+								if(data.RspCode == 0) {
+									//26.用户云盘顶层文件及文件夹获取
+									postFirstFile();
+									mui.toast('创建成功');
+									document.activeElement.blur();
+									mui.closePopups();
+								} else if(data.RspCode == 8) {
+									mui.toast('操作失败！已存在相同的名字');
+								} else {
+									mui.toast(data.RspTxt);
+								}
+							});
+						}
+						return false;
+					} else {
+						//点击取消
+						document.activeElement.blur();
+					}
+				}
+
+				//---云盘end---
+
+				//---家校互动---start---
+				mui('#cloudrecord_0').on('tap', '.mui-table-view-cell', function() {
+					var id = this.id;
+					if(id == 'homework') { //作业
+						requestClassData();
+					} else if(id == 'manage') { //班级管理
+						events.openNewWindowWithData('/html/mine/qun_manage_a.html', {
+							type: '1' //0群管理,1人员资料
+						});
+					} else { //学生
+						var index = this.id.replace('studentsdynamic', '');
+						var stuid = this.getAttribute('data-stuid');
+						document.getElementById("studyn_redpoint_" + stuid).style.display = 'none';
+						if(events.click) {
+							return false;
+						}
+						events.click = true;
+						setTimeout(function() {
+							events.click = false;
+						}, events.clickTime);
+						mui.openWindow({
+							url: '../quan/studentdynamic_main.html',
+							id: '../quan/studentdynamic_main.html',
+							styles: {
+								top: '0px', //设置距离顶部的距离
+								bottom: '0px'
+							},
+							waiting: {
+								title: '正在加载...'
+							},
+							extras: {
+								data: {
+									studentId: topStudentArr[index].stuid,
+									classId: topStudentArr[index].gid,
+									studentName: topStudentArr[index].stuname,
+									stuimg: topStudentArr[index].stuimg
+								}
+							},
+						});
+					}
+				});
+
+				mui('#cloudrecord_1').on('tap', '.mui-table-view-cell', function() {
+					var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid;
+					var id = this.id;
+					var gid = this.getAttribute('data-gid');
+					if(id == 'noclass') { //没有班级的情况
+						events.openNewWindow('../mine/qun_manage_info.html');
+					} else { //班级
+						var type = this.getAttribute('type');
+						if(type == 0) {
+							////console.log('班级');
+							var index = this.id.replace('tarClass', '');
+							////console.log('index：' + index);
+							document.getElementById("tarClass_" + gid).style.display = 'none';
+							events.singleWebviewInPeriod(this, '../quan/class_space.html', {
+								classId: datasource[index].gid,
+								className: datasource[index].gname
+							});
+						} else {
+							//console.log('家校圈');
+							var index = this.id.replace('tarClass1', '');
+							//console.log('index：' + index);
+							document.getElementById("tarClass1_" + gid).style.display = 'none';
+							events.click = true;
+							setTimeout(function() {
+								events.click = false;
+							}, events.clickTime);
+							mui.openWindow({
+								url: '../quan/zone_main.html',
+								id: '../quan/zone_main.html',
+								styles: {
+									top: '0px', //设置距离顶部的距离
+									bottom: '0px'
+								},
+								waiting: {
+									title: '正在加载...'
+								},
+								extras: {
+									data: {
+										className: datasource[index].gname,
+										classId: datasource[index].gid
+									}
+								},
+							});
+						}
+					}
+				});
+				//---家校互动---end---
+
+				//---应用---start---
+				mui('#cloudapps').on('tap', '.mui-table-view-cell', function() {
+					var value = this.getAttribute("value");
+					if(value == '0') { //笔记
+						events.openNewWindow('app_notes_main.html');
+					} else if(value == '1') { //记事
+						events.openNewWindow('app_keeprecord.html');
+					}
+				});
+				//---应用---end---
+
+				//-----------设置监听end---------------
+
+				//重置滑动组件
+				function resetScroll() {
+					//清理界面
+					var id = ['cloudstorage_0', 'cloudstorage_1', 'cloudrecord_0', 'cloudrecord_1'];
+					for(var i = 0; i < id.length; i++) {
+						var scroll = mui('#' + id[i] + '_sw').scroll();
+						scroll.scrollTo(0, 0, 100); //100毫秒滚动到顶
+					}
+				}
+
+				/**
+				 * 修改云盘的文件，档案数据
+				 */
+				function changeData() {
+					if(!parseInt(myStorage.getItem(storageKeyName.PERSONALINFO).utid)) {
+						return;
+					}
+
+					if(plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_NONE) {
+						//console.log('没有网络');
+						mui.toast("网络异常，请检查网络设置！");
+						return;
+					}
+					httpFlag = 0;
+					getAboutMe();
+
+					//26.用户云盘顶层文件及文件夹获取
+					postFirstFile();
+					//91.（云档案）按家长获取档案文件夹
+					postUserStudent();
+					//获取学生
+					getStuList();
+					//获取班级
+					getGroupList();
+					//重置滑动组件
+					resetScroll();
+				}
+
+				/**
+				 * 修改云盘的文件
+				 */
+				function changeCloudData() {
+					//document.getElementById("cloudstorage_1").innerHTML = '';
+					//26.用户云盘顶层文件及文件夹获取
+					postFirstFile();
+				}
+
+				/**
+				 * 获取用户所在群数据
+				 */
+				function requestClassData() {
+					var teacherClasses = [];
+					var studentClasses = [];
+					var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid;
+					//获取当前账号，所在的群
+					//需要参数
+					var comData = {
+						vtp: 'ag', //要获取的项:cg(创建的群),ug(参与群),mg(协管的群),ag(所有的群),ig(群信息vvl对应群ID)
+						vvl: personalUTID //查询的各项，对应人的utid，可以是查询的任何人
+					};
+					// 等待的对话框
+					//var wd = events.showWaiting();
+					//9.获取用户群
+					postDataPro_PostGList(comData, wd, function(data) {
+						//wd.close();
+						//console.log('作业主界面获取的群信息：' + JSON.stringify(data));
+						if(data.RspCode == 0) {
+							var tempArray = data.RspData;
+							//			gid:'14',//群ID
+							//			gname:'10群',//群名
+							//			gimg:'',//群头像,群头像的链接
+							//			mstype:'2'//用户角色,0家长,1管理员,2老师,3学生
+							//然后检索身份为老师或者家长、学生的
+							for(var i in tempArray) {
+								var tempModel = tempArray[i];
+
+								var isHave = false;
+								//2老师
+								if(tempModel.mstype == 2 || tempModel.mstype == 1) {
+									for(var m in teacherClasses) {
+										if(tempModel.gid == teacherClasses[m].gid) {
+											isHave = true;
+											break;
+										}
+									}
+									if(!isHave) {
+										teacherClasses.push(tempModel);
+									}
+								}
+								var isHave1 = false;
+								//家长、学生
+								if(tempModel.mstype == 0 || tempModel.mstype == 3) {
+									for(var m in studentClasses) {
+										if(tempModel.gid == studentClasses[m].gid) {
+											isHave1 = true;
+											break;
+										}
+									}
+									if(!isHave1) {
+										studentClasses.push(tempModel);
+									}
+								}
+							}
+							if(teacherClasses.length > 0 || studentClasses.length > 0) {
+								//console.log('teacherClasses:' + teacherClasses.length + ',' + studentClasses.length);
+								//								sendMessageToHomework(teacherClasses, studentClasses);
+								events.openNewWindowWithData("../homework/homework-tea.html", {
+									teacherClasses: teacherClasses,
+									studentClasses: studentClasses
+								});
+							} else {
+								mui.toast('您还未加入班级');
+							}
+						} else {
+							mui.toast(data.RspTxt);
+						}
+					});
+				}
+
+				//26.用户云盘顶层文件及文件夹获取
+				function postFirstFile() {
+					//var wd = events.showWaiting();
+					//所需参数
+					var comData = {
+						vtp: '1', //类型，0文件及文件夹混合,1文件夹,2文件
+						vvl: '0' //	节点ID，顶层为0
+					};
+					postDataPro_PostDiFi(comData, wd, function(data) {
+						document.getElementById("cloudstorage_1").innerHTML = '';
+						//console.log('26.postDataPro_PostDiFi_用户云盘顶层文件及文件夹获取_RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+						if(data.RspCode == 0) {
+							for(var i in data.RspData) {
+								if(i > 9) {
+									break;
+								}
+								addStorageFolder(data.RspData[i]);
+							}
+						} else {
+							if(data.RspCode != 9) {
+								mui.toast(data.RspTxt);
+							}
+						}
+						addStorageIcon();
+						//wd.close();
+					});
+				}
+
+				//91.（云档案）按家长获取档案文件夹
+				function postUserStudent() {
+					//var wd = events.showWaiting();
+					var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid;
+					var comData = {
+						parentId: personalUTID //家长ID
+					};
+					postDataPro_getStudentDocByParent(comData, wd, function(data) {
+						//console.log('91 按家长获取档案文件夹 getStudentDocByParent ' + JSON.stringify(data));
+						document.getElementById("cloudstorage_0").innerHTML = '';
+						addcloudstorage_0_0(); //手机通讯录，手机图库
+						studentDoc = {};
+						if(data.RspCode == 0) {
+							//设置页面显示
+							for(var i = 0; i < data.RspData.Data.length; i++) {
+								////console.log('学生档案 ' + i + '|' + JSON.stringify(data.RspData.Data[i]));
+								addcloudstorage_0_1(data.RspData.Data[i]);
+							}
+						} else {
+							mui.toast(data.RspTxt);
+						}
+						//wd.close();
+					});
+				}
+
+				/**
+				 * 增加存储的文件夹或文件
+				 * @param {Object} data
+				 */
+				function addStorageFolder(data, type) {
+					////console.log("addStorageFolder " + type + " " + JSON.stringify(data));
+					var li = document.createElement("li");
+					li.setAttribute('id', "fid_" + data.fid);
+					li.setAttribute('data-fid', data.fid);
+					li.className = 'mui-table-view-cell';
+					var html1 = ''; //图标
+					var html2 = ''; //名字
+					var fname = ''; //文件名
+					if(data.ftype == '.file') { //文件夹
+						html1 = '<img src="../../image/cloud/cloud_0_wenjianjia_1.png" style="height: ' + initStyle + 'px;width: ' + initStyle + 'px;"/>';
+						html2 = '<p id="fname_' + data.fid + '" class="mui-ellipsis"></p>';
+						fname = data.fname;
+					} else { //文件
+						var type = cloud.classifyQNImg(data.ftype);
+						var pathList = data.fpath.split('/');
+						var pathList2 = pathList[pathList.length - 1].split('.');
+						var fileName = pathList2[0];
+						var path = window.storageKeyName.QNPB + 'yuncunc/' + window.storageKeyName.CLOUDSTORAGETHUMB + fileName + '.png'
+						if(type == 'QN_video' || type == 'QN_img') {
+							html1 = '<img src="' + path + '" style="height: ' + initStyle + 'px;width: ' + initStyle + 'px;"/>';
+						} else { //七牛能生成缩略图的图片或视频
+							html1 = '<img src="../../image/cloud/' + type + '" style="height: ' + initStyle + 'px;width: ' + initStyle + 'px;"/>';
+						}
+						html2 = '<p id="fname_' + data.fid + '" class="mui-ellipsis"></p>';
+						fname = data.fname + data.ftype;
+					}
+					li.innerHTML = html1 + html2;
+					li.style.width = maxWidth + 'px';
+					li.style.height = cloudFirstItemHeight + 'px';
+					if(type == 1) {
+						document.getElementById("cloudstorage_1").insertBefore(li, document.getElementById("addFolder"));
+					} else {
+						document.getElementById("cloudstorage_1").appendChild(li);
+					}
+
+					document.getElementById("fname_" + data.fid).innerText = fname;
+
+					li.style.paddingTop = (cloudFirstItemHeight / 2 - (li.lastElementChild.offsetHeight + li.lastElementChild.offsetTop - li.firstElementChild.offsetTop)) / 2 + 'px';
+				}
+
+				/**
+				 * 增加文件夹的按钮（加号按钮）
+				 */
+				function addStorageIcon() {
+					var li = document.createElement('li');
+					li.id = 'addFolder';
+					li.className = 'mui-table-view-cell';
+					li.innerHTML = '<img src="../../image/cloud/cloud_0_xinjian_4.png" style="height: ' + initStyle + 'px;width: ' + initStyle + 'px;"/><p class="mui-ellipsis">新建文件夹</p>';
+					li.style.width = maxWidth + 'px';
+					li.style.height = cloudFirstItemHeight + 'px';
+					document.getElementById("cloudstorage_1").appendChild(li);
+					li.style.paddingTop = (cloudFirstItemHeight / 2 - (li.lastElementChild.offsetHeight + li.lastElementChild.offsetTop - li.firstElementChild.offsetTop)) / 2 + 'px';
+				}
+
+				/**
+				 * 增加手机通讯录和手机图库
+				 */
+				function addcloudstorage_0_0() {
+					//手机通讯录
+					var li = document.createElement('li');
+					li.id = 'shoujitongxunlu';
+					li.className = 'mui-table-view-cell';
+					li.innerHTML = '<img src="../../image/cloud/cloud_0_tongxunlu.png" style="height: ' + initStyle + 'px;width: ' + initStyle + 'px;"/>\
+									   <p class="mui-ellipsis">手机通讯录</p>';
+					li.style.width = maxWidth + 'px';
+					li.style.height = cloudFirstItemHeight / 2 + 'px';
+					document.getElementById("cloudstorage_0").appendChild(li);
+					li.style.paddingTop = (cloudFirstItemHeight / 2 - (li.lastElementChild.offsetHeight + li.lastElementChild.offsetTop - li.firstElementChild.offsetTop)) / 2 + 'px';
+
+					//手机图库
+					var li2 = document.createElement('li');
+					li2.id = 'shoujituku';
+					li2.className = 'mui-table-view-cell';
+					li2.innerHTML = '<img src="../../image/cloud/cloud_0_tuku.png" style="height: ' + initStyle + 'px;width: ' + initStyle + 'px;"/>\
+									   <p class="mui-ellipsis">手机图库</p>';
+					li2.style.width = maxWidth + 'px';
+					li2.style.height = cloudFirstItemHeight / 2 + 'px';
+					document.getElementById("cloudstorage_0").appendChild(li2);
+					li2.style.paddingTop = (cloudFirstItemHeight / 2 - (li2.lastElementChild.offsetHeight + li2.lastElementChild.offsetTop - li2.firstElementChild.offsetTop)) / 2 + 'px';
+				}
+
+				/**
+				 * 增加档案
+				 * @param {Object} data
+				 */
+				function addcloudstorage_0_1(data) {
+					var id = data.DocType + '_' + data.DocId;
+					studentDoc[id] = data;
+					var li = document.createElement('li');
+					li.className = 'mui-table-view-cell';
+					li.id = 'data_' + id;
+					li.innerHTML = '<img src="../../image/cloud/cloud_0_dangan.png" style="height: ' + initStyle + 'px;width: ' + initStyle + 'px;"/>\
+									   <p class="mui-ellipsis" id="data_name_' + id + '"></p>';
+					li.style.width = maxWidth + 'px';
+					li.style.height = cloudFirstItemHeight / 2 + 'px';
+					document.getElementById("cloudstorage_0").appendChild(li);
+					var name = data.DocName || data.StudentName;
+					document.getElementById("data_name_" + id).innerText = name + '档案';
+					li.style.paddingTop = (cloudFirstItemHeight / 2 - (li.lastElementChild.offsetHeight + li.lastElementChild.offsetTop - li.firstElementChild.offsetTop)) / 2 + 'px';
+				}
+
+				/**
+				 * 作业和人员资料
+				 */
+				function addcloudrecord_0_0() {
+					//作业
+					var li = document.createElement('li');
+					li.id = 'homework';
+					li.className = 'mui-table-view-cell';
+					li.setAttribute('value', 0);
+					li.innerHTML = '<span class="mui-icon iconfont icon-re" style="left:' + (maxWidth * imgeWith * (4 / 5)) + 'px;font-size:' + maxWidth * imgeWith * (5 / 7) + 'px;"></span>\
+									<img src="../../image/cloud/cloud_0_zuoye.png" style="height: ' + initStyle + 'px;width: ' + initStyle + 'px;"/>\
+									<p class="mui-ellipsis">作业</p>';
+					li.style.width = maxWidth + 'px';
+					li.style.height = cloudSecondItemHeight / 2 + 'px';
+					document.getElementById("cloudrecord_0").appendChild(li);
+					li.style.paddingTop = (cloudSecondItemHeight / 2 - (li.lastElementChild.offsetHeight + li.lastElementChild.offsetTop - li.firstElementChild.offsetTop)) / 2 + 'px';
+
+					//人员资料
+					var li2 = document.createElement('li');
+					li2.id = 'manage';
+					li2.className = 'mui-table-view-cell';
+					li2.setAttribute('value', 1);
+					li2.innerHTML = '<img src="../../image/cloud/cloud_0_banjiguanli.png" style="height: ' + initStyle + 'px;width: ' + initStyle + 'px;"/>\
+									   <p class="mui-ellipsis">人员资料</p>';
+					li2.style.width = maxWidth + 'px';
+					li2.style.height = cloudSecondItemHeight / 2 + 'px';
+					document.getElementById("cloudrecord_0").appendChild(li2);
+					li2.style.paddingTop = (cloudSecondItemHeight / 2 - (li2.lastElementChild.offsetHeight + li2.lastElementChild.offsetTop - li2.firstElementChild.offsetTop)) / 2 + 'px';
+				}
+
+				/**
+				 * 增加学生
+				 */
+				function addcloudrecord_0_1(id_index, data) {
+					var li = document.createElement('li');
+					li.className = 'mui-table-view-cell';
+					li.id = 'studentsdynamic' + id_index;
+					li.setAttribute('data-stuid', data.stuid);
+					var html0 = '<div id="studyn_redpoint_' + data.stuid + '" class="cloud-red-point" style="left:' + (maxWidth - 20) + 'px' + ';"></div>';
+					li.innerHTML = html0 + '<img id="student_imge_' + data.stuid + '" src="' + updateHeadImg(data.stuimg, 2) + '"style="height: ' + initStyle + 'px;width: ' + initStyle + 'px;"/>\
+									   <p id="studyn_' + id_index + '" class="mui-ellipsis"></p>';
+					li.style.width = maxWidth + 'px';
+					li.style.height = cloudSecondItemHeight / 2 + 'px';
+					document.getElementById("cloudrecord_0").appendChild(li);
+
+					//资料名称为空的时候，用户昵称+的孩子
+					var name = '';
+					if(data.stuname == '') {
+						name = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).unick + '的孩子';
+					} else {
+						name = data.stuname;
+					}
+					document.getElementById("studyn_" + id_index).innerText = name;
+
+					li.style.paddingTop = (cloudSecondItemHeight / 2 - (li.lastElementChild.offsetHeight + li.lastElementChild.offsetTop - li.querySelector('img').offsetTop)) / 2 + 'px';
+				}
+
+				/**
+				 * 增加班级,家校圈入口
+				 * @param {Object} data
+				 * @param {Object} type 班级0,家校圈1
+				 */
+				function addcloudrecord_1_0(id_index, data, type) {
+					////console.log('addcloudrecord_1_0 ' + JSON.stringify(data));
+					var li = document.createElement('li');
+					li.className = 'mui-table-view-cell';
+					li.setAttribute('type', type);
+					li.setAttribute('data-gid', data.gid);
+					var html0 = '';
+					var html1 = '';
+					var gname = ''; //群名称
+					var gnameId = ''; //群名称元素的id
+					if(type == 0) {
+						li.id = 'tarClass' + id_index;
+						html0 = '<div id="tarClass_' + data.gid + '" class="cloud-red-point" style="left:' + (maxWidth - 20) + 'px;"></div>';
+
+						html1 = html0 + '<img src="../../image/cloud/cloud_0_ban_1.png" style="margin-left:' + (maxWidth / 2.5) + 'px;position: absolute;margin-top: ' + (maxWidth * 0.35) + 'px;height: ' + (maxWidth * imgeWith * 0.5) + 'px;width: ' + (maxWidth * imgeWith * 0.5) + 'px;"/>';
+						//html1 = html0 + '<span class="mui-icon iconfont icon-banxiabiao" style="top:' + (maxWidth * imgeWith * 0.6) + 'px;left:' + (maxWidth * imgeWith * 0.6) + 'px;"></span>';
+						li.innerHTML = html1 + '<img src="' + updateHeadImg(data.gimg, 2) + '"style="height: ' + initStyle + 'px;width: ' + initStyle + 'px;"/>\
+									   <p id="tarClass_gname_' + data.gid + '" class="mui-ellipsis"></p>';
+						gnameId = 'tarClass_gname_' + data.gid;
+						gname = data.gname;
+					} else {
+						li.id = 'tarClass1' + id_index;
+						html0 = '<div id="tarClass1_' + data.gid + '" class="cloud-red-point" style="left:' + (maxWidth - 20) + 'px;"></div>';
+						html1 = html0 + '<img src="../../image/cloud/cloud_0_jia_0.png" style="margin-left:' + (maxWidth / 2.5) + 'px;position: absolute;margin-top: ' + (maxWidth * 0.35) + 'px;height: ' + (maxWidth * imgeWith * 0.5) + 'px;width: ' + (maxWidth * imgeWith * 0.5) + 'px;"/>';
+
+						//html1 = html0 + '<span class="mui-icon iconfont icon-jiaxiabiao" style="top:' + (maxWidth * imgeWith * 0.6) + 'px;left:' + (maxWidth * imgeWith * 0.6) + 'px;"></span>';
+						li.innerHTML = html1 + '<img src="' + updateHeadImg(data.gimg, 2) + '"style="height: ' + initStyle + 'px;width: ' + initStyle + 'px;"/>\
+									   <p id="tarClass1_gname_' + data.gid + '" class="mui-ellipsis"></p>';
+						gnameId = 'tarClass1_gname_' + data.gid;
+						gname = '家长(' + data.gname + ')';
+					}
+
+					li.style.width = maxWidth + 'px';
+					li.style.height = cloudSecondItemHeight + 'px';
+					document.getElementById("cloudrecord_1").appendChild(li);
+					document.getElementById(gnameId).innerText = gname;
+					li.style.paddingTop = (cloudSecondItemHeight / 2 - (li.lastElementChild.offsetHeight + li.lastElementChild.offsetTop)) / 2 + 'px';
+				}
+
+				/**
+				 * 没有班级的情况
+				 */
+				function addcloudrecord_1_noclass() {
+					var li = document.createElement('li');
+					li.id = 'noclass';
+					li.className = 'mui-table-view-cell';
+					li.innerHTML = '<img src="../../image/quan/add.png"style="height: ' + initStyle + 'px;width: ' + initStyle + 'px;"/>\
+									   <p class="mui-ellipsis">创建班级</p>';
+					li.style.width = maxWidth + 'px';
+					li.style.height = cloudSecondItemHeight + 'px';
+					document.getElementById("cloudrecord_1").appendChild(li);
+					li.style.paddingTop = (cloudSecondItemHeight / 2 - (li.lastElementChild.offsetHeight + li.lastElementChild.offsetTop - li.firstElementChild.offsetTop)) / 2 + 'px';
+				}
+
+				/**
+				 * 增加笔记和记事
+				 */
+				function addcloudapps_0() {
+					//笔记
+					var li = document.createElement('li');
+					li.id = 'notes';
+					li.className = 'mui-table-view-cell';
+					li.setAttribute('value', 0);
+					li.innerHTML = '<img src="../../image/cloud/cloud_0_biji.png" style="height: ' + initStyle + 'px;width: ' + initStyle + 'px;"/>\
+									   <p class="mui-ellipsis">笔记</p>';
+					li.style.width = maxWidth + 'px';
+					li.style.height = cloudThirdItemHeight / 2 + 'px';
+					document.getElementById("cloudapps_0").appendChild(li);
+					li.style.paddingTop = (cloudThirdItemHeight / 2 - (li.lastElementChild.offsetHeight + li.lastElementChild.offsetTop - li.firstElementChild.offsetTop)) / 2 + 'px'; //笔记
+
+					var li2 = document.createElement('li');
+					li2.id = 'note';
+					li2.className = 'mui-table-view-cell';
+					li2.setAttribute('value', 1);
+					li2.innerHTML = '<img src="../../image/cloud/cloud_0_jishi.png" style="height: ' + initStyle + 'px;width: ' + initStyle + 'px;"/>\
+									   <p class="mui-ellipsis">记事</p>';
+					li2.style.width = maxWidth + 'px';
+					li2.style.height = cloudThirdItemHeight / 2 + 'px';
+					document.getElementById("cloudapps_0").appendChild(li2);
+					li2.style.paddingTop = (cloudThirdItemHeight / 2 - (li2.lastElementChild.offsetHeight + li2.lastElementChild.offsetTop - li2.firstElementChild.offsetTop)) / 2 + 'px'; //记事
+				}
+
+				//获取学生列表
+				function getStuList() {
+					var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid;
+					//所需参数
+					var comData = {
+						utid: personalUTID
+					};
+					//返回值model：model_userDataInfo
+					// 等待的对话框
+					//var wd = events.showWaiting();
+					//addcloudrecord_0_0();
+					//24.通过用户表ID获取用户关联的学生
+					postDataPro_PostUstu(comData, wd, function(data) {
+						//清除学生区域
+						document.getElementById("cloudrecord_0").innerHTML = '';
+						addcloudrecord_0_0();
+						//console.log('获取学生列表_PostUstu:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+						if(data.RspCode == 0 || data.RspCode == 9 || data.RspCode == 7) { //9为查询记录为空
+							topStudentArr = data.RspData;
+							var stuIds = [];
+							var classIds = [];
+							//生成学生界面
+							mui.each(topStudentArr, function(index, element) {
+								////console.log('学生:' + index + '|' + JSON.stringify(element));
+								addcloudrecord_0_1(index, element);
+								stuIds.push(element.stuid);
+								classIds.push(element.gid);
+							});
+							var stuIdStr = arrayToStr(stuIds);
+							var classStr = arrayToStr(classIds)
+							getNotesByUserForMutiStudent(stuIdStr, classStr, stuIds);
+						} else {
+							mui.toast(data.RspTxt);
+						}
+						//wd.close();
+					});
+				}
+
+				//获取所有的群
+				function getGroupList() {
+					var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid;
+					//	//需要参数
+					var comData = {
+						vtp: 'ag', //要获取的项:cg(创建的群),ug(参与群),mg(协管的群),ag(所有的群)
+						vvl: personalUTID, //查询的各项，对应人的utid，可以是查询的任何人
+					};
+					// 等待的对话框
+					//var wd = events.showWaiting();
+					//	获取用户群
+					postDataPro_PostGList(comData, wd, function(data) {
+						//清除班级区域
+						document.getElementById("cloudrecord_1").innerHTML = '';
+						//console.log('获取用户群_PostGList:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+						if(data.RspCode == 0) {
+							//			showBlankPage(false);
+							datasource = data.RspData; //底部列表数据
+							var tempArr = [];
+							var tempDatasource = [];
+							//			群去重
+							for(var i = 0; i < datasource.length; i++) {
+								if(tempArr.indexOf(datasource[i].gid) > -1) {
+									//					//console.log(i+'已存在'+datasource[i].gid);
+								} else {
+									//					//console.log(i+'不存在'+datasource[i].gid);
+									tempArr.push(datasource[i].gid);
+									tempDatasource.push(datasource[i]);
+								}
+							}
+							var gids = arrayToStr(tempArr);
+
+							datasource = tempDatasource;
+							//生成班级界面
+							mui.each(datasource, function(index, element) {
+								////console.log('班级:' + index + '|' + JSON.stringify(element));
+								addcloudrecord_1_0(index, element, 0);
+							});
+							//生成家校圈界面
+							mui.each(datasource, function(index, element) {
+								////console.log('家校圈:' + index + '|' + JSON.stringify(element));
+								addcloudrecord_1_0(index, element, 1);
+							});
+							getAllClassMember(gids, tempArr); // 通过群IDs获取群的正常用户
+							getClassSpacesByUserForMutiClass(gids, tempArr); //（班级空间）获取用户针对多班级的空间列表
+						} else if(data.RspCode == 9) { //没有群
+							//console.log('显示空白页');
+							addcloudrecord_1_noclass();
+							//			showBlankPage(true); //显示空白页
+						} else {
+							mui.toast(data.RspTxt);
+						}
+						//wd.close();
+					});
+				}
+				
+
+				function updateUnread() {
+					console.log('刷新未读数')
+
+					if(!parseInt(myStorage.getItem(storageKeyName.PERSONALINFO).utid)) {
+						return;
+					}
+
+					if(plus.networkinfo.getCurrentType() == plus.networkinfo.CONNECTION_NONE) {
+						//console.log('没有网络');
+						mui.toast("网络异常，请检查网络设置！");
+						return;
+					}
+					httpFlag = 0;
+					//获取学生
+					getStuList();
+					//获取班级
+					getGroupList();
+					updateFlag =1;
+					getAboutMe();
+
+				}
+			});
+			// 通过群ID获取群的正常用户
+			function getAllClassMember(gids, gidArr) {
+				var gidStr = gids.replace('[', '');
+				gidStr = gidStr.replace(']', '');
+
+				//需要参数
+				var comData = {
+					top: '-1', //选择条数
+					vvl: gidStr, //群ID，查询的值
+					vvl1: '-1', //群员类型，0家长,1管理员,2老师,3学生,-1取全部
+
+				};
+				//var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+				postDataPro_PostGusers(comData, wd, function(data) {
+					//wd.close();
+					var userArrays = [];
+					//console.log('通过群ID获取群的正常用户_PostGusers:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						var gids = gidStr.split(',');
+						//把是同一个群的用户放到一起
+						for(var i = 0; i < gids.length; i++) {
+							var tempUserArr = [];
+							var gid = gids[i];
+							var tempGids = data.RspData;
+							for(var j = 0; j < tempGids.length; j++) {
+								var tempGid = tempGids[j]
+								if(tempGid.gid == gid) {
+									tempUserArr.push(tempGid.utid);
+								}
+							}
+							var tempUsersStr = arrayToStr(tempUserArr)
+							userArrays.push(tempUsersStr);
+						}
+						var usersStr = arrayToStr(userArrays);
+						//console.log('所用的群用户：' + usersStr);
+						getNoReadCntForClassByUser(usersStr, gidArr); //79.（用户空间）获取多班级多用户空间所有用户未读数
+
+					} else {
+
+					}
+				});
+
+			}
+			//77.（点到记事）获取用户针对多学生的点到记事列表
+			function getNotesByUserForMutiStudent(StudentIds, gids, stuIds) {
+				var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid;
+
+				//所需参数
+				var comData = {
+					userId: personalUTID, //用户ID
+					studentIds: StudentIds, //学生ID,Array
+					classIds: gids //班级ID,Array
+				};
+				//var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+				postDataPro_getNotesByUserForMutiStudent(comData, wd, function(data) {
+					//wd.close();
+					if(data.RspCode == 0) {
+						noReadModel.stu_noReads = [];
+						var tempArr = data.RspData.Data;
+						for(var i = 0; i < tempArr.length; i++) {
+							noReadModel.stu_noReads.push(tempArr[i].NoReadCnt); //学生未读数数组
+						}
+						//console.log(JSON.stringify(noReadModel));
+
+						//显示未读的红点
+						for(var i = 0; i < noReadModel.stu_noReads.length; i++) {
+							var tempValue = noReadModel.stu_noReads[i];
+							//console.log('tempValue==' + tempValue);
+							if(noReadModel.stu_noReads[i] != 0) {
+								var redpoint = document.getElementById("studyn_redpoint_" + stuIds[i]);
+								if(redpoint) {
+									redpoint.style.display = 'inline';
+								}
+							}
+						}
+					} else {}
+					//console.log('获取所有学生的未读数_getNotesByUserForMutiStudentr:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+
+				})
+			}
+			//76.（班级空间）获取用户针对多班级的空间列表
+			function getClassSpacesByUserForMutiClass(gids, gidArr) {
+				var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid;
+
+				//所需参数
+				var comData = {
+					userId: personalUTID, //用户ID
+					classIds: gids //班级ID，例如[1,2,3]
+				};
+				//var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+				//返回：model_userNoteInfo
+				postDataPro_getClassSpacesByUserForMutiClass(comData, wd, function(data) {
+					//wd.close();
+					if(data.RspCode == 0) {
+						noReadModel.class_noReads = [];
+						var tempArr = data.RspData.Data;
+						for(var i = 0; i < tempArr.length; i++) {
+							if(tempArr[i].NoReadCnt == '') {
+								tempArr[i].NoReadCnt = 0;
+							}
+							noReadModel.class_noReads.push(tempArr[i].NoReadCnt); //班级未读数数组
+						}
+						//console.log(JSON.stringify(noReadModel));
+						//显示未读的红点
+						for(var i = 0; i < tempArr.length; i++) {
+							if(tempArr[i].NoReadCnt != 0) {
+								document.getElementById("tarClass_" + tempArr[i].ClassId).style.display = 'inline';
+							}
+						}
+					} else {
+
+					}
+					//console.log('获取用户针对多班级的空间列表_getClassSpacesByUserForMutiClass:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+
+				})
+			}
+			//79.（用户空间）获取多班级多用户空间所有用户未读数
+			function getNoReadCntForClassByUser(publisherIds, gidArr) {
+				var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid;
+
+				//所需参数
+				var comData = {
+					userId: personalUTID, //用户ID，登录用户
+					publisherIds: publisherIds //发布者ID，Array，例如[[1,2,3],[4,5,6]]
+				};
+				//var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+				//返回：NoReadCnts：未读总数列表，Array，例如[1,2,3]
+				postDataPro_getNoReadCntForClassByUser(comData, wd, function(data) {
+					//wd.close();
+					if(data.RspCode == 0) {
+						noReadModel.parents_noReads = data.RspData.NoReadCnts; //家长圈未读数数组
+						//console.log(JSON.stringify(noReadModel));
+						for(var i = 0; i < noReadModel.parents_noReads.length; i++) {
+							if(noReadModel.parents_noReads[i] != 0) {
+								document.getElementById("tarClass1_" + gidArr[i]).style.display = 'inline';
+							}
+						}
+					} else {}
+					//console.log('获取所有群的未读数_getNoReadCntForClassByUser:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+				});
+			}
+			//获取与我相关
+			function getAboutMe() {
+				var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid; //用户id
+				if(personalUTID == 0) {
+					return;
+				}
+				//56.（用户空间）获取与我相关
+				//所需参数
+				var comData = {
+					userId: personalUTID, //用户ID
+					pageIndex: '1', //当前页数
+					pageSize: '1' //每页记录数
+				};
+				wd = events.showWaiting();
+				if(updateFlag==1){
+					wd.close();
+					updateFlag=0;
+				}
+				
+				//返回model：model_homeSchoolList，model_userSpaceAboutMe
+				//var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+				//24.获取与我相关
+				postDataPro_getAboutMe(comData, wd, function(data) {
+					//wd.close();
+					//console.log('postDataPro_getAboutMe:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						getHomeworkAlert(data.RspData.NoReadCnt);
+					} else {
+						//				mui.toast(data.RspTxt);
+					}
+				});
+			}
+			//获取作业的提醒
+			function getHomeworkAlert(NoReadCnt) {
+				var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid; //用户id
+				//56.（用户空间）获取与我相关
+				//所需参数
+				var comData = {
+					userId: personalUTID, //用户ID
+					pageSize: '1' //每页记录数
+				};
+				//返回model：model_homeSchoolList，model_userSpaceAboutMe
+				//var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+				//24.获取与我相关
+				postDataPro_GetHomeworkAlertCount(comData, wd, function(data) {
+					//wd.close();
+					//console.log('postDataPro_GetHomeworkAlertCount:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						NoReadCnt = data.RspData.NoReadCnt + NoReadCnt;
+						noReadCount = NoReadCnt;
+						var noRead = document.getElementById('aboutme_noRead');
+						if(NoReadCnt == 0) {
+							noRead.innerHTML = NoReadCnt;
+							noRead.style.visibility = 'hidden';
+						} else {
+							noRead.style.visibility = 'visible';
+							noRead.innerHTML = NoReadCnt;
+						}
+
+					} else {
+						//				mui.toast(data.RspTxt);
+					}
+				});
+			}
+
+			//			var sendMessageToHomework = function(teacherClasses, studentClasses) {
+			//				if(homeworkReady) {
+			//					events.closeWaiting();
+			//					events.fireToPageWithData('../homework/homework-tea.html', 'postClasses', {
+			//						teacherClasses: teacherClasses,
+			//						studentClasses: studentClasses
+			//					})
+			//				} else {
+			//					events.showWaiting();
+			//					setTimeout(function() {
+			//						sendMessageToHomework(teacherClasses, studentClasses)
+			//					}, 500);
+			//				}
+			//			}
+
+			/**
+			 * 长按某个档案
+			 * @param {Object} id
+			 * @param {Object} event
+			 */
+			function longTapData(id, event) {
+				var cellData = studentDoc[id.replace('data_', '')];
+				//console.log('cellData ' + JSON.stringify(cellData));
+				var data1 = {
+					flag: 7, //flag:求知：提问1，回答2，评论3；班级空间：班级动态4；个人空间：个人动态5，个人动态评论6，档案7
+					comData: {
+						docId: cellData.DocId, //档案文件夹ID
+						docType: cellData.DocType //档案类型
+					}, //协议需要参数
+					title: '档案操作', //弹出框中，显示的标题
+					buttons: [{
+						title: '重命名',
+						btnFlag: 5
+					}, {
+						title: '删除',
+						btnFlag: 1
+					}], //弹出的列表,格式为：[{title:标题，btnFlag:要做的操作}]，btnFlag：1删除，2修改，3屏蔽，4取消屏蔽，5重命名
+					delFlag: 1 //删除确认弹出框格式，1从下弹出，2中间confirm
+				};
+				delContent_pop(data1, function(data) {
+					//console.log('delContent_pop 返回值为 ' + JSON.stringify(data));
+					if(data.flag == 5) { //重命名
+						changeDataName(cellData, event);
+					} else if(data.flag == 1) { //删除
+						deleteData(cellData, data);
+					} else {
+						events.closeWaiting(data.wd);
+					}
+				});
+			}
+
+			/**
+			 * 修改档案的名称
+			 */
+			function changeDataName(dataInfo, event) {
+				//console.log('修改档案名称');
+				event.detail.gesture.preventDefault(); //修复iOS 8.x平台存在的bug，使用plus.nativeUI.prompt会造成输入法闪一下又没了
+				var btnArray = ['取消', '确定'];
+				if(plus.os.name == 'iOS') {
+					plus.nativeUI.prompt(" ", function(e) {
+						rename(e, dataInfo);
+					}, "重命名", "档案名称,最多10个字", btnArray);
+				} else {
+					mui.prompt('', '档案名称,最多10个字', '重命名', btnArray, function(e) {
+						rename(e, dataInfo);
+					}, 'div');
+					var input = document.querySelector('.mui-popup-input input');
+					input.type = 'text';
+					input.maxLength = 10;
+					input.value = dataInfo.DocName || dataInfo.StudentName;
+				}
+			}
+
+			//重命名文件夹，弹出框的单机加载
+			function rename(e, dataInfo) {
+				if(e.index == 1) { //点击确定
+					////console.log(e.value);
+					if(e.value.replace(/(^\s*)|(\s*$)/g, "") == "") {
+						mui.toast('档案名称不能为空');
+					} else if(dataInfo.DocName == e.value) {
+						//未做修改
+						document.activeElement.blur();
+						mui.closePopups();
+					} else if(e.value.length > 10) {
+						mui.toast('档案名称最多10个字');
+					} else {
+						//var wd = events.showWaiting();
+						var comData = {
+							fileInfoId: dataInfo.DocId, //档案ID
+							fileInfoName: e.value, //档案新名称
+							fileInfoType: dataInfo.DocType, //档案类型
+						}
+						//86.（云档案）修改档案名称
+						postDataPro_setStudentFileInfoName(comData, wd, function(data) {
+							//console.log('86 修改档案名称 setStudentFileInfoName ' + JSON.stringify(data));
+							if(data.RspCode == 0 && data.RspData.Result == 1) {
+								//成功的回调
+								mui.toast('档案重命名成功');
+								var id = dataInfo.DocType + '_' + dataInfo.DocId;
+								studentDoc[id].DocName = e.value;
+								document.getElementById('data_name_' + id).innerText = e.value + '档案';
+								document.activeElement.blur();
+								mui.closePopups();
+							} else {
+								mui.toast(data.RspTxt);
+							}
+							//wd.close();
+						})
+					}
+					return false;
+				} else {
+					//点击取消
+					document.activeElement.blur();
+				}
+			}
+
+			/**
+			 * 删除档案
+			 */
+			function deleteData(cellInfo, dataInfo) {
+				if(dataInfo.data.RspCode == 0 && dataInfo.data.RspData.Result == 1) {
+					mui.toast('删除成功');
+					var cell = document.getElementById("data_" + cellInfo.DocType + "_" + cellInfo.DocId);
+					cell.parentNode.removeChild(cell);
+					delete studentDoc[cellInfo.DocType + "_" + cellInfo.DocId]; //删除对应保存的数据
+					events.closeWaiting(dataInfo.wd);
+				} else {
+					events.closeWaiting(dataInfo.wd);
+					mui.toast('删除失败 ' + temp.RspTxt);
+				}
+			}
+			var setIcons = function() {
+				var navigationbar = plus.webview.currentWebview().getNavigationbar();
+				//				var width=navigationbar.;
+				//console.log("****************获取的宽度：");
+				var leftDrawStyle = {
+					id: "personalImg",
+					tag: "img",
+					position: {
+						top: "5px",
+						left: "10px",
+						width: "35px",
+						height: "35px"
+					},
+					src: updateHeadImg(myStorage.getItem(storageKeyName.PERSONALINFO).uimg, 2)
+				};
+				var rightDrawStyles = [{
+					id: "orderMember",
+					tag: "img",
+					position: {
+						top: "7.5px",
+						right: "45px",
+						width: "30px",
+						height: "30px"
+					},
+					src: "../../image/cloud/png-icon-order.png"
+				}, {
+					id: "cloudMore",
+					tag: "img",
+					position: {
+						top: "10px",
+						right: "10px",
+						width: "25px",
+						height: "25px"
+					},
+					src: "../../image/cloud/png-icon-more.png"
+				}]
+				rightDrawStyles.push(leftDrawStyle);
+				navigationbar.draw(rightDrawStyles)
+			}
+		</script>
+	</body>
+
+</html>

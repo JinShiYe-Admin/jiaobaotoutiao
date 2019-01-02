@@ -1,0 +1,372 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<style>
+			.mui-btn {
+				padding: 10px;
+			}
+			
+			.mui-input-group:before {
+				background: #fff;
+			}
+			
+			.mui-input-group:after {
+				background: #fff;
+			}
+			
+			.row1:after {
+				background-color: #e4e4e4;
+			}
+			.mui-input-group .mui-input-row{
+				height: 45px;
+			}
+			.mui-input-row label {
+				width: auto;
+			}
+			.mui-input-row label~input{
+				width: 75%;
+			}
+			input::-webkit-input-placeholder{
+				color: #909090;
+			}
+			input[type=tel]{
+				height: 45px;
+			}
+			.mui-input-row label{
+				padding: 15px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-icon mui-icon-left-nav" id="back"></a>
+			<h1 class="mui-title"></h1>
+		</header>
+		<div class="mui-content">
+			<div id="tishi" style="padding: 30px;text-align: center;">
+				<a style="color: black;font-size: 20px;">短信验证码已发送，请填写验证码</a>
+			</div>
+			<form class="mui-input-group">
+				<div class="mui-input-row row1">
+					<label style="font-size: 15px;">手机号</label>
+					<input type="tel" id="phoneNumber" placeholder="请输入手机号" readonly="readonly" style="color: gray;">
+				</div>
+				<div class="mui-input-row">
+					<label style="font-size: 15px;">验证码</label>
+					<input type="tel" id="yanzheng" placeholder="请输入验证码">
+				</div>
+			</form>
+			<div class="mui-content-padded" style="text-align: center;">
+				<button id='register' class="mui-btn mui-btn-block mui-btn-primary" style="background: #13b7f6; border: none;">提交</button>
+				<a id="get_code">获取验证码</a>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js" type="text/javascript" charset="utf-8"></script>
+		<!--界面中用到的事件-->
+		<script src="../../js/utils/events.js" type="text/javascript" charset="utf-8"></script>
+		<!--本地存储-->
+		<script src="../../js/libs/myStorage/myStorage.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/storageKeyName.js" type="text/javascript" charset="utf-8"></script>
+		<!--加密-->
+		<script src="../../js/libs/RSA/Barrett.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/libs/RSA/BigInt.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/libs/RSA/RSA.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils/RSAEncrypt.js" type="text/javascript" charset="utf-8"></script>
+		<!---->
+		<script src="js/mui.enterfocus.js" type="text/javascript" charset="utf-8"></script>
+		<!--网络请求-->
+		<script src="../../js/utils/postData.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/publicProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<!--签名-->
+		<script src="../../js/libs/crypto-js/require.js"></script>
+		<script src="../../js/utils/sortSign.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils/signHmacSHA1.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/libs/jquery.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init();
+			//倒计时
+			var wait = 180;
+			var comData; //从上个界面获取验证码的参数
+			//获取个人信息
+			var personalUTID;
+
+			//验证码倒计时
+			function time(btnObj) {
+				if(wait == 0) {
+					btnObj.style.color = '#576b95';
+					btnObj.removeAttribute("disabled");
+					btnObj.textContent = "收不到验证码？";
+				} else {
+					btnObj.style.color = '#7f7f7f';
+					btnObj.setAttribute("disabled", true);
+					btnObj.textContent = "接收短信大约需要" + wait + "秒";
+					wait--;
+					setTimeout(function() {
+						time(btnObj)
+					}, 1000)
+				}
+			}
+			document.getElementById('back').addEventListener('tap',function () {
+			        returnLeft();
+			})
+			//nav返回按钮
+			function returnLeft() {
+				mui.confirm(' ', '验证码短信可能略有延迟，确定返回并重新开始？', ['取消', '确认'], function(e) {
+					var index = e.index;
+					//console.log('index:' + index);
+					switch(index) {
+						case 0: //取消
+							break;
+						case 1: //返回
+							mui.back();
+							mui.back();
+							break;
+					}
+				},'div');
+
+			}
+			//遇到登录问题
+			document.getElementById("get_code").addEventListener('tap', function(event) {
+				if(wait > 0) {
+					return false;
+				}
+				document.activeElement.blur();
+				var btnArray = [{
+					title: "重新获取验证码"
+				}];
+				plus.nativeUI.actionSheet({
+					title: "登录遇到问题？",
+					cancel: "取消",
+					buttons: btnArray
+				}, function(e) {
+					var index = e.index;
+					switch(index) {
+						case 0: //取消
+							break;
+						case 1: //获取验证码
+							getCode();
+							break;
+						case 2:
+							break;
+					}
+				});
+			}, false);
+			//重新获取验证码
+			function getCode() {
+				//需要加密的数据
+				var enData = {
+					uid: document.getElementById("phoneNumber").value
+				};
+				// 等待的对话框
+				var wd = events.showWaiting();
+				//发送网络请求，data为网络返回值
+				postDataEncry(storageKeyName.MAINURL + 'PostCode', enData, comData, 0, wd, function(data) {
+					//成功，关闭等待框
+					wd.close();
+					if(data.RspCode != 0000) {
+						mui.toast(data.RspTxt);
+					} else {
+						//验证码倒计时
+						wait = 180;
+						time(document.getElementById("get_code"));
+					}
+				});
+			}
+			mui.plusReady(function() {
+				var regFlag; //0注册，1验证码登录，2更改绑定手机号
+				personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO);
+				var phoneNumBox = document.getElementById("phoneNumber");
+				phoneNumBox.value = '';
+				var codeBox = document.getElementById("yanzheng");
+				var get_code = document.getElementById("get_code");
+				//验证码倒计时
+				time(get_code);
+
+				var curPage = plus.webview.currentWebview();
+				phoneNum = curPage.data.tempValue;
+				comData = curPage.data.comData;
+				//console.log('phoneNum:' + JSON.stringify(phoneNum));
+				codeBox.value = '';
+				phoneNumBox.value = phoneNum.phone;
+				regFlag = phoneNum.flag;
+
+				events.addTap('register', function() {
+					document.activeElement.blur();
+					//先本地判断验证码
+					if(document.getElementById("yanzheng").value.length == 0) {
+						mui.toast('请输入验证码');
+						return;
+					}
+					//需要加密的数据
+					var enData = {
+						uid: document.getElementById("phoneNumber").value,
+						code: document.getElementById("yanzheng").value
+					};
+					// 等待的对话框
+					var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+					//握手协议
+					//需要加密的数据
+					var enData0 = {};
+					//不需要加密的数据
+					var comData1;
+					if(regFlag == 2) { //更改绑定手机号2
+						var comData1 = {
+							uuid: plus.device.uuid, //用户设备号,用户设备号
+							appid: plus.runtime.appid, //应用ID,应用ID
+							token: personalUTID.token, //用户令牌,	用户的令牌
+							shaketype: 'bind' //
+						};
+						var enData1 = {
+							utid: personalUTID.utid, //用户表ID,RSA加密	,用户utid
+							uid: document.getElementById("phoneNumber").value, //手机号,RSA加密,	要更改为手机号
+							code: document.getElementById("yanzheng").value //验证码,RSA加密,	加密后的验证码
+						};
+						//50.更改用户绑定
+						postDataPro_PostBindMobile(comData1, enData1, wd, function(data) {
+							wd.close();
+							//console.log('50.postDataPro_PostBindMobile:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+							if(data.RspCode == 0) {
+								//存储到手机本地
+								personalUTID.uid = document.getElementById("phoneNumber").value;
+								window.myStorage.setItem(window.storageKeyName.PERSONALINFO, personalUTID);
+								var tarPagePath = '../mine/setting.html';
+								var tarPageIds = tarPagePath.split('/');
+								var targetPage = plus.webview.getWebviewById(tarPageIds[tarPageIds.length - 1]);
+								//console.log('targetPage是否存在:' + Boolean(targetPage))
+								if(targetPage) {
+									targetPage.evalJS('document.getElementById("change_phoneNum").innerText =' + personalUTID.uid);
+									plus.webview.currentWebview().opener().close();
+									plus.webview.currentWebview().close('slide-out-right',250);
+//									targetPage.show('slide-in-left', 250);
+									mui.toast('重新绑定成功');
+								}
+							} else {
+								mui.toast(data.RspTxt);
+							}
+						});
+					} else {
+						if(regFlag == 0) { //注册
+							comData1 = {
+								uuid: plus.device.uuid,
+								shaketype: 'reg',
+								appid: plus.runtime.appid
+							};
+						} else if(regFlag == 1) { //验证码登录1
+							comData1 = {
+								uuid: plus.device.uuid,
+								shaketype: 'login',
+								appid: plus.runtime.appid
+							};
+						}
+						//发送网络请求，data为网络返回值
+						postDataEncry(storageKeyName.MAINURL + 'PostShakeHand', enData0, comData1, 0, wd, function(data) {
+							wd.close();
+							//console.log('90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+							if(data.RspCode == 0) {
+								//存储到手机本地
+								window.myStorage.setItem(window.storageKeyName.SHAKEHAND, data.RspData);
+								//标注为登录状态
+								data.RspData.isLogin = 1;
+								//判断是注册0，还是验证码模式登录1
+								if(regFlag == 0) { //注册0
+									//发送网络请求，data为网络返回值
+									postDataEncry(storageKeyName.MAINURL + 'PostReg', enData, comData1, 0, wd, function(data) {
+										//成功，关闭等待框
+										wd.close();
+										//console.log('11111success12:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+										//判断返回值是否正确
+										if(data.RspCode == 0) {
+											//解析省市代码
+											if(data.RspData.uarea.length > 0) {
+												var tempArray = data.RspData.uarea.split('|');
+												if(tempArray.length > 0) {
+													var temp0 = tempArray[0].split(' ');
+													var temp1 = tempArray[1].split(' ');
+													var model_area = {
+														procode: temp0[0], //省份code，自己添加的参数
+														proname: temp1[0], //省份名称，自己添加的参数
+														acode: temp0[1], //节点代码,通用6位,前两位为省份编码,中间两位为城市编码,后两位为区县编码--城市代码
+														aname: temp1[1], //节点名称--城市名称
+														atype: '' //节点类型,0省1城市2区县
+													}
+													data.RspData.uarea = model_area;
+												}
+											}
+											//存储到手机本地
+											window.myStorage.setItem(window.storageKeyName.PERSONALINFO, data.RspData);
+											//判断是否有密码，如果有，直接到主界面，没有，则设置密码
+											events.infoChanged();
+											if(data.RspData.ispw == 1) {
+												//跳转到主界面
+												//退出 界面更新
+												events.logOff();
+//												events.infoChanged();
+												mui.fire(plus.webview.getWebviewById("index.html"), 'login');
+												events.hidePagesExIndex();
+												mui.back();
+											} else {
+												//跳转到修改密码界面
+												events.openNewWindowWithData('modify_password.html', '0');
+											}
+										} else {
+											mui.toast(data.RspTxt);
+										}
+
+									});
+								} else { //验证码模式登录1
+									//console.log('yanzhengma denglu');
+									//发送网络请求，data为网络返回值
+									postDataEncry(storageKeyName.MAINURL + 'PostCodeLogin', enData, comData1, 0, wd, function(data) {
+										//成功，关闭等待框
+										wd.close();
+										//console.log('11222success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+										//判断返回值是否正确
+										if(data.RspCode == 0) {
+											//解析省市代码
+											if(data.RspData.uarea.length > 0) {
+												var tempArray = data.RspData.uarea.split('|');
+												if(tempArray.length > 0) {
+													var temp0 = tempArray[0].split(' ');
+													var temp1 = tempArray[1].split(' ');
+													var model_area = {
+														procode: temp0[0], //省份code，自己添加的参数
+														proname: temp1[0], //省份名称，自己添加的参数
+														acode: temp0[1], //节点代码,通用6位,前两位为省份编码,中间两位为城市编码,后两位为区县编码--城市代码
+														aname: temp1[1], //节点名称--城市名称
+														atype: '' //节点类型,0省1城市2区县
+													}
+													data.RspData.uarea = model_area;
+												}
+											}
+											if(data.RspCode != 0000) {
+												mui.toast(data.RspTxt);
+												return;
+											} else {
+												//存储到手机本地
+												window.myStorage.setItem(window.storageKeyName.PERSONALINFO, data.RspData);
+												//跳转到修改密码界面
+												events.openNewWindowWithData('modify_password.html', '3');
+											}
+										} else {
+											mui.toast(data.RspTxt);
+										}
+									});
+								}
+							} else {
+								mui.toast(data.RspTxt);
+							}
+						});
+					}
+				});
+			});
+		</script>
+	</body>
+
+</html>

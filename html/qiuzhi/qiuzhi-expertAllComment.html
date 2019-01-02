@@ -1,0 +1,278 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<link href="../../css/qiuzhi/qiuzhi-expertAllComment.css" rel="stylesheet" />
+		<style>
+			.mui-table-view {
+				background: #F2F3F5;
+			}
+			
+			.mui-table-view-cell {
+				background: white;
+				margin-bottom: 5px;
+			}
+			
+			.mui-table-view-cell p:last-child,
+			p:first-child {
+				-webkit-line-clamp: 3;
+				/*用来限制在一个块元素显示的文本的行数*/
+				display: -webkit-box;
+				/*必须结合的属性，将对象作为弹性伸缩盒子模型显示*/
+				-webkit-box-orient: vertical;
+				/*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式*/
+				overflow: hidden;
+			}
+			
+			.mui-table-view-cell div p:nth-child(1) {
+				display: block;
+			}
+			
+			/*.mui-table-view-cell div {
+				padding-bottom: 10px;
+				padding-top: 5px;
+				width: 100%;
+			}*/
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">全部评论</h1>
+		</header>
+		<div id="refreshContainer" class="mui-content mui-fullscreen" style="z-index:0">
+			<div class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<ul id="list-container" class="mui-table-view">
+						<!--<li class="mui-table-view-cell">
+							<p>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</p>
+							<div>
+								<p><img src=''>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</p>
+								<p>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</p>
+							</div>
+							<p>" + record.LikeNum + " 赞 · " + record.CommentDate +'</p>
+						</li>
+						<li class="mui-table-view-cell">
+							<p>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</p>
+							<div>
+								<p><img src=''>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</p>
+								<p>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</p>
+							</div>
+							<p>" + record.LikeNum + " 赞 · " + record.CommentDate +'</p>
+						</li>
+						<li class="mui-table-view-cell">
+							<p>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</p>
+							<div>
+								<p><img src=''>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</p>
+								<p>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</p>
+							</div>
+							<p>" + record.LikeNum + " 赞 · " + record.CommentDate +'</p>
+						</li>
+						<li class="mui-table-view-cell">
+							<p>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</p>
+							<div>
+								<p><img src=''>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</p>
+								<p>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</p>
+							</div>
+							<p>" + record.LikeNum + " 赞 · " + record.CommentDate +'</p>
+						</li>
+						<li class="mui-table-view-cell">
+							<p>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</p>
+							<div>
+								<p><img src=''>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</p>
+								<p>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</p>
+							</div>
+							<p>" + record.LikeNum + " 赞 · " + record.CommentDate +'</p>
+						</li>-->
+					</ul>
+				</div>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<!--<script src="../../js/utils/h5fresh.js"></script>-->
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/storageKeyName.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/publicQiuzhiProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var ExpertsInfo; //专家详细页传来的 专家信息
+			var pageIndex = 1; //请求数据页面
+			var totalPageCount; //总页码
+			var flagRef = 0; //是刷新0，还是加载更多1
+			var answerArray = []; //回答总数组
+
+			mui.init();
+
+			mui.plusReady(function() {
+				var curPage = plus.webview.currentWebview();
+				ExpertsInfo = curPage.data;
+				pageIndex = 1;
+				flagRef = 0;
+				//33.获取某个用户的评论列表
+				getCommentsByUser(ExpertsInfo.UserId);
+
+				//点击cell,跳转回答详情页
+				mui('.mui-table-view').on('tap', '.mui-table-view-cell', function() {
+					var index = this.id.replace('li', '');
+					events.fireToPageWithData('qiuzhi-answerDetail.html', 'answerInfo', answerArray[index]);
+				});
+
+				//阻尼系数、初始化刷新加载更多
+				var deceleration = mui.os.ios ? 0.003 : 0.0009;
+				mui('.mui-scroll-wrapper').scroll({
+					bounce: false,
+					indicators: true, //是否显示滚动条
+					deceleration: deceleration
+				});
+
+				//上拉下拉注册
+				mui(".mui-scroll-wrapper .mui-scroll").pullToRefresh({
+					down: {
+						callback: function() {
+							//清除节点
+							document.getElementById('list-container').innerHTML = "";
+							var self = this;
+							//console.log("下拉刷新");
+							pageIndex = 1;
+							flagRef = 0;
+							//33.获取某个用户的评论列表
+							getCommentsByUser(ExpertsInfo.UserId);
+							setTimeout(function() {
+								//结束下拉刷新
+								self.endPullDownToRefresh();
+							}, 1000);
+						}
+					},
+					up: {
+						callback: function() {
+							var self = this;
+							//console.log("上拉加载更多");
+							flagRef = 1;
+							if(pageIndex <= totalPageCount) {
+								//33.获取某个用户的评论列表
+								getCommentsByUser(ExpertsInfo.UserId);
+								setTimeout(function() {
+									//结束下拉刷新
+									self.endPullUpToRefresh();
+									if(mui(".mui-table-view-cell").length < 10) {
+										mui(".mui-pull-loading")[0].innerHTML = "";
+									}
+								}, 1000);
+							} else {
+								//结束下拉刷新
+								self.endPullUpToRefresh();
+								mui(".mui-pull-loading")[0].innerHTML = "没有更多了";
+							}
+						}
+					}
+				});
+
+			});
+
+			//33.获取某个用户的评论列表
+			function getCommentsByUser(userId) {
+				//需要加密的数据
+				var comData = {
+					userId: userId, //用户ID
+					pageIndex: pageIndex, //当前页数
+					pageSize: '10' //每页记录数,传入0，获取总记录数
+				};
+				// 等待的对话框
+				var wd = events.showWaiting();
+				//33.获取某个用户的评论列表
+				postDataQZPro_getCommentsByUser(comData, wd, function(data) {
+					wd.close();
+					//console.log('33.获取某个用户的评论列表:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						//总页数
+						totalPageCount = data.RspData.TotalPage;
+						pageIndex++;
+						//如果是旧数据，去掉里面的html标签
+						for (var i = 0; i < data.RspData.Data.length; i++) {
+							var temp = data.RspData.Data[i];
+							if (temp.AnswerSFlag ==1) {
+ 								temp.AnswerContent = events.deleteHtml(temp.AnswerContent);
+							}
+						}
+						if(flagRef == 0) { //刷新
+							//清除节点
+							document.getElementById('list-container').innerHTML = "";
+							answerArray = data.RspData.Data;
+							if(data.RspData.Data.length == 0) {
+								mui.toast('没有数据');
+							}
+						} else { //加载更多
+							//合并数组
+							answerArray = answerArray.concat(data.RspData.Data);
+						}
+						if(mui(".mui-table-view-cell").length < 10) {
+							mui(".mui-pull-loading")[0].innerHTML = "";
+						}
+						setAnswerRecord(data.RspData.Data);
+					} else {
+						mui.toast(data.RspTxt);
+					}
+				});
+			};
+
+			/**
+			 * 放置邀请回答记录数据
+			 * @param {Object} list 回答记录数据
+			 */
+			var setAnswerRecord = function(list) {
+				var listContainer = document.getElementById('list-container');
+				for(var i in list) {
+					createList(listContainer, list[i], i);
+				}
+			}
+			/**
+			 * 拼接回答记录
+			 * @param {Object} listContainer
+			 * @param {Object} record
+			 */
+			var createList = function(listContainer, record, index) {
+				var li = document.createElement('li');
+				li.className = 'mui-table-view-cell';
+				li.id = 'li' + index;
+				//拼接显示
+				li.innerHTML = "<p style='font-size:1.4rem;color: #808080;'>" + record.CommentContent + "</p><div><p style='font-size:1.4rem;color: #323232;'><img src='" + getChannelIcon(record) + "'>[" + record.AskChannel + ']' + record.AskTitle + "</p><p style='font-size:1.3rem;color: #474747;'>" + record.AnswerContent + "</p></div><p>" + record.LikeNum + " 赞·" + modifyTimeFormat(record.CommentDate) + '</p>';
+
+				listContainer.appendChild(li);
+			}
+			var getChannelIcon = function(cell) {
+				var iconSourse = "../../image/qiuzhi/";
+				switch(cell.AskChannel) {
+					case "教学":
+						iconSourse += "channel-edu.png";
+						break;
+					case "美食":
+						iconSourse += "channel-food.png";
+						break;
+					case "健康":
+						iconSourse += "channel-health.png";
+						break;
+					case "其他":
+						iconSourse += "channel-others.png";
+						break;
+					case "科普":
+						iconSourse += "channel-science.png";
+						break;
+					default:
+						iconSourse = "";
+						break;
+				}
+				return iconSourse;
+			}
+		</script>
+	</body>
+
+</html>

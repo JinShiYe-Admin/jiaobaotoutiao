@@ -1,0 +1,137 @@
+.Ask-Title {
+	color: #323232;
+	-webkit-line-clamp: 3;
+	/*用来限制在一个块元素显示的文本的行数*/
+	display: -webkit-box;
+	/*必须结合的属性，将对象作为弹性伸缩盒子模型显示*/
+	-webkit-box-orient: vertical;
+	/*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式*/
+	overflow: hidden;
+}
+
+.mui-scroll-wrapper {
+	padding-top: 44px;
+}
+
+.mui-table-view li {
+	border-bottom: #e4e4e4 solid 1px;
+	padding: 0;
+}
+
+.cell-container {
+	margin-left: 15px;
+	display: flex;
+	display: -webkit-flex;
+	align-items: center;
+}
+
+.mui-table-view img {
+	width: 4rem;
+	height: 4rem;
+	margin: .5rem;
+	border-radius: 50%;
+	display: block;
+}
+
+.invite-info {
+	width: 50%;
+	flex-grow: 1;
+	padding-right: 15px;
+}
+
+.mui-table-view-cell>div {
+	min-height: 5rem;
+	padding: 0.75rem 0;
+}
+
+.mui-table-view li div p {
+	margin: 0;
+}
+
+.mui-table-view li div p span {
+	color: #20b7f0;
+}
+
+.mui-bar~.mui-content .mui-fullscreen {
+	top: 44px;
+	height: auto;
+}
+
+.mui-pull-top-tips {
+	position: absolute;
+	top: -20px;
+	left: 50%;
+	margin-left: -25px;
+	width: 40px;
+	height: 40px;
+	border-radius: 100%;
+	z-index: 1;
+}
+
+.mui-bar~.mui-pull-top-tips {
+	top: 24px;
+}
+
+.mui-pull-top-wrapper {
+	width: 42px;
+	height: 42px;
+	display: block;
+	text-align: center;
+	background-color: #efeff4;
+	border: 1px solid #ddd;
+	border-radius: 25px;
+	background-clip: padding-box;
+	box-shadow: 0 4px 10px #bbb;
+	overflow: hidden;
+}
+
+.mui-pull-top-tips.mui-transitioning {
+	-webkit-transition-duration: 200ms;
+	transition-duration: 200ms;
+}
+
+.mui-pull-top-tips .mui-pull-loading {
+	/*-webkit-backface-visibility: hidden;
+				-webkit-transition-duration: 400ms;
+				transition-duration: 400ms;*/
+	margin: 0;
+}
+
+.mui-pull-top-wrapper .mui-icon,
+.mui-pull-top-wrapper .mui-spinner {
+	margin-top: 7px;
+}
+
+.mui-pull-top-wrapper .mui-icon.mui-reverse {
+	/*-webkit-transform: rotate(180deg) translateZ(0);*/
+}
+
+.mui-pull-bottom-tips {
+	text-align: center;
+	background-color: #efeff4;
+	font-size: 15px;
+	line-height: 40px;
+	color: #777;
+}
+
+.mui-pull-top-canvas {
+	overflow: hidden;
+	background-color: #fafafa;
+	border-radius: 40px;
+	box-shadow: 0 4px 10px #bbb;
+	width: 40px;
+	height: 40px;
+	margin: 0 auto;
+}
+
+.mui-pull-top-canvas canvas {
+	width: 40px;
+}
+
+.mui-slider-indicator.mui-segmented-control {
+	background-color: #efeff4;
+}
+
+.mui-table-view-cell:after {
+	height: 0px;
+}

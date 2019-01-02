@@ -1,0 +1,191 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<style>
+			body {
+				background-color: #FFFFFF;
+			}
+			
+			.mui-bar-nav~.mui-content {
+				background-color: transparent;
+			}
+			
+			.tea-hint,
+			.course-hint,
+			.course-hint {
+				font-size: 16px;
+				font-weight: 700;
+				color: #000000;
+			}
+			
+			.tea-portrait {
+				margin-left: 10px;
+				width: 40px;
+				height: 40px;
+				border-radius: 50%;
+				z-index: 2;
+			}
+			
+			.tea-intro {
+				margin-left: 28px;
+				margin-top: -27px;
+				border: dashed 1px #12B7F5;
+				padding: 10px 15px;
+			}
+			
+			.tea-name {
+				text-align: center;
+				font-size: 16px;
+				font-weight: 700;
+				color: #323232;
+			}
+			
+			.tea-note,
+			.course-note {
+				color: #323232;
+				font-size: 15px;
+				padding-top: 15px;
+			}
+			
+			.course-note {
+				padding-left: 30px;
+			}
+			
+			.info-div {
+				position: relative;
+				padding: 15px 10px;
+			}
+			
+			.info-div: {
+				background-color: #E4E4E4;
+			}
+			
+			.info-div::after {
+				position: absolute;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				height: 1px;
+				content: '';
+				-webkit-transform: scaleY(.5);
+				transform: scaleY(.5);
+				background-color: #E4E4E4;
+			}
+			
+			.btn-attention {
+				margin-top: 10px;
+				border: 0;
+				margin-left: 2.5%;
+				margin-right: 2.5%;
+				width: 95%;
+				height: 40px;
+				font-size: 16px;
+				color: white;
+			}
+			.btn-unfocus{
+				background-color: #1db8F1;
+			}
+			.btn-focused{
+				background-color: #e4e4e4;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title course-name"></h1>
+		</header>
+		<div id="course-info" v-show="courseInfo.TabId" class="mui-content">
+			<div class="info-div mui-table-view-cell">
+				<p class="tea-hint">授课老师</p>
+				<img class="tea-portrait" v-bind:src="courseInfo.TeacherPic" />
+				<div class="tea-intro">
+					<p class="tea-name">{{courseInfo.TeacherName}}</p>
+					<p class="tea-note">{{courseInfo.TeacherNote}}</p>
+				</div>
+			</div>
+			<div class="info-div mui-table-view-cell">
+				<p class="course-hint">课程介绍</p>
+				<p class="course-note">{{courseInfo.CourseNote}}</p>
+			</div>
+			<div class="history-container info-div mui-table-view-cell" v-on:tap="jumpToPage(courseInfo)">
+				<p class="course-hint mui-navigate-right">查看历史</p>
+			</div>
+			<button class="btn-attention btn-unfocus" v-bind:class="{'btn-focused':isFocused}" v-on:tap="toggleFocus">{{isFocused?'已关注':'关注'}}</button>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/utils/vue.min.js"></script>
+		<script src="../../js/micro-course/course-info.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script src="../../js/publicMicroClass.js"></script>
+		<script type="text/javascript">
+			var courseModel;
+			mui.init()
+			mui.plusReady(function() {
+				var curPage = plus.webview.currentWebview();
+				courseModel = curPage.data;
+				getCourseInfo(courseModel.TabId);
+				getCourseFocusByUser();
+			})
+
+			function getCourseInfo(courseId) {
+				//4.获取课程信息
+				//所需参数
+				var comData = {
+					courseId: courseId //课程ID
+				};
+				// 等待的对话框
+				var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+				//4.获取课程信息
+				postDataMCPro_getCourseInfoById(comData, wd, function(data) {
+					wd.close();
+					//console.log('4.获取课程信息:' + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						courseInfo.courseInfo = data.RspData;
+						//console.log("获取的课程信息：" + JSON.stringify(courseInfo.courseInfo));
+						document.querySelector(".course-name").innerText=courseInfo.courseInfo.CourseName;
+					} else {
+						mui.toast(data.RspTxt);
+					}
+				});
+
+			}
+
+			function getCourseFocusByUser() {
+				if(!events.getUtid()) {
+					var localInfo = events.isExistInStorageArray(storageKeyName.FOCUSECOURSES, courseModel.TabId);
+					if(localInfo[1] >= 0) {
+						courseInfo.isFocused = 1;
+					} else {
+						courseInfo.isFocused = 0;
+					}
+					return;
+				}
+				//5.获取是否已对某个课程关注
+				//所需参数
+				var comData = {
+					userId: events.getUtid(), //用户ID,登录用户
+					courseId: courseModel.TabId //课程ID
+				};
+				//返回值：非0为已关注
+				var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+				postDataMCPro_getCourseFocusByUser(comData, wd, function(data) {
+					wd.close();
+					//console.log('5.获取是否已对某个课程关注:' + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						courseInfo.isFocused = data.RspData.Result;
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

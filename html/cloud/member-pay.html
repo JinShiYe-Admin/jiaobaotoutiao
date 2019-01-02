@@ -1,0 +1,233 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<style>
+			.mui-table-view:before {
+				height: 0;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">支付</h1>
+		</header>
+		<!--下拉刷新容器-->
+		<div id="refreshContainer" class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<!--数据列表-->
+				<ul class="mui-table-view">
+					<li class="mui-table-view-divider">
+						费用详情
+					</li>
+					<li class="mui-table-view-cell">
+						<p class="mui-pull-left" id='memberType' style="color: black;"></p>
+						<p class="mui-pull-right" id='memberTime'></p>
+					</li>
+					<li class="mui-table-view-cell">
+						<a class="">总计
+							<p class="mui-pull-right" id="memberPay"></p>
+						</a>
+					</li>
+				</ul>
+				<ul class="mui-table-view mui-table-view-radio">
+					<li class="mui-table-view-divider">
+						请选择支付方式
+					</li>
+					<li class="mui-table-view-cell mui-selected" value="0">
+						<a class="mui-navigate-right"><span class="iconfont icon-zhifubao" style="color: #1296db;font-size:22px;padding-right: 5px;vertical-align: middle;"></span>支付宝支付</a>
+					</li>
+					<li class="mui-table-view-cell " value="1">
+						<a class="mui-navigate-right"><span class="iconfont icon-weixinzhifu" style="color: #1afa29;font-size:22px;padding-right: 5px;vertical-align: middle;"></span>微信支付</a>
+					</li>
+				</ul>
+				<button id="sure" class="mui-btn mui-btn-primary" style="width: 90%;margin-left: 5%;margin-top: 20px; background-color: #1DB8F1;border: 0;">确认支付</button>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			var wxChannel = null; // 微信支付
+			var aliChannel = null; // 支付宝支付
+			var channel = null;
+			var cmr = null;
+			mui.plusReady(function() {
+				var tempModel = plus.webview.currentWebview().data;
+				//console.log('tempModel=' + JSON.stringify(tempModel));
+				document.getElementById("memberType").innerText = tempModel.memberName ? "超级会员" : "普通会员";
+				document.getElementById("memberTime").innerText = tempModel.memberTime;
+				document.getElementById("memberPay").innerText = tempModel.memberPay;
+
+				// 获取支付通道
+				plus.payment.getChannels(function(channels) {
+					//console.log('channels=' + JSON.stringify(channels));
+					for(var i in channels) {
+						var temp = channels[i];
+						if(temp.id == 'alipay') {
+							aliChannel = temp;
+						} else if(temp.id == 'wxpay') {
+							wxChannel = temp;
+						}
+					}
+				}, function(e) {
+					alert("获取支付通道失败：" + e.message);
+				});
+
+				var ALIPAYSERVER = 'https://jsypay.jiaobaowang.net/jsypay/alipay/sys/aliappserver.ashx';
+				var WXPAYSERVER = 'https://jsypay.jiaobaowang.net/JSYPAY/WxPay/sys/AppServer.aspx';
+
+				document.getElementById("sure").addEventListener('tap', function() {
+					var tempSelect = document.querySelector(".mui-selected").getAttribute("value");
+					//console.log('tempSelect=' + tempSelect);
+					if(tempSelect == 0) {
+						//console.log("alipay");
+//						videoCapture();
+
+						pay('alipay');
+						//						if(plus.runtime.isApplicationExist({
+						//								pname: 'com.tencent.mm',
+						//								action: 'weixin://'
+						//							})) {
+						//							//console.log("微信应用已安装");
+						//						} else {
+						//							//console.log("微信应用未安装");
+						//						}
+						//
+						//						if(plus.os.name == "Android") {
+						//							plus.runtime.launchApplication({
+						//								pname: "com.sina.weibo"
+						//							}, function(e) {
+						//								plus.nativeUI.confirm("检查到您未安装\"微博\"，是否到商城搜索下载？", function(i) {
+						//									if(i.index == 0) {
+						//										androidMarket("com.sina.weibo");
+						//									}
+						//								});
+						//							});
+						//						} else if(plus.os.name == "iOS") {
+						//
+						//							plus.runtime.launchApplication({
+						//								action: "weixin://"
+						//							}, function(e) {
+						//								//console.log('调用weixin:' + JSON.stringify(e));
+						//								plus.nativeUI.confirm("检查到您未安装\"微博\"，是否到商城搜索下载？", function(i) {
+						//									if(i.index == 0) {
+						//										iosAppstore("itunes.apple.com/cn/app/wei-bo/id350962117?mt=8");
+						//									}
+						//								});
+						//							});
+						//						}
+					} else {
+						//console.log("wxpay");
+						pay('wxpay');
+					}
+				});
+
+				//2. 发起支付请求
+				function pay(id) {
+					// 从服务器请求支付订单
+					var PAYSERVER = '';
+					if(id == 'alipay') {
+						PAYSERVER = ALIPAYSERVER;
+						channel = aliChannel;
+					} else if(id == 'wxpay') {
+						PAYSERVER = WXPAYSERVER;
+						channel = wxChannel;
+					} else {
+						plus.nativeUI.alert("不支持此支付通道！", null, "捐赠");
+						return;
+					}
+					var xhr = new XMLHttpRequest();
+					xhr.onreadystatechange = function() {
+						//console.log('xhr=' + JSON.stringify(xhr));
+						switch(xhr.readyState) {
+							case 4:
+								if(xhr.status == 200) {
+									var data;
+									if(id == 'alipay') {
+										data = htmldecode(xhr.responseText);
+									} else {
+										data = xhr.responseText;
+									}
+									alert("PAYSERVER=" + PAYSERVER + ',channel=' + JSON.stringify(channel));
+									alert("获取订单信=" + JSON.stringify(xhr));
+									//console.log('data=' + JSON.stringify(data));
+									plus.payment.request(channel, data, function(result) {
+										//console.log('result=' + JSON.stringify(result));
+										alert("result=" + JSON.stringify(result));
+										plus.nativeUI.alert("支付成功！", function() {
+
+										});
+									}, function(error) {
+										//console.log('error' + JSON.stringify(error));
+										plus.nativeUI.alert("支付失败：" + error.code);
+									});
+								} else {
+									alert("获取订单信息失败！");
+								}
+								break;
+							default:
+								break;
+						}
+					}
+					xhr.open('GET', PAYSERVER);
+					xhr.send();
+				};
+
+				function htmlencode(s) {
+					var div = document.createElement('div');
+					div.appendChild(document.createTextNode(s));
+					return div.innerHTML;
+				}
+
+				function htmldecode(s) {
+					var div = document.createElement('div');
+					div.innerHTML = s;
+					return div.innerText || div.textContent;
+				}
+
+				function onPlusReady() {
+					//console.log("plusready");
+				}
+
+				// 摄像
+				function videoCapture() {
+					cmr = plus.camera.getCamera();
+					var res = cmr.supportedVideoResolutions[0];
+					var fmt = cmr.supportedVideoFormats[0];
+					//console.log('cmr.supportedVideoResolutions=' + cmr.supportedVideoResolutions);
+					//console.log('cmr.supportedVideoFormats=' + cmr.supportedVideoFormats);
+					//console.log("Resolution: " + res + ", Format: " + fmt);
+					cmr.startVideoCapture(function(path) {
+							alert("Capture video success: " + path);
+						},
+						function(error) {
+							alert("Capture video failed: " + error.message);
+						}, {
+							resolution: res,
+							format: fmt
+						}
+					);
+					//console.log('cmr.status='+cmr.status);
+					cmr.status
+					// 拍摄10s后自动完成 
+					setTimeout(stopCapture, 10000);
+				}
+				// 停止摄像
+				function stopCapture() {
+					//console.log("stopCapture");
+					cmr.stopVideoCapture();
+				}
+
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,1026 @@
+<!--
+	作者：444811716@qq.com
+	时间：2017-06-22
+	描述：发布点到记事
+-->
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/utils/pullToRefresh.css" />
+		<link rel="stylesheet" href="../../css/utils/preview.css" />
+		<link rel="stylesheet" href="../../css/iconfont/iconfont.css" />
+		<link rel="stylesheet" href="../../css/utils/MultiMedia.css" />
+		<style>
+			.mui-table-view {
+				background: transparent;
+			}
+
+			.mui-table-view-cell {
+				background: white;
+				padding: 5px 15px;
+				margin-bottom: 15px;
+			}
+
+			.mui-table-view:before,
+			.mui-table-view:after,
+			.mui-table-view-cell:after {
+				height: 0px;
+			}
+
+			.mui-input-group:before,
+			.mui-input-group .mui-input-row:after,
+			.mui-input-group:after {
+				height: 0px;
+			}
+
+			.mui-checkbox input[type=checkbox]:checked:before,
+			.mui-radio input[type=radio]:checked:before {
+				color: #1db8f1;
+			}
+
+			.mui-col-sm-4,
+			.mui-col-xs-8 {
+				height: 36px;
+			}
+
+			.mui-checkbox.mui-left input[type=checkbox],
+			.mui-radio.mui-left input[type=radio] {
+				left: 18%;
+			}
+
+			.mui-checkbox.mui-left label,
+			.mui-radio.mui-left label {
+				padding-left: 50%;
+				padding-right: 0px;
+			}
+
+			#textarea_record,
+			#input_call {
+				margin-bottom: 0px;
+				border: none;
+				border-radius: 0px;
+				border-bottom: 1px solid #D9D9D9;
+				width: 94%;
+				margin-left: 3%;
+				padding: 10px 5px;
+				/*background: #D9D9D9;*/
+			}
+
+			.mui-checkbox,
+			.mui-checkbox:last-child {
+				width: 25%;
+				background: white;
+				position: absolute;
+			}
+
+			.mui-checkbox input[type=checkbox]:before {
+				font-size: 25px;
+			}
+
+			.mui-media-body {
+				margin-top: 10px;
+				margin-bottom: 7px;
+				color: #323232;
+				word-break: break-all;
+				font-size: 15px;
+			}
+
+			.time {
+				/*height: 51px;*/
+				text-align: center;
+				border-bottom: 1px solid #e1e1e1;
+				color: #909090;
+				font-size: 15px;
+				padding-top: 4px;
+				padding-bottom: 4px;
+			}
+
+			.record-imge {
+				width: 100%;
+			}
+
+			.record-picture {
+				overflow: hidden;
+				position: relative;
+				float: left;
+				text-align: center;
+			}
+
+			.mui-popover {
+				width: 100%;
+				height: 0px;
+				border-radius: initial;
+				background-color: transparent;
+				border: none;
+				box-shadow: none;
+			}
+
+			.mui-backdrop {
+				background-color: black;
+			}
+
+			.video-thumb {
+				/*视频缩略图*/
+				width: 50%;
+				visibility: hidden;
+			}
+
+			.video-play {
+				/*播放按钮*/
+				position: absolute;
+				visibility: hidden;
+			}
+
+			#commit {
+				font-size: 14px;
+				line-height: 44px;
+				position: absolute;
+				right: 10px;
+				padding: 0px;
+				font-weight: 500;
+				color: #B7B7B7;
+			}
+
+			.video-time {
+				/*视频时间*/
+				position: absolute;
+				color: white;
+				right: 52%;
+				visibility: hidden;
+				bottom: 15px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title"></h1>
+			<div id="commit" class="mui-pull-right">完成</div>
+		</header>
+		<!--下拉刷新容器-->
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper" style="z-index: 1;">
+			<div class="mui-scroll">
+				<ul class="mui-table-view" id="ul_table">
+					<div id="call" style="width: 100%;background: white;padding-top: 8px;">
+						<div id="calltype" style="width: 100%;height: 36px;">
+							<div class="mui-input-row mui-checkbox mui-left">
+								<label>旷课</label>
+								<input id="cb_2" value="2" name="checkbox" type="checkbox" disabled>
+							</div>
+							<div class="mui-input-row mui-checkbox mui-left" style="left: 25%;">
+								<label>请假</label>
+								<input id="cb_5" value="5" name="checkbox" type="checkbox" disabled>
+							</div>
+							<div class="mui-input-row mui-checkbox mui-left" style="left:50%;">
+								<label>迟到</label>
+								<input id="cb_3" value="3" name="checkbox" type="checkbox" disabled>
+							</div>
+							<div class="mui-input-row mui-checkbox mui-left" style="left: 70%;">
+								<label>早退</label>
+								<input id="cb_4" value="4" name="checkbox" type="checkbox" disabled>
+							</div>
+						</div>
+						<input id="input_call" type="text" class="mui-input-clear" placeholder="备注,最多20字" maxlength="20" style="margin-bottom: 10px;" disabled>
+					</div>
+					<div id="record" style="background: white;margin-top: 10px;padding-top: 10px;line-height: 0px;">
+						<textarea id="textarea_record" rows="4" placeholder="记事,最多500字" maxlength="500" disabled></textarea>
+						<div id="MultiMedia">
+						</div>
+					</div>
+					<div id="top" style="margin-top: 10px;">
+					</div>
+				</ul>
+			</div>
+		</div>
+		<div id="videoPopover" class="mui-popover">
+			<video id="video" style="position: absolute;z-index: 999;" controls="controls" webkit-playsinline playsinline>
+				您的浏览器不支持 video 标签。
+			</video>
+		</div>
+
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/utils/MultiMedia.js"></script>
+		<script type="text/javascript" src="../../js/utils/gallerypick.js"></script>
+		<script type="text/javascript" src="../../js/mui.zoom.js"></script>
+		<script type="text/javascript" src="../../js/mui.previewimage.js"></script>
+		<script type="text/javascript" src="../../js/mui.pullToRefresh.js"></script>
+		<script type="text/javascript" src="../../js/mui.pullToRefresh.material.js"></script>
+		<script type="text/javascript" src="../../js/cloud/AndroidFileSystem.js"></script>
+		<script type="text/javascript" src="../../js/qiniu/qiniu.js"></script>
+		<script type="text/javascript" src="../../js/utils/cryption.js"></script>
+		<script type="text/javascript" src="../../js/utils/CloudFileUtil.js"></script>
+		<script type="text/javascript" src="../../js/storageKeyName.js"></script>
+		<script type="text/javascript" src="../../js/utils/compress.js"></script>
+		<script type="text/javascript" src="../../js/utils/recordvideoutil.js"></script>
+		<script type="text/javascript" src="../../js/utils/playutil.js"></script>
+		<script type="text/javascript" src="../../js/utils/showvideoutil.js"></script>
+		<script type="text/javascript">
+			var main; //获取当前窗体对象
+			var mainData; //接收页面传入的参数值
+			var commit = false; //是否允许提交
+			var call_type = ''; //记录最后点击的点到类型
+			var call_input = ''; //记录点到的备注
+			var strParent = ''; //家长
+			var strUser = ''; //推送用户
+			var pathList = []; //记录需要删掉的图片和缩略图
+			var QNUptoken; //token数据
+			var uploadNum = 0; //记录上传的次数
+			var hideOption; //隐藏键盘的数据
+			var page; //记录页数
+			var records = {
+				recordKey: [], //记录点到记事的Key
+				recordValue: {} //记录点到记事的Value
+			}; //记录所有的点到记事
+			var personal = window.myStorage.getItem(window.storageKeyName.PERSONALINFO);
+			var multiMedia; //多媒体选取控件
+			var previewImage; //查看图片的控件
+			var pullRefresh; //下拉，上拉控件
+
+			//启用双击监听
+			mui.init({
+				gestureConfig: {
+					doubletap: true
+				},
+			});
+
+			mui.plusReady(function() {
+				initData(); //初始化数据
+				init(); //初始化界面
+				initListener(); //初始化监听
+				getNotes(1, 0); //获取数据
+			});
+
+			/**
+			 * 初始化数据
+			 */
+			function initData() {
+				var main = plus.webview.currentWebview(); //获取当前窗体对象
+				mainData = main.data; //接收A页面传入参数值
+				//console.log('main-data:' + JSON.stringify(mainData));
+				document.getElementById("title").innerText = mainData.stuname;
+			}
+
+			/**
+			 * 初始化界面
+			 */
+			function init() {
+				events.blurBack();
+
+				//图片查看控件
+				previewImage = mui.previewImage();
+
+				//设置多媒体控件
+				multiMedia = MultiMedia.multiMedia({
+					MultiMediaId: 'MultiMedia', //存放多媒体对象控件的id
+					Key: personal.utid, //utid
+					Picture: true, //是否显示图片图标
+					//					Audio: true, //是否显示音频图标
+					Video: true, //是否显示视频图标
+					TotalPicture: 9, //图片的个数
+					//					TotalAudio: 1, //音频的个数
+					TotalVideo: 1, //视频的个数
+				});
+
+				/**
+				 * 图片数量发送改变的回调
+				 */
+				multiMedia.imageChangeCallBack = function() {
+					changeCommit();
+				}
+
+				/**
+				 * 视频数量变化的回调
+				 */
+				multiMedia.videoChangeCallBack = function() {
+					changeCommit();
+				}
+
+				/**
+				 * 播放视频
+				 * @param {Object} data
+				 */
+				multiMedia.videoPlayCallBack = function(data) {
+					ShowVideoUtil.showVideo(document.getElementById("video"), 'videoPopover', data.path, data.localthumb);
+				}
+
+				//初始化下拉，上拉控件
+				var deceleration = mui.os.ios ? 0.003 : 0.0009;
+				mui('.mui-scroll-wrapper').scroll({
+					bounce: false,
+					indicators: true, //是否显示滚动条
+					deceleration: deceleration
+				});
+
+				pullRefresh = mui('.mui-scroll-wrapper .mui-scroll').pullToRefresh({
+					down: {
+						callback: function() {
+							//console.log('down ' + JSON.stringify(page));
+							getNotes(1, 1);
+						}
+					},
+					up: {
+						contentinit: '', //默认没有更多显示空白
+						contentnomore: '', //隐藏没有更多提示
+						callback: function() {
+							//console.log('up ' + JSON.stringify(page));
+							if(page) {
+								getNotes(page.pageIndex + 1, 2);
+							} else {
+								pullRefresh.endPullUpToRefresh();
+								mui.toast('数据异常，请下拉刷新后重新尝试');
+							}
+						}
+					}
+				});
+				hideOption = events.initHideKeyBoard(); //获取配置信息
+				//初始化播放器
+				ShowVideoUtil.initVideo(document.getElementById("video"));
+			}
+
+			/**
+			 * 初始化监听
+			 */
+			function initListener() {
+
+				//点击图片清除焦点
+				mui('body').on('tap', 'img', function() {
+					document.activeElement.blur();
+				});
+
+				//点到类型切换监听
+				mui('#calltype').on('change', 'input', function() {
+					var ids = ["cb_2", "cb_3", "cb_4", "cb_5"];
+					for(var i in ids) {
+						var ele = document.getElementById(ids[i]);
+						ele.checked = false;
+					}
+					document.getElementById("input_call").style.color = 'gainsboro';
+					var value = this.getAttribute('value'); //本次选择的类型
+					var checkBox = document.getElementById("cb_" + value);
+					if(call_type == value) { //两次点击都是同一个checkbox
+						call_type = '';
+					} else {
+						checkBox.checked = true;
+						call_type = value;
+						document.getElementById("input_call").style.color = 'black';
+					}
+					changeCommit();
+				});
+
+				//监听点到备注的输入
+				document.getElementById('input_call').addEventListener('input', function() {
+					////console.log(this.value);
+					var value = this.value;
+					if(call_type == '') {
+						this.value = call_input;
+						mui.toast('请选择点到类型');
+					} else {
+						call_input = value;
+					}
+				});
+
+				//监听记事的输入
+				document.getElementById('textarea_record').addEventListener('input', function() {
+					changeCommit();
+				});
+
+				//新增点到或记事
+				document.getElementById('commit').addEventListener('tap', function() {
+					events.hideKeyBoard(hideOption);
+					if(!commit) {
+						//console.log('不允许发布');
+					} else if(document.getElementById("input_call").value.length > 20) {
+						mui.toast('备注最多20字');
+					} else if(document.getElementById("textarea_record").value.length > 500) {
+						mui.toast('记事最多500字');
+					} else {
+						var wd = events.showWaiting();
+						commit = false;
+						var parentIds = []; //家长列表
+						var userIds = []; //推送用户ID
+						//30.通过资料ID获取关联的人员
+						//所需参数
+						var comData = {
+							vtp: 'Id',
+							vvl: mainData.stuid, //群成员群ID，stuid
+						};
+						postDataPro_PostStuU(comData, wd, function(data) {
+							//console.log('30_PostStuU通过资料ID获取关联的人员.90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+							if(data.RspCode == 0 || data.RspCode == 9) {
+								mui.each(data.RspData, function(index, item) {
+									//console.log('_PostStuU:' + JSON.stringify(item));
+									userIds.push(item.utid); //推送
+									if(item.umstype == 0) { //家长
+										parentIds.push(item.utid);
+									}
+								});
+								strParent = arrayToStr(parentIds); //家长
+								strUser = arrayToStr(userIds); //推送用户
+								if(call_type != '') { //有点到
+									addNotes(1, strParent, strUser, {
+										encType: '3', //附件类型,1图片2音视频3仅文字
+										encAddr: '', //附件地址
+										encImg: '', //附件缩略图地址
+										encLen: 0 //音视频时长
+									}, wd, function() {
+										if(multiMedia.data.PictureArray.length != 0 || multiMedia.data.VideoArray.length != 0) { //有文件
+											uploadFile(wd, strParent, strUser); //上传文件
+										} else if(document.getElementById("textarea_record").value.replace(/(^\s*)|(\s*$)/g, "") != "") { //没有文件只有文字
+											addNotes(2, strParent, strUser, {
+												encType: '3', //附件类型,1图片2音视频3仅文字
+												encAddr: '', //附件地址
+												encImg: '', //附件缩略图地址
+												encLen: 0 //音视频时长
+											}, wd, function() {
+												finishCommit(wd, 3);
+											});
+										} else { //没有记事
+											finishCommit(wd, 3);
+										}
+									});
+								} else { //没有点到
+									//增加记事
+									if(multiMedia.data.PictureArray.length != 0 || multiMedia.data.VideoArray.length != 0) {
+										uploadFile(wd, strParent, strUser); //上传文件
+									} else if(document.getElementById("textarea_record").value.replace(/(^\s*)|(\s*$)/g, "") != "") {
+										addNotes(2, strParent, strUser, {
+											encType: '3', //附件类型,1图片2音视频3仅文字
+											encAddr: '', //附件地址
+											encImg: '', //附件缩略图地址
+											encLen: 0 //音视频时长
+										}, wd, function() {
+											finishCommit(wd, 3);
+										});
+									}
+								}
+							} else {
+								mui.toast(data.RspTxt);
+								wd.close();
+							}
+						});
+					}
+				});
+
+				//双击标题返回列表顶部
+				document.getElementById('title').addEventListener('doubletap', function() {
+					mui('#pullrefresh').scroll().scrollTo(0, 0, 100);
+				});
+
+				/**
+				 * 播放视频
+				 */
+				mui('#top').on('tap', '.video-play', function() {
+					var ids = this.id.split('_');
+					ShowVideoUtil.showVideo(document.getElementById("video"), 'videoPopover', records.recordValue[ids[2]].EncAddr, records.recordValue[ids[2]].EncImgAddr);
+				});
+
+				//设置监听后才允许点击
+				var ids = ['cb_2', 'cb_3', 'cb_4', 'cb_5', 'input_call', 'textarea_record'];
+				for(var i = 0; i < ids.length; i++) {
+					document.getElementById(ids[i]).disabled = false;
+				}
+			}
+
+			/**
+			 * 判断是否允许发布
+			 */
+			function changeCommit() {
+				var textarea_record = document.getElementById("textarea_record");
+				if(call_type == '' && textarea_record.value.replace(/(^\s*)|(\s*$)/g, "") == "" && multiMedia.data.PictureArray.length == 0 && multiMedia.data.VideoArray.length == 0) {
+					//不允许发布
+					document.getElementById("commit").style.color = "#B7B7B7";
+					commit = false;
+				} else {
+					document.getElementById("commit").style.color = "white";
+					commit = true;
+				}
+			}
+
+			/**
+			 * 增加点到记事
+			 * @param {Object} type 点到或记事1点到2记事
+			 * @param {Object} parentIds 家长列表，用于学生档案记录
+			 * @param {Object} userIds 推送用户ID
+			 * @param {Object} data 相应的数据
+			 * @param {Object} wd 等待框
+			 * @param {Object} callback 完成的回调
+			 * data={ 必填
+			 * 	encType: '', //附件类型,1图片2音视频3仅文字
+			 * 	encAddr: '', //附件地址
+			 * 	encImg: '', //附件缩略图地址
+			 * }
+			 */
+			function addNotes(type, parentIds, userIds, data, wd, callback) {
+				var publisherName = '【' + personal.unick + '老师】【' + mainData.gname + '】' //发布者姓名
+				var noteType = type; //点到记事类型1点到2记事
+				var checkType = ''; //点到类型
+				var msgContent = ''; //内容
+				var encType = data.encType; //附件类型,1图片2音视频3仅文字
+				var encAddr = data.encAddr; //附件地址
+				var encImg = data.encImg; //附件缩略图地址
+				var encLen = data.encLen; //音视频时长
+				if(noteType == 1) { //点到
+					checkType = call_type;
+					msgContent = document.getElementById("input_call").value;
+				} else { //记事
+					checkType = '0';
+					msgContent = document.getElementById("textarea_record").value;
+				}
+				//8.（点到记事）新增某学生点到记事信息
+				//所需参数
+				var comData = {
+					studentId: mainData.stuid, //用户ID----stuid
+					classId: mainData.gid, //班级id
+					msgContent: msgContent, //记事内容
+					encType: encType, //附件类型,1图片2音视频3仅文字
+					encAddr: encAddr, //附件地址
+					encImg: encImg, //附件缩略图地址
+					teacherId: personal.utid, //发布教师ID
+					noteType: noteType, //点到记事类型1点到2记事
+					checkType: checkType, //点到类型,1 正常2 旷课3 迟到4 早退5请假6 其他
+					studentName: mainData.stuname, //学生姓名
+					publisherName: publisherName, //发布者姓名
+					parentIds: parentIds, //家长列表
+					className: mainData.gname, //班级名称
+					userIds: userIds, //推送用户ID
+					encLen: encLen //音视频时长
+				};
+				////console.log('新增记事发送的数据:' + JSON.stringify(comData));
+				// 等待的对话框
+				postDataPro_addNote(comData, wd, function(data) {
+					//console.log('8.新增某学生点到记事信息:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						////console.log('新增点到记事信息成功：' + JSON.stringify(data.RspData.Result));
+						if(noteType == 1) { //点到
+							mui.toast('点到发布成功');
+							//重置数据
+							document.getElementById("cb_" + checkType).checked = false;
+							document.getElementById("input_call").value = '';
+							call_type = '';
+							call_input = '';
+						} else {
+							mui.toast('记事发布成功');
+							//重置数据
+							pathList = [];
+							if(multiMedia.data.PictureArray.length != 0) { //图片
+								multiMedia.imageRefresh();
+							}
+							if(multiMedia.data.VideoArray.length != 0) { //视频
+								multiMedia.videoRefresh();
+							}
+
+							document.getElementById("textarea_record").value = '';
+						}
+						callback();
+					} else {
+						mui.toast(data.RspTxt);
+						if(noteType == 1) { //点到
+							callback();
+						} else {
+							if(pathList.length != 0) {
+								BatchDelete(pathList, function() {
+									callback();
+								});
+							} else {
+								callback();
+							}
+						}
+					}
+				});
+			}
+
+			/**
+			 * 完成所有的提交后执行的方法
+			 * @param {Object} wd
+			 */
+			function finishCommit(wd, type) {
+				mui('#pullrefresh').scroll().scrollTo(0, 0, 100);
+				changeCommit();
+				if(type == 3) {
+					getNotes(1, 0, wd);
+					return;
+				}
+				setTimeout(function() {
+					getNotes(1, 0, wd);
+				}, 1000);
+			}
+
+			/**
+			 * 界面中创建一条记录
+			 * @param {Object} data
+			 */
+			function createNotes(data) {
+				////console.log('createNotes:' + JSON.stringify(data));
+				records.recordKey.push(data.TabId);
+				records.recordValue[data.TabId] = data;
+				var li = document.createElement('li');
+				li.className = 'mui-table-view-cell';
+				var type = ''; //类型
+				var mediaStr = ''; //记录多媒体的html
+				if(data.NoteType == 1) { //点到
+					if(data.MsgContent != '') { //有内容
+						type = data.CheckTypeStr + ' : ';
+					} else {
+						type = data.CheckTypeStr;
+					}
+				} else if(data.NoteType == 2) { //记事
+					if(data.MsgContent != '') { //有内容
+						type = '记事' + ' : ';
+					}
+				}
+
+				var width = Math.ceil((document.getElementById("top").offsetWidth - 30) * 0.32);
+				var height = parseInt(width * 3 / 4);
+				var marginBottom = Math.floor((document.getElementById("top").offsetWidth - 30) * 0.02);
+				var marginRight;
+				if(data.EncType == 1) { //附件类型,1图片2音视频3仅文字
+					var imageArray = data.EncAddr.split('|');
+					var thumbArray = data.EncImgAddr.split('|');
+
+					var html_0 = '<div class="record-imge">';
+					var html_1 = '';
+					for(var i = 0; i < imageArray.length; i++) {
+						if(i == 2 || i == 5 || i == 8) {
+							marginRight = 0;
+						} else {
+							marginRight = marginBottom;
+						}
+
+						html_1 = html_1 + '<div class="record-picture" style="width: ' + width + 'px; height: ' + height + 'px; margin-right: ' + marginRight + 'px; margin-bottom: ' + marginBottom + 'px;">\
+									<img src="' + thumbArray[i] + '" data-preview-src="' + imageArray[i] + '" data-preview-group="' + data.TabId + '" style="width: 100%" onerror="events.imageOnError(this,this.getAttribute(\'data-preview-src\'))" onload="if(this.offsetHeight<=this.offsetWidth){if(this.offsetHeight<' + height + '){this.style.height=\'' + height + 'px\';this.style.width=\'initial\';}this.style.marginLeft=-parseInt((this.offsetWidth-' + width + ')/2)+\'px\';}else{this.style.marginTop=-parseInt((this.offsetHeight-' + height + ')/2)+\'px\';}">\
+								</div>';
+					}
+					mediaStr = html_0 + html_1 + '</div>';
+				} else if(data.EncType == 2) { //视频
+					var play_width = 55;
+					var html_0 = '<div class="record-video">\
+								<div id="video_time_' + data.TabId + '" class="video-time">' + data.EncLen + '\'\'</div>\
+								<img id="video_play_' + data.TabId + '" style="width:' + play_width + 'px;height:' + play_width + 'px;" class="video-play" onload="videoThumbLoad(this);" src="../../image/utils/playvideo.png" />\
+								<img id="video_thumb_' + data.TabId + '" class="video-thumb" src="' + data.EncImgAddr + '" onload="videoThumbLoad(this);" onerror="videoThumbError(this);">\
+							</div>';
+					mediaStr = html_0;
+				}
+				li.innerHTML = '<div class="time">' + data.PublishDate + '</div>\
+								<div id="MsgContent_' + data.TabId + '" class="mui-media-body"></div>' + mediaStr;
+				document.getElementById("top").appendChild(li);
+				document.getElementById("MsgContent_" + data.TabId).innerText = type + data.MsgContent;
+			}
+
+			/**
+			 * 获取用户针对某学生的点到记事列表
+			 * @param {Object} pageIndex 当前页数
+			 */
+			function getNotes(pageIndex, type, waiting) {
+				var wd = null;
+				if(type == 0) {
+					if(waiting) {
+						wd = waiting;
+					} else {
+						wd = events.showWaiting();
+					}
+				}
+				var comData = {
+					userId: personal.utid, //用户ID----utid
+					studentId: mainData.stuid, //学生ID----stuid
+					classId: mainData.gid, //班级ID
+					pageIndex: pageIndex, //当前页数
+					pageSize: 10, //每页记录数
+					publisherId: personal.utid //发布者ID,0代表全部
+				};
+				//4.（点到记事）获取用户针对某学生的点到记事列表
+				postDataPro_getNotesByUserForStudent(comData, wd, function(data) {
+					//console.log('4 取记事列表 getNotesByUserForStudent' + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						//记录页数
+						page = {
+							pageIndex: pageIndex, //当前页数
+							totalPage: data.RspData.TotalPage //总页数
+						};
+						//console.log('page ' + JSON.stringify(page));
+						if(pageIndex == 1) { //下拉刷新或者获取的第一页的内容
+							records = {
+								recordKey: [], //记录点到记事的Key
+								recordValue: {} //记录点到记事的Value
+							}; //记录所有的点到记事
+							//清空对应的界面
+							document.getElementById('top').innerHTML = '';
+							pullRefresh.refresh(true); //更新当前控件
+						}
+
+						////console.log(document.getElementById("top").innerHTML);
+						if(data.RspData.Data.length == 0 && pageIndex == 1) {
+							mui.toast('点到记事为空');
+						} else {
+							for(var i = 0; i < data.RspData.Data.length; i++) {
+								createNotes(data.RspData.Data[i]);
+							}
+						}
+					} else {
+						mui.toast(data.RspTxt);
+					}
+					if(type == 0) {
+						wd.close();
+					}
+					if(type == 1) { //结束下拉刷新
+						pullRefresh.endPullDownToRefresh();
+					}
+					endPullUp();
+				});
+			}
+
+			/**
+			 * 上传文件
+			 */
+			function uploadFile(waiting, strParent, strUser) {
+				var getToken = {
+					type: '2', //str 必填 获取上传token的类型。0上传需要生成缩略图的文件；1上传文件；2上传需要生成缩略图的多个文件
+					appId: 6, //int 必填 项目id
+					fileArray: [], //array 选填  type为2时有效，多个文件的路径
+					mainSpace: window.storageKeyName.QNPUBSPACE, //str 必填 文件存放在私有空间或公有空间
+					uploadSpace: window.storageKeyName.RECORD, //str 必填  上传的空间
+				}
+
+				var fileArray = []
+
+				if(multiMedia.data.PictureArray.length !== 0) { //图片
+					for(var i = 0; i < multiMedia.data.PictureArray.length; i++) {
+						fileArray.push(multiMedia.data.PictureArray[i].path);
+					}
+				} else if(multiMedia.data.VideoArray.length !== 0) { //视频
+					getToken.type = '3';
+					for(var i = 0; i < multiMedia.data.VideoArray.length; i++) {
+						fileArray.push(multiMedia.data.VideoArray[i]);
+					}
+				}
+				getToken.fileArray = fileArray;
+				uploadNum = fileArray.length; //记录上传的次数
+
+				CloudFileUtil.getQNUpToken(window.storageKeyName.QNGETUPTOKENFILE, getToken, function(data) {
+					//console.log('获取上传凭证 ' + JSON.stringify(data));
+					if(data.data.Status == 1) { //成功
+						//console.log('获取上传凭证成功');
+						QNUptoken = data.data; //token数据
+						var configure = data.configure; //获取token的配置信息
+						//console.log('七牛上传凭证:' + JSON.stringify(QNUptoken));
+						//console.log('七牛配置信息:' + JSON.stringify(configure));
+						if(multiMedia.data.PictureArray.length !== 0) { //图片
+							//记录图片和缩略图地址
+							for(var j = 0; j < multiMedia.data.PictureArray.length; j++) {
+								for(var i = 0; i < QNUptoken.Data.length; i++) {
+									////console.log(JSON.stringify(QNUptoken.Data[i]));
+									var filePath = QNUptoken.Data[i].P_Key.split("/");
+									var fileName = filePath[filePath.length - 1];
+									var fileId = fileName.split("_")[0];
+									if(multiMedia.data.PictureArray[j].id == fileId) {
+										multiMedia.data.PictureArray[j].domain = QNUptoken.Data[i].Domain + QNUptoken.Data[i].Key;
+										multiMedia.data.PictureArray[j].thumb = QNUptoken.Data[i].OtherKey[configure.thumbKey[i]];
+									}
+								}
+							}
+						} else if(multiMedia.data.VideoArray.length !== 0) { //视频
+							//记录视频和缩略图地址
+							for(var j = 0; j < multiMedia.data.VideoArray.length; j++) {
+								var videoPath = multiMedia.data.VideoArray[j].path.split("/");
+								var videoName = videoPath[videoPath.length - 1];
+								for(var i = 0; i < QNUptoken.Data.length; i++) {
+									////console.log(JSON.stringify(QNUptoken.Data[i]));
+									var filePath = QNUptoken.Data[i].P_Key.split("/");
+									var fileName = filePath[filePath.length - 1];
+									if(videoName == fileName) {
+										multiMedia.data.VideoArray[j].domain = QNUptoken.Data[i].Domain + QNUptoken.Data[i].Key;
+										multiMedia.data.VideoArray[j].thumb = QNUptoken.Data[i].OtherKey[configure.thumbKey[i]];
+									}
+								}
+							}
+						}
+						waiting.setTitle('上传中...');
+						//开始执行上传任务
+						taskCreate(waiting);
+					} else {
+						//console.log('### ERROR ### 获取上传凭证失败 ### ' + data.data.Message);
+						mui.toast('上传失败 ' + data.data.Message);
+						changeCommit();
+						waiting.close();
+					}
+				}, function(xhr, type, errorThrown) {
+					//console.log('### ERROR ### 请求上传凭证失败 ### ' + type);
+					mui.toast('上传失败 ' + type);
+					changeCommit();
+					waiting.close();
+				});
+
+			}
+
+			/**
+			 * 删除上传失败的文件
+			 */
+			function BatchDelete(paths, callback) {
+				var batchDelete = {
+					appId: 6, //int 必填 项目id
+					urls: paths //array 必填 需要获取下载token文件的路径
+				}
+				/**
+				 * 七牛批量删除
+				 */
+				CloudFileUtil.BatchDelete(window.storageKeyName.QNGETTOKENDELETE, batchDelete, function(data) {
+						//console.log('七牛删除 ' + JSON.stringify(data));
+						if(data.Status == 1) {
+							pathList = [];
+						} else {
+							//console.log('### ERROR ### 七牛删除失败 ### ' + JSON.stringify(data));
+							mui.toast('删除失败' + JSON.stringify(data));
+						}
+						callback();
+					},
+					function(xhr, type, errorThrown) {
+						//console.log('### ERROR ### 请求七牛删除失败 ### ' + JSON.stringify(type));
+						mui.toast('请求删除失败' + JSON.stringify(type));
+						callback();
+					}
+				);
+			}
+
+			/**
+			 * 创建上传任务并且逐个任务执行
+			 */
+			function taskCreate(waiting) {
+				for(var i = 0; i < QNUptoken.Data.length; i++) {
+					if(QNUptoken.Data[i].task == undefined) {
+						var filePath = QNUptoken.Data[i].P_Key.split("/");
+						var fileName = filePath[filePath.length - 1];
+						//获取路径
+						var fPath = '';
+						var num; //记录第几个文件
+						if(multiMedia.data.PictureArray.length !== 0) { //图片
+							for(var k = 0; k < multiMedia.data.PictureArray.length; k++) {
+								var path = multiMedia.data.PictureArray[k].path.split("/");
+								var name = path[path.length - 1];
+								if(fileName == name) {
+									num = k;
+									fPath = multiMedia.data.PictureArray[k].path;
+									break;
+								}
+							}
+						} else if(multiMedia.data.VideoArray.length !== 0) { //视频
+							for(var k = 0; k < multiMedia.data.VideoArray.length; k++) {
+								var path = multiMedia.data.VideoArray[k].path.split("/");
+								var name = path[path.length - 1];
+								if(fileName == name) {
+									num = k;
+									fPath = multiMedia.data.VideoArray[k].path;
+									break;
+								}
+							}
+						}
+						CloudFileUtil.upload(fPath, QNUptoken.Data[i].Token, QNUptoken.Data[i].Key, function(upload, status) {
+							//上传任务完成的监听
+							//console.log('上传任务完成' + status + ' ' + JSON.stringify(upload));
+							if(status == 200) {
+								//console.log('上传成功');
+								QNUptoken.Data[i].task = true;
+								uploadNum--;
+								var title = '上传 ' + (QNUptoken.Data.length - uploadNum) + "/" + (QNUptoken.Data.length);
+								waiting.setTitle(title);
+								//记录失败后需要删除的文件
+								if(multiMedia.data.PictureArray.length !== 0) { //图片
+									pathList.push(multiMedia.data.PictureArray[num].domain);
+									pathList.push(multiMedia.data.PictureArray[num].thumb);
+								} else if(multiMedia.data.VideoArray.length !== 0) { //视频
+									pathList.push(multiMedia.data.VideoArray[num].domain);
+									pathList.push(multiMedia.data.VideoArray[num].thumb);
+								}
+
+								if(uploadNum == 0) {
+									//console.log('所有上传都成功');
+									var encAddr = []; //附件地址
+									var encImg = []; //附件缩略图地址
+									var encLen = 0; //音视频时长
+									var type;
+									if(multiMedia.data.PictureArray.length !== 0) { //图片
+										for(var j = 0; j < multiMedia.data.PictureArray.length; j++) {
+											encAddr.push(multiMedia.data.PictureArray[j].domain);
+											encImg.push(multiMedia.data.PictureArray[j].thumb);
+										}
+										type = '1';
+									} else if(multiMedia.data.VideoArray.length !== 0) { //视频
+										for(var j = 0; j < multiMedia.data.VideoArray.length; j++) {
+											encAddr.push(multiMedia.data.VideoArray[j].domain);
+											encImg.push(multiMedia.data.VideoArray[j].thumb);
+										}
+										type = '2';
+										encLen = multiMedia.data.VideoArray[0].duration;
+									}
+									var encAddrStr = encAddr.join('|');
+									var encImgrStr = encImg.join('|');
+
+									addNotes(2, strParent, strUser, {
+										encType: type, //附件类型,1图片2音视频3仅文字
+										encAddr: encAddrStr, //附件地址
+										encImg: encImgrStr, //附件缩略图地址
+										encLen: encLen //音视频时长
+									}, waiting, function() {
+										finishCommit(waiting);
+									}); //增加记事
+								} else {
+									taskCreate(waiting);
+								}
+							} else {
+								//console.log('### ERROR ### 上传失败 ### ' + status + ' ' + JSON.stringify(upload));
+								mui.toast('上传失败 ' + status + ' ' + upload.responseText);
+								changeCommit();
+								if(pathList.length != 0) {
+									BatchDelete(pathList, function() {
+										waiting.close();
+									});
+								} else {
+									waiting.close();
+								}
+							}
+						}, function(upload, status) {
+							//var uploadedSize = AndroidFileSystem.readSize(upload.uploadedSize);
+							//var totalSize = AndroidFileSystem.readSize(upload.totalSize);
+							switch(upload.state) {
+								case 0: //上传任务开始调度
+									//console.log('上传任务开始调度:|id:' + upload.__UUID__ + '|uploadState:' + upload.state);
+									break;
+								case 1: //上传任务开始请求
+									//console.log('上传任务开始请求:|id:' + upload.__UUID__ + '|uploadState:' + upload.state);
+									break;
+								case 2: //上传任务请求已经建立
+									//console.log('上传任务请求已经建立:|id:' + upload.__UUID__ + '|uploadState:' + upload.state);
+									break;
+								case 3: //上传任务提交数据
+									////console.log('上传任务状态监听:|id:' + upload.__UUID__ + '|uploadedSize:' + uploadedSize + '|totalSize:' + totalSize + '|uploadState:' + upload.state);
+									break;
+								case 4: //上传任务已完成
+									//console.log('上传任务已完成:|id:' + upload.__UUID__ + '|uploadState:' + upload.state);
+									break;
+								case 5: //上传任务已暂停
+									//console.log('上传任务已暂停:|id:' + upload.__UUID__ + '|uploadState:' + upload.state);
+									break;
+								default:
+									//console.log('上传任务状态监听:其他状态' + upload.state);
+									break;
+							}
+						}, function(task) {
+							//上传任务创建成功的回调
+							task.start();
+						});
+						break;
+					}
+				}
+			}
+
+			/**
+			 * 结束上拉加载更多
+			 */
+			function endPullUp() {
+				if(page && page.pageIndex >= page.totalPage) {
+					//console.log('没有下一页');
+					pullRefresh.endPullUpToRefresh(true);
+				} else {
+					pullRefresh.endPullUpToRefresh();
+				}
+			}
+
+			/**
+			 * 视频的缩略图加载成功
+			 * @param {Object} img
+			 */
+			function videoThumbLoad(img) {
+				var ids = img.id.split('_');
+				img.setAttribute('data-load', 1);
+				var img_a;
+				if(ids[1] == 'play') {
+					img_a = document.getElementById("video_thumb_" + ids[2]);
+				} else {
+					img_a = document.getElementById("video_play_" + ids[2]);
+				}
+				if(img.getAttribute('data-load') && img_a.getAttribute('data-load')) {
+					ShowVideoUtil.videoThumbLoad(document.getElementById("video_thumb_" + ids[2]), document.getElementById("video_play_" + ids[2]), 0, document.getElementById("video_time_" + ids[2]));
+				}
+			}
+
+			/**
+			 * 视频的缩略图加载失败
+			 * @param {Object} img
+			 */
+			function videoThumbError(img) {
+				var ids = img.id.split('_');
+				ShowVideoUtil.videoThumbError(img, document.getElementById("video_play_" + ids[2]), records.recordValue[ids[2]].EncAddr);
+			}
+		</script>
+	</body>
+
+</html>

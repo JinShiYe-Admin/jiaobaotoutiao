@@ -1,0 +1,234 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			
+			.mui-bar~.mui-content .mui-fullscreen {
+				top: 44px;
+				height: auto;
+			}
+			
+			.mui-pull-top-tips {
+				position: absolute;
+				top: -20px;
+				left: 50%;
+				margin-left: -25px;
+				width: 40px;
+				height: 40px;
+				border-radius: 100%;
+				z-index: 1;
+			}
+			
+			.mui-bar~.mui-pull-top-tips {
+				top: 24px;
+			}
+			
+			.mui-pull-top-tips.mui-transitioning {
+				-webkit-transition-duration: 200ms;
+				transition-duration: 200ms;
+			}
+			
+			.mui-pull-top-tips .mui-pull-loading {
+				margin: 0;
+			}
+			
+			.mui-slider-indicator {
+				margin-left: -10px;
+				bottom: -3px;
+			}
+			
+			.mui-slider-indicator .mui-indicator {
+				margin: 1px 2px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">全部</h1>
+			<div id="header-indicator" class="mui-slider-indicator">
+				<div class="mui-indicator mui-active"></div>
+				<div class="mui-indicator"></div>
+			</div>
+			<a id="publish-show" class="mui-pull-right" style="">发布</a>
+		</header>
+		<div class="mui-content">
+			<div id="slider" class="mui-slider mui-fullscreen">
+				<div id="sliderSegmentedControl" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+					<div class="mui-scroll">
+						<a class="mui-control-item mui-active" href="#item1mobile" data-wid="show-attended.html">
+						</a>
+						<a class="mui-control-item" href="#item2mobile" data-wid="show-all.html">
+						</a>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/webviewGroup.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript">
+			var group;
+			var detailReady = false;
+			var attendedItem = {
+				id: "show-attended.html",
+				url: "show-attended.html",
+				styles: {
+					top: '44px',
+					bottom: 0
+				},
+				extras: {}
+			};
+			var allItem = {
+				id: "show-all.html",
+				url: "show-all.html",
+				styles: {
+					top: '44px',
+					bottom: 0
+				},
+				extras: {}
+			}
+			var items = [allItem,attendedItem];
+			mui.init();
+			mui.plusReady(function() {
+				events.preload("show-detail.html", 100);
+				setWebGroup();
+				setTitle(10);
+				setListener();
+			});
+
+			function setListener() {
+				window.addEventListener("detailReady", function() {
+					detailReady = true;
+				})
+				window.addEventListener('focus', function() {	
+					getFocusedPerson(function(isShow) {
+						console.log("show-home.html获取关注事件"+isShow)
+						events.fireToPageNone("show-attended.html","showAttended",isShow);
+						console.log("获取的加载网页：" + items.length, items);
+					})
+				})
+				document.getElementById('publish-show').addEventListener('tap', function(e) {
+					var item = e.target;
+					if(events.judgeLoginMode(item)) {
+						return;
+					}
+					item.disabled = true;
+					events.singleWebviewInPeriod(item, "../quan/pub-dynamic.html", "zx");
+				})
+			}
+
+			function clearChild() {
+				if(plus.webview.getWebviewById("show-attended.html")) {
+					plus.webview.getWebviewById("show-attended.html").close();
+				}
+				if(plus.webview.getWebviewById("show-all.html")) {
+					plus.webview.getWebviewById("show-all.html").close();
+				}
+
+			}
+
+			function stopMove() {
+				if(group.getCurrentWebview().id == 'show-all.html') {
+					group.getCurrentWebview().drag({
+						direction: 'left',
+						moveMode: 'followFinger'
+					}, {
+						view: 'none',
+						moveMode: 'follow'
+					})
+				}
+			}
+
+			function setWebGroup() {
+				console.log("获取的iten:"+items.length,items)
+				group = new webviewGroup("show-home.html", {
+					items: items,
+					onChange: function(obj) {
+						console.log("当前界面index:" + parseInt(obj.index));
+						if(items.length > 1) {
+							if(parseInt(obj.index) == 1) {
+								setTitle(11);
+							} else {
+								setTitle(10);
+							}
+						}
+					}
+				});
+			}
+			/**
+			 * 获取关注的人
+			 * @param {Object} callback 回调方法
+			 */
+			function getFocusedPerson(callback) {
+				if(!events.getUtid()) {
+					var showFocusedPersen = myStorage.getItem(storageKeyName.SHOWFOCUSEPERSEN);
+					if(showFocusedPersen && showFocusedPersen.length > 0) {
+						callback(1);
+					} else {
+						callback(0);
+					}
+					return;
+				}
+				var wd = null;
+				postDataPro_getFocusByUser({
+					userId: events.getUtid()
+				}, wd, function(data) {
+//					wd.close();
+					//console.log("获取关注的人列表" + JSON.stringify(data));
+					if(data.RspCode == 0 && data.RspData.Users.length > 0) {
+						callback(1);
+					} else {
+						callback(0);
+					}
+				})
+			}
+			/**
+			 * 设置标题
+			 * @param {Object} type 0 只有全部 10 显示全部 11 显示关注
+			 */
+			function setTitle(type) {
+				var title = document.querySelector(".mui-title");
+				var indicator = document.querySelector("#header-indicator");
+				switch(type) {
+					case 0: //全部
+						title.innerText = "全部";
+						indicator.style.display = "none";
+						break;
+					case 10: //全部
+						title.innerText = "全部";
+						indicator.style.display = "block";
+						indicator.firstElementChild.className = "mui-indicator mui-active";
+						indicator.lastElementChild.className = "mui-indicator";
+						break;
+					case 11: //关注
+						title.innerText = "关注";
+						indicator.style.display = "block";
+						indicator.firstElementChild.className = "mui-indicator";
+						indicator.lastElementChild.className = "mui-indicator mui-active";
+						break;
+					case 12:
+						indicator.style.display = "block";
+						break;
+					default:
+						break;
+				}
+			}
+		</script>
+	</body>
+
+</html>

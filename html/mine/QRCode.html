@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<!--<script src="../../js/utils/jquery-1.8.3.min.js" type="text/javascript" charset="utf-8"></script>-->
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">群二维码名片</h1>
+		</header>
+
+		<!--<div class="mui-content" style="background: black none repeat scroll 0% 0%;">
+			<div id="" style="background: white;/*! margin-top: 10px; *//*! margin-left: 10px; *//*! margin-right: 10px; *//*! margin-bottom: 10px; */margin: 2.5rem;">
+				<div style="padding: 1.8rem;/*! vertical-align: middle; *//*! line-height: 4.5rem; *//*! height: 4.5rem; */">
+					<img src="../../image/cloud/cloud_0_banjiguanli.png" style="width: 4.5rem;height: 4.5rem;float: left;"><span style="line-height: 4.5rem;/*! height: 4.5rem; *//*! margin: 1.8rem 0; *//*! display: inline-block; */margin-left: 1rem;">weijjj</span>
+				</div>
+				<div class="qrcode" style="background: white;/*! height: 256px; */ /*! width: 256px; */margin-top: 10px;text-align: center;padding: 2.5rem;"><img src="../../image/cloud/cloud_0_banjiguanli.png" style="width: 100%;height: 100%;"></div>
+			</div>
+
+		</div>-->
+
+		<div class="mui-content mui-fullscreen" style="background: white;">
+			<div id="" style="background: white; margin: 2.5rem; position: absolute;top: 5.3rem;right: 0;bottom: 7.5rem;left: 0;">
+				<div style="padding: 1.8rem;">
+					<img id="groupImg" style="width: 4.5rem;height: 4.5rem;float: left; border-radius: 50%; display: none;">
+					<h6 id="groupName" style="margin-left: 1rem;color: #323232;"></h6>
+					<p id="group-info" style="margin-left: 40px;"></p>
+				</div>
+				<div class="qrcode" style="background: white;text-align: center;padding: 1rem;width: 100%;height: auto;"></div>
+				<h6 id="tishi" style="text-align: center;color: black;"></h6>
+			</div>
+
+		</div>
+
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script src="../../js/utils/jquery.qrcode.min.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var qrcodeUrl;
+			mui.init({
+				swipeBack: true //启用右滑关闭功能1492745882000
+			});
+			mui.plusReady(function() {
+				var curPage = plus.webview.currentWebview();
+				var groupModel = curPage.data; //群model
+				var temp0 = escape(groupModel.gname, 'UTF-8');
+				var temp1 = escape(groupModel.gnote, 'UTF-8');
+				qrcodeUrl = 'jby1@' + groupModel.gid + '@' + temp0 + '@' + groupModel.gimg + '@' + temp1+ '@' +events.getNowFormatDate(); //code1，代表是群二维码
+				document.getElementById("groupImg").style.display = 'inline-block';
+				document.getElementById("groupImg").src = updateHeadImg(groupModel.gimg, 2);
+				document.getElementById("groupName").innerText = groupModel.gname;
+				document.getElementById("group-info").innerText = groupModel.gnote;
+				//console.log('qrcodeUrl=' + qrcodeUrl);
+				//计算7天后的时间
+				var yesterdsay = new Date(new Date().getTime() + 86400000*7);
+				var date0= events.format(yesterdsay,"yyyy-MM-dd"); 
+				document.getElementById("tishi").innerText = '二维码七日内有效('+date0+'前)';
+				makrQRCode();
+			});
+
+			// 制作二维码
+			function makrQRCode() {
+				jQuery('.qrcode').qrcode(qrcodeUrl);
+			}
+			
+		</script>
+	</body>
+
+</html>

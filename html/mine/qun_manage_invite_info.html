@@ -1,0 +1,116 @@
+<!--
+	作者：444811716@qq.com
+	时间：2016-12-06
+	描述：查看被邀请人的账号信息
+-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<style>
+			.mui-content>.mui-table-view:first-child {
+				margin-top: 0px
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">账号信息</h1>
+		</header>
+		<div class="mui-content">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<img id="uimg" style="height: 40px;width: 40px;border-radius:50% ;" class="mui-media-object mui-pull-right" src="../../image/utils/default_personalimage.png">
+					<div class="mui-media-body">
+						头像
+					</div>
+				</li>
+				<li class="mui-table-view-cell">
+					<p class="mui-pull-right" id='unick'>暂无</p>
+					<div class="mui-media-body">
+						昵称
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<p class="mui-pull-right single-line" id='uname' style="max-width: 70%;">暂无</p>
+					<div class="mui-media-body">
+						账号
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<p class="mui-pull-right" id='uid'>暂无</p>
+					<div class="mui-media-body">
+						手机号
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<p class="mui-pull-right" id='usex'>暂无</p>
+					<div class="mui-media-body">
+						性别
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<p id="utxt" class='mui-pull-right single-line'style="max-width: 70%;">暂无</p>
+					<div class="mui-media-body mui-pull-left">
+						个性签名
+					</div>
+				</li>
+				<li class="mui-table-view-cell mui-media">
+					<p id="uarea" class='mui-pull-right'>暂无</p>
+					<div class="mui-media-body">
+						地区
+					</div>
+				</li>
+			</ul>
+
+		</div>
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function() {
+				var main = plus.webview.currentWebview(); //获取当前窗体对象
+				var data = main.data.userData; //接收A页面传入参数值
+				//console.log('main-data:' + JSON.stringify(data));
+				document.getElementById("uimg").src = updateHeadImg(data.uimg, 2);
+				//昵称
+				if(data.unick != '' && data.unick != null) {
+					document.getElementById("unick").innerText = data.unick;
+				}
+				//账号
+				if(data.uname != '' && data.uname != null) {
+					document.getElementById("uname").innerText = data.uname;
+				}
+				//手机号
+				if(data.uid != '' && data.uid != null) {
+					document.getElementById("uid").innerText = data.uid;
+				}
+				//性别
+				if(data.usex == 0) {
+					document.getElementById("usex").innerText = '未定';
+				} else if(data.usex == 1) {
+					document.getElementById("usex").innerText = '男';
+				} else {
+					document.getElementById("usex").innerText = '女';
+				}
+				//个性签名
+				if(data.utxt != '' && data.utxt != null) {
+					document.getElementById("utxt").innerText = data.utxt;
+				}
+				//地区
+				if(data.uarea != '' && data.uarea != null) {
+					var uarea = data.uarea.split('|');
+					document.getElementById("uarea").innerText = uarea[1];
+				}
+			});
+		</script>
+	</body>
+
+</html>

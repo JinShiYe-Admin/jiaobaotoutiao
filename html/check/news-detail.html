@@ -1,0 +1,45 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<style>
+			.check-container {
+				padding: 10px 15px;
+				position: fixed;
+				bottom: 0;
+				height: 50px;
+				width: 100%;
+			}
+			.check-status{
+				padding-top: 5px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">新闻详情</h1>
+		</header>
+		<!--下拉刷新容器-->
+		<div class="mui-content">
+			<div id="news-detail">
+			</div>
+			<div class="check-container">
+				<p id="check-status" class="check-status display-inlineBlock"></p>
+				<input id="pass-button" type="button" class="mui-btn mui-btn-primary mui-pull-right" value="显示"></input>
+				<input id="refuse-button" type="button" class="mui-btn mui-btn-primary mui-pull-right" value="屏蔽"></input>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script src="../../js/check/news-detail.js"></script>
+	</body>
+
+</html>

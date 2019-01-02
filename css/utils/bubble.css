@@ -1,0 +1,113 @@
+
+  	[class*=chat_content_] {
+        float: left;
+        background: #fff;
+        position: relative;
+        width: 75%;
+        -webkit-box-sizing: border-box;
+        box-sizing: border-box;
+        display: inline-block;
+        word-wrap: break-word;
+        border-radius: 5px;
+        padding:2.5%;
+        margin:0 0 0 2.5%;
+     /*   border: 1px solid #E4E4E4;*/
+    }
+    .chat_content_top{
+    	width: 95%;
+    }
+    /*上角汽泡*/
+    .chat_content_top:before,
+    .chat_content_top:after {
+        position: absolute;
+        top: -8px;
+        width: 0;
+        height: 0;
+        display: block;
+        content: " ";
+        border-color: transparent transparent #ccc transparent;
+        border-style: dashed dashed solid dashed;
+        border-width: 0px 8px 8px 8px;
+        pointer-events: none;
+    }
+    .chat_content_top:before {
+        border-bottom-color: #ccc;
+        z-index: 1;
+    }
+    .chat_content_top:after {
+        border-bottom-color: #ffffff;
+        margin-top: 1px;
+        z-index: 2;
+    }
+    /*右角汽泡*/
+    .chat_content_right:before,
+    .chat_content_right:after {
+        position: absolute;
+        top: 8px;
+        right: -8px;
+        width: 0;
+        height: 0;
+        display: block;
+        content: " ";
+        border-color: transparent #cccccc transparent transparent;
+        border-style: dashed dashed dashed solid;
+        border-width: 8px 0 8px 8px;
+        pointer-events: none;
+    }
+    .chat_content_right:before {
+        border-left-color: #cccccc;
+        z-index: 1;
+    }
+    .chat_content_right:after {
+        border-left-color: #ffffff;
+        margin-right: 1px;
+        z-index: 2;
+    }
+    /*下角汽泡*/
+    .chat_content_bottom:before,
+    .chat_content_bottom:after {
+        position: absolute;
+        bottom: -8px;
+        width: 0;
+        height: 0;
+        display: block;
+        content: " ";
+        border-color: #ccc transparent transparent transparent;
+        border-style: solid dashed dashed dashed;
+        border-width: 8px 8px 0 8px;
+        pointer-events: none;
+    }
+    .chat_content_bottom:before {
+        border-top-color: #ccc;
+        z-index: 1;
+    }
+    .chat_content_bottom:after {
+        border-top-color: #ffffff;
+        margin-bottom: 1px;
+        z-index: 2;
+    }
+    /*左角汽泡*/
+    .chat_content_left:before,
+    .chat_content_left:after {
+        position: absolute;
+        top: 1rem;
+        left: -8px;
+        width: 0;
+        height: 0;
+        display: block;
+        content: " ";
+        border-color: transparent #ffffff transparent transparent;
+        border-style: dashed solid dashed dashed;
+        border-width: 8px 8px 8px 0;
+        pointer-events: none;
+    }
+    .chat_content_left:before {
+        /*border-right-color: #cccccc;*/
+        z-index: 1;
+    }
+    .chat_content_left:after {
+        border-right-color: #ffffff;
+        margin-left: 1px;
+        z-index: 2;
+    }
+ 

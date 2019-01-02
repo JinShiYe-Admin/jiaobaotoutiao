@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link rel="stylesheet" type="text/css" href="../../css/mui.min.css" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<style>
+			.ui-page-login,
+			body {
+				width: 100%;
+				height: 100%;
+				margin: 0px;
+				padding: 0px;
+			}
+			
+			.mui-content {
+				height: 100%;
+			}
+			
+			.area {
+				margin: 20px auto 0px auto;
+			}
+			
+			.mui-input-group {
+				margin-top: 3px;
+			}
+			
+			.mui-input-group:first-child {
+				margin-top: 20px;
+			}
+			
+			.mui-input-group label {
+				width: 22%;
+			}
+			
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				width: 78%;
+			}
+			
+			.mui-checkbox input[type=checkbox],
+			.mui-radio input[type=radio] {
+				top: 6px;
+			}
+			
+			.mui-content-padded {
+				margin-top: 25px;
+			}
+			
+			.mui-btn {
+				padding: 10px;
+			}
+			
+			.link-area {
+				display: block;
+				margin-top: 25px;
+				text-align: center;
+			}
+			
+			.spliter {
+				color: #bbb;
+				padding: 0px 8px;
+			}
+			
+			.oauth-area {
+				position: absolute;
+				bottom: 20px;
+				left: 0px;
+				text-align: center;
+				width: 100%;
+				padding: 0px;
+				margin: 0px;
+			}
+			
+			.oauth-area .oauth-btn {
+				display: inline-block;
+				width: 50px;
+				height: 50px;
+				background-size: 30px 30px;
+				background-position: center center;
+				background-repeat: no-repeat;
+				margin: 0px 20px;
+				/*-webkit-filter: grayscale(100%); */
+				border: solid 1px #13b7f6;
+				border-radius: 25px;
+			}
+			
+			.oauth-area .oauth-btn:active {
+				border: solid 1px #aaa;
+			}
+			
+			.oauth-area .oauth-btn.disabled {
+				background-color: #ddd;
+			}
+			/*
+			 * athor:xbs
+			 *
+			 */
+			
+			.mui-input-group:after {
+				background-color: #fff;
+			}
+			
+			.mui-input-group:before {
+				background-color: #fff;
+			}
+			
+			.row1:after {
+				background-color: #e4e4e4;
+			}
+			.mui-input-group .mui-input-row{
+				height: 45px;
+			}
+			input::-webkit-input-placeholder {
+				color: #999999;
+			}
+			input[type=tel],
+			input[type=password]{
+				height: 45px;
+			}
+			.regesterAndForget {
+				color: #00A5E0;
+				font-size: 1.2em;
+			}
+			
+			.head-portrait {
+				width: 70px;
+				height: 70px;
+				border-radius: 70px;
+				margin-top: 10px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title" style="color: white;">登录</h1>
+			<h1 class="mui-icon mui-icon-right-nav mui-pull-right" id="cancelBtn" style="text-align: right;right: 10px;font-size: 15px;">取消</h1>
+		</header>
+		<div class="mui-content">
+			<div align="center">
+				<!--<img id="group-img" src="../../image/dynamic/u101.png" class="head-portrait" /><br />-->
+			</div>
+			<form id='login-form' class="mui-input-group">
+				<p></p>
+				<div class="mui-input-row row1">
+					<!--<label style="font-size: 15px;">账号</label>-->
+					<input id='account' type="tel" class="mui-input-clear mui-input" placeholder="手机号码">
+				</div>
+				<div class="mui-input-row ">
+					<!--<label style="font-size: 15px;">密码</label>-->
+					<input id='password' type="password" class="mui-input-clear mui-input " placeholder="密码">
+				</div>
+			</form>
+			<!--<form class="mui-input-group">
+				<ul class="mui-table-view mui-table-view-chevron">
+					<li class="mui-table-view-cell">
+						自动登录
+						<div id="autoLogin" class="mui-switch">
+							<div class="mui-switch-handle"></div>
+						</div>
+					</li>
+				</ul>
+			</form>-->
+
+			<div class="mui-content-padded">
+				<button id='login' class="mui-btn mui-btn-block mui-btn-primary" style="background: #13b7f6; border:
+
+none; margin-top: -15px;">登录</button>
+				<!--<div class="link-area">-->
+				<!--<a id='forgetPassword' class="regesterAndForget">忘记密码?</a>-->
+				<!--<span class="spliter">|</span>-->
+				<!-- <a id='reg' class="regesterAndForget" style="float: right;">注册账号</a> -->
+				<!--</div>-->
+
+			</div>
+
+			<!--<div class="mui-content-padded oauth-area">
+
+			</div>-->
+
+		</div>
+		<div class=<!-- "link-area oauth-area">
+			<a id="more" href="#sheet" style="color: #323232;font-size: 1.2em; top:5px;  position: relative; text-align: center;">遇到登录问题？</a>
+		</div> -->
+		<script src="../../js/mui.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/app.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils/events.js" type="text/javascript" charset="utf-8"></script>
+		<!--本地存储-->
+		<script src="../../js/libs/myStorage/myStorage.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/storageKeyName.js" type="text/javascript" charset="utf-8"></script>
+		<!--加密-->
+		<script src="../../js/libs/RSA/Barrett.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/libs/RSA/BigInt.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/libs/RSA/RSA.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils/RSAEncrypt.js" type="text/javascript" charset="utf-8"></script>
+
+		<script src="js/mui.enterfocus.js" type="text/javascript" charset="utf-8"></script>
+		<!--网络请求-->
+		<script src="../../js/utils/postData.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/publicProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils/events.js" type="text/javascript" charset="utf-8"></script>
+		<!--签名-->
+		<script src="../../js/libs/crypto-js/require.js"></script>
+		<script src="../../js/utils/app-update.js"></script>
+		<script src="../../js/utils/sortSign.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils/signHmacSHA1.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/libs/jquery.js" type="text/javascript" charset="utf-8"></script>
+
+		<script>
+			(function($, doc) {
+				mui.init({
+					statusBarBackground: '#13b7f6'
+				});
+				$.plusReady(function() {
+					//---设置沉浸式---start---
+
+					//---设置沉浸式---end---
+					//					events.preload('register_phoneNumber.html');
+					plus.screen.lockOrientation("portrait-primary");
+					var settings = app.getSettings();
+					var state = app.getState();
+					//					var mainPage = $.preload({
+					//						"id": '../../html/index.html',
+					//						"url": '../../html/index.html'
+					//					});
+					//					var toMain = function() {
+					//						$.fire(mainPage, 'show', null);
+					//						setTimeout(function() {
+					//							$.openWindow({
+					//								id: '../../html/index.html',
+					//								show: {
+					//									aniShow: 'pop-in'
+					//								},
+					//								waiting: {
+					//									autoShow: false
+					//								}
+					//							});
+					//						}, 0);
+					//					};
+					// close splash
+					setTimeout(function() {
+						//关闭 splash
+						plus.navigator.closeSplashscreen();
+					}, 600);
+					//检查 "登录状态/锁屏状态" 结束
+					var loginButton = doc.getElementById('login');
+					var accountBox = doc.getElementById('account');
+					accountBox.value = '';
+					var passwordBox = doc.getElementById('password');
+					passwordBox.value = '';
+					//					var autoLoginButton = doc.getElementById("autoLogin");
+					var regButton = doc.getElementById('reg');
+					//					var forgetButton = doc.getElementById('forgetPassword');
+					var moreButton = doc.getElementById('more');
+					accountBox.value = '';
+					passwordBox.value = '';
+					//如果之前登录成功，则重新获取token，获取个人信息，则为登录成功
+					//					var personal = window.myStorage.getItem(window.storageKeyName.PERSONALINFO);
+					//					if(personal) {
+					//						accountBox.value = personal.uid;
+					//						passwordBox.value = '123456';
+					//						//需要参数
+					//						var comData = {
+					//							uuid: plus.device.uuid,
+					//							utid: personal.utid,
+					//							appid: plus.runtime.appid
+					//						};
+					//						// 等待的对话框
+					//						var wd = events.showWaiting();
+					//						//token续订
+					//						postDataPro_PostTokenRenew(comData, wd, function(data0) {
+					//							wd.close();
+					//							//console.log('token续订success:RspCode:' + data0.RspCode + ',RspData:' + JSON.stringify(data0.RspData) + ',RspTxt:' + data0.RspTxt);
+					//							if(data0.RspCode == 0) {
+					//								//								window.myStorage.getItem(window.storageKeyName.PERSONALINFO).token = data0.RspData;
+					//								//获取个人信息
+					//								var comData1 = {
+					//									vvl: personal.utid, //用户id，查询的值,p传个人ID,g传ID串
+					//									vtp: 'p' //查询类型,p(个人)g(id串)
+					//								};
+					//								//21.通过用户ID获取用户资料
+					//								postDataPro_PostUinf(comData1, wd, function(data) {
+					//									wd.close();
+					//									//console.log('获取个人信息000:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					//									if(data.RspCode == 0) {
+					//										var tepI0000 = data.RspData[0];
+					//										//存储个人信息
+					//										var tempInfo = window.myStorage.getItem(window.storageKeyName.PERSONALINFO);
+					//										tempInfo.token = data0.RspData;
+					//										tempInfo.uname = tepI0000.uname;
+					//										tempInfo.unick = tepI0000.unick;
+					//										tempInfo.usex = tepI0000.usex;
+					//										tempInfo.utxt = tepI0000.utxt;
+					//										//解析省市代码
+					//										//console.log('9999=' + tepI0000.uarea);
+					//										if(tepI0000.uarea != null) {
+					//											var tempArray = tepI0000.uarea.split('|');
+					//											if(tempArray.length > 0) {
+					//												var temp0 = tempArray[0].split(' ');
+					//												var temp1 = tempArray[1].split(' ');
+					//												var model_area = {
+					//													procode: temp0[0], //省份code，自己添加的参数
+					//													proname: temp1[0], //省份名称，自己添加的参数
+					//													acode: temp0[1], //节点代码,通用6位,前两位为省份编码,中间两位为城市编码,后两位为区县编码--城市代码
+					//													aname: temp1[1], //节点名称--城市名称
+					//													atype: '' //节点类型,0省1城市2区县
+					//												}
+					//												tempInfo.uarea = model_area;
+					//											}
+					//										}
+					//										window.myStorage.setItem(window.storageKeyName.PERSONALINFO, tempInfo);
+					//										//
+					//										events.infoChanged();
+					//										//console.log('登录保存的个人信息：' + JSON.stringify(tempInfo))
+					//										//跳到主界面
+					////										events.openNewWindow('../index/index.html');
+					//										events.openNewWindow('../index/index.html', '');
+					//									} else {
+					//										mui.toast(data.RspTxt);
+					//									}
+					//								});
+					//							} else {
+					//								mui.toast(data0.RspTxt);
+					//							}
+					//						});
+					//					}
+					//登录按钮
+					loginButton.addEventListener('tap', function(event) {
+						document.activeElement.blur();
+						if(!accountBox.value) {
+							mui.toast('请输入账号')
+							return;
+						}
+						if(!passwordBox.value) {
+							mui.toast('请输入密码')
+							return;
+						}
+						var loginInfo = {
+							account: accountBox.value,
+							password: passwordBox.value
+						};
+						//登录
+						loginBtn(loginInfo);
+					});
+					//遇到登录问题
+// 					moreButton.addEventListener('tap', function(event) {
+// 						document.activeElement.blur();
+// 						var btnArray = [{
+// 							title: "通过短信验证码登录"
+// 						}];
+// 						plus.nativeUI.actionSheet({
+// 							title: "遇到登录问题？",
+// 							cancel: "取消",
+// 							buttons: btnArray
+// 						}, function(e) {
+// 							var index = e.index;
+// 							switch(index) {
+// 								case 0: //取消
+// 									break;
+// 								case 1: //通过短信验证码登录
+// 									//flag为1，表示是验证码登录
+// 									events.openNewWindowWithData('register_phoneNumber.html', '1');
+// 									//									events.fireToPage('register_phoneNumber.html', 'registerFlag', function() {
+// 									//										return 1;
+// 									//									});
+// 									break;
+// 								case 2:
+// 									break;
+// 							}
+// 						});
+// 					}, false);
+					$.enterfocus('#login-form input', function() {
+						$.trigger(loginButton, 'tap');
+					});
+					//					autoLoginButton.classList[settings.autoLogin ? 'add' : 'remove']('mui-active')
+					//					autoLoginButton.addEventListener('toggle', function(event) {
+					//						setTimeout(function() {
+					//							var isActive = event.detail.isActive;
+					//							settings.autoLogin = isActive;
+					//							app.setSettings(settings);
+					//						}, 50);
+					//					}, false);
+					//注册账号
+// 					regButton.addEventListener('tap', function(event) {
+// 						document.activeElement.blur();
+// 						//flag为0，表示是注册账号
+// 						events.openNewWindowWithData('register_phoneNumber.html', '0');
+// 					}, false);
+					//					forgetButton.addEventListener('tap', function(event) {
+					//						$.openWindow({
+					//							url: 'forget_password.html',
+					//							id: 'forget_password',
+					//							preload: true,
+					//							show: {
+					//								aniShow: 'pop-in'
+					//							},
+					//							styles: {
+					//								popGesture: 'hide'
+					//							},
+					//							waiting: {
+					//								autoShow: false
+					//							}
+					//						});
+					//					}, false);
+					//
+					window.addEventListener('resize', function() {
+						//						oauthArea.style.display = document.body.clientHeight > 400 ? 'block' : 'none';
+					}, false);
+					//
+					var backButtonPress = 0;
+					//					$.back = function(event) {
+					//						backButtonPress++;
+					//						if(backButtonPress > 1) {
+					//							plus.runtime.quit();
+					//						} else {
+					//							plus.nativeUI.toast('再按一次退出应用');
+					//						}
+					//						setTimeout(function() {
+					//							backButtonPress = 0;
+					//						}, 1000);
+					//						return false;
+					//					};
+				});
+
+				//取消按钮
+				events.addTap('cancelBtn', function() {
+					document.activeElement.blur();
+					//console.log('获取登录界面的opener:' + plus.webview.currentWebview().opener().id);
+					mui.back();
+				});
+
+				function loginBtn(loginInfo) {
+					//console.log('1221111');
+					//先发送握手协议
+					//需要加密的数据
+					var enData0 = {};
+					//不需要加密的数据
+					var comData0 = {
+						uuid: plus.device.uuid,
+						shaketype: 'login',
+						appid: plus.runtime.appid
+					};
+					// 等待的对话框
+					var wd = events.showWaiting();
+					//发送网络请求，data为网络返回值
+					postDataEncry(storageKeyName.MAINURL + 'PostShakeHand', enData0, comData0, 0, wd, function(data) {
+						//						wd.close();
+						//console.log('PostShakeHand:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+						if(data.RspCode == 0) {
+							//存储到手机本地
+							window.myStorage.setItem(window.storageKeyName.SHAKEHAND, data.RspData);
+							//账号密码登录协议
+							//需要加密的数据
+							var enData = {
+								uid: loginInfo.account, //用户手机号或账号或email
+								pw: loginInfo.password
+							};
+							//不需要加密的数据
+							var comData = {
+								uuid: plus.device.uuid,
+								shaketype: 'login', //注册(reg),登录(login),修改密码(repw)
+								appid: plus.runtime.appid,
+								vtp: 'mb' //mb(手机号),nm(账号或邮箱)
+							};
+							//console.log('endata:' + JSON.stringify(enData) + 'comdata:' + JSON.stringify(comData));
+							//发送网络请求，data为网络返回值
+							postDataEncry(storageKeyName.MAINURL + 'PostLoginColl', enData, comData, 0, wd, function(data) {
+								wd.close();
+								wd.close();
+								//console.log('账号密码登录s1111111e:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+								if(data.RspCode != 0000) {
+									mui.toast(data.RspTxt);
+									return;
+								} else {
+									mui.toast('登录成功')
+									//存储到手机本地
+									data.RspData.ispw = '1';
+									if(!data.RspData.uimg) {
+										data.RspData.uimg = '../../image/utils/default_personalimage.png';
+									}
+									if(data.RspData.unick == '' || data.RspData.unick == undefined) {
+										data.RspData.unick = '新用户';
+									}
+									//解析省市代码
+									if(data.RspData.uarea.length > 0) {
+										var tempArray = data.RspData.uarea.split('|');
+										if(tempArray.length > 0) {
+											var temp0 = tempArray[0].split(' ');
+											var temp1 = tempArray[1].split(' ');
+											var model_area = {
+												procode: temp0[0], //省份code，自己添加的参数
+												proname: temp1[0], //省份名称，自己添加的参数
+												acode: temp0[1], //节点代码,通用6位,前两位为省份编码,中间两位为城市编码,后两位为区县编码--城市代码
+												aname: temp1[1], //节点名称--城市名称
+												atype: '' //节点类型,0省1城市2区县
+											}
+											data.RspData.uarea = model_area;
+										}
+									}
+									data.RspData.account = loginInfo.account;
+									data.RspData.password = loginInfo.password;
+									window.myStorage.setItem(window.storageKeyName.PERSONALINFO, data.RspData);
+									//console.log('登录保存的个人信息：' + JSON.stringify(data.RspData));
+									//退出 界面更新
+//									events.logOff();
+//									events.infoChanged();
+//									mui.fire(plus.webview.getWebviewById("index.html"), 'login');
+//									events.hidePagesExIndex();
+//									mui.back();
+									
+									plus.webview.open('../../html/index/index.html');
+									var wvs = plus.webview.all();
+									for(var i = 0, len = wvs.length; i < len; i++) {
+										if(wvs[i].getURL().indexOf('sciedu_home.html') != -1 ||
+											wvs[i].getURL().indexOf('collect.html') != -1 ||
+											wvs[i].getURL().indexOf('mine.html') != -1) {
+											continue;
+										}
+										plus.webview.close(wvs[i]);
+									}
+									var curr = plus.webview.currentWebview();
+									curr.close();
+								}
+							});
+						} else {
+							mui.toast(data.RspTxt);
+						}
+					});
+				}
+			}(mui, document));
+		</script>
+	</body>
+
+</html>

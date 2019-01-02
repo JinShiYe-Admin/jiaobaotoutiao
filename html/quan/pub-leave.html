@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+	<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/mui.css" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<script type="text/javascript" src="../../js/mui.min.js"></script>
+		<!--公用事件js文件-->
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<style type="text/css">
+.input-content {
+	width: 100%;
+	height: 20rem;
+	background-color: white;
+	border-color: #E4E4E4;
+}
+
+
+/**
+ * 输入内容样式
+ */
+textarea {
+	border-radius: 5px 5px 0 0;
+	border-color: transparent;
+	width: 100%;
+	height: 20rem;
+}
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav common-background-bar ">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left common-color-white"></a>
+			<h1 class="mui-title common-color-white common-font-family-Regular">写留言</h1>
+			<a id="publish" class="mui-pull-right mui-plus-visible">发表</a>
+		</header>
+		<div class="mui-content">
+			<div class="input-content">
+				<textarea id='content' placeholder="添加留言，最多300字" ></textarea>
+			</div>
+		</div>
+	</body>
+	<script>
+		mui.plusReady(function() {
+			var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid; //用户id
+			var userOwnerId = plus.webview.currentWebview().data;
+			var leaveContent = document.getElementById('content');
+			
+			events.addTap('publish', function() {
+				var tempText= leaveContent.value;
+				if(!tempText||tempText=='') {
+					mui.toast('请输入留言');
+					return;
+				}else if(tempText.length > 300) {
+					mui.toast('不能超过300字');
+					return;
+				}else{
+//					tempText = replaceAllBL(tempText);
+				}
+				//console.log(tempText);
+				var httpData = {
+					userId:personalUTID,
+					userOwnerId: userOwnerId,
+					msgContent:tempText
+				}
+				//console.log('httpData === ' + JSON.stringify(httpData));
+				// 等待的对话框
+				var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+				postDataPro_addUserSpaceMsg(httpData, wd, function(data) {
+					wd.close();
+					//console.log('addUserSpaceMsg:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt + data.RspData.TotalCnt);
+					if(data.RspCode == 0) {
+						mui.toast('成功')
+						leaveContent.value = '';
+						events.fireToPageNone('leaveNew.html','refreshLeaveList');
+						mui.back();
+					} else {
+						mui.toast(data.RspTxt);
+					}
+				})
+			})
+
+		})
+	</script>
+
+	</html>

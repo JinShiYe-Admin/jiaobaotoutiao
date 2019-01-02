@@ -1,0 +1,1299 @@
+<!--
+	作者：444811716@qq.com
+	时间：2017-06-02
+	描述：课程详情列表
+-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>课程详情</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/iconfont/iconfont.css" />
+		<style>
+			body,
+			.mui-content {
+				word-wrap: break-word;
+				background-color: white;
+				/*font-family: inherit !important;*/
+			}
+
+			.mui-table-view:before,
+			.mui-table-view:after,
+			.section-top .mui-table-view-cell:after {
+				height: 0px;
+			}
+
+			.section-comment .mui-table-view-cell:after {
+				left: 10px;
+				right: 10px;
+			}
+
+			.mui-table-view-cell.mui-collapse.mui-active {
+				margin-top: 0;
+			}
+
+			.section-top {
+				/*顶部节次区域*/
+				display: none;
+				padding-bottom: 8px;
+				background-color: #efeff4;
+			}
+
+			.section-top .mui-table-view-cell {
+				background-color: white;
+			}
+
+			.section-top .mui-navigate-right {
+				/*顶部节次展开，收起描述按钮*/
+				font-size: 24px;
+				width: 21px;
+				height: 21px;
+				position: absolute;
+				right: 10px;
+			}
+
+			.section-top .mui-navigate-right:after {
+				/*顶部节次展开，收起描述按钮*/
+				content: "\e581";
+				right: 5px;
+			}
+
+			.mui-collapse {
+				/*顶部节次描述区域*/
+				padding: 0px;
+			}
+
+			.mui-table-view-cell.mui-collapse .mui-collapse-content {
+				/*顶部节次描述的内容*/
+				margin: 0px;
+				padding: 11px 15px;
+				padding-top: 0px;
+				font-size: 13px;
+				color: #808080 !important;
+			}
+
+			.section-top .mui-table-view-cell>a:not(.mui-btn).mui-active,
+			.section-top .mui-table-view-cell.mui-active,
+			.section-comment .mui-table-view-cell.mui-active,
+			.section-shield .mui-table-view-cell.mui-active {
+				/*顶部节次，评论列表，节次被屏蔽的点击效果*/
+				background-color: white;
+			}
+
+			.mui-bar-tab {
+				display: none;
+			}
+
+			.mui-bar-tab button {
+				/*评论按钮*/
+				text-align: left;
+				padding: 6px 12px !important;
+				color: #B7B7B7;
+				margin: 6px 1.5% !important;
+				width: 96%;
+				top: 0 !important;
+				height: 36px;
+				font-size: 14px;
+			}
+
+			.section-title {
+				/*节次标题*/
+				font-size: 16px;
+				color: #323232;
+			}
+
+			.section-top .section-title {
+				/*顶部节次标题*/
+				margin-right: 15px;
+				font-weight: 700;
+			}
+
+			.section-list .section-title {
+				/*节次列表标题*/
+				margin-bottom: 11px;
+				margin-right: 18px;
+			}
+
+			.section-list .mui-table-view-cell {
+				padding: 8px 15px;
+			}
+
+			.section-info,
+			.section-comment-info {
+				/*课程信息*/
+				color: #B7B7B7;
+				font-size: 14px;
+			}
+
+			.section-top .section-info {
+				margin-top: -11px !important;
+			}
+
+			.section-info .mui-pull-right {
+				display: inline;
+			}
+
+			.icon-zanzan1:before {
+				/*点赞按钮*/
+				content: "\e691";
+			}
+
+			.icon-zanzan1 {
+				font-size: 16px;
+				color: #dbdbdb;
+			}
+
+			.section-more {
+				/*查看更多*/
+				display: none;
+				text-align: center;
+				color: #B7B7B7;
+				font-size: 14px;
+			}
+
+			.section-more-text {
+				display: inline-block;
+				padding-right: 22px;
+				padding-top: 1px;
+			}
+
+			.section-more .mui-icon-arrowdown {
+				font-size: 20px;
+				position: absolute;
+				margin-left: -22px;
+				top: 8px;
+			}
+
+			.section-list-li {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			.section-list-li-left {
+				width: 65%;
+				float: left;
+			}
+
+			.section-list-img-div {
+				float: right;
+				overflow: hidden;
+				width: 35%;
+				line-height: 0px;
+			}
+
+			.section-list-img {
+				/*课程列表图片*/
+				visibility: hidden;
+				width: 100%;
+			}
+
+			.section-list-img-mask {
+				/*课程列表图片遮罩*/
+				background-color: rgba(0, 0, 0, 0.5);
+				position: absolute;
+			}
+
+			.section-image-play {
+				/*视频播放按钮*/
+				position: absolute;
+				width: 35px;
+				height: 35px;
+			}
+
+			.section-image-time {
+				/*视频的时间*/
+				position: absolute;
+				font-size: 12px;
+				color: white;
+				right: 5px;
+				bottom: 0px;
+				line-height: 21px;
+			}
+
+			.section-comment-info,
+			.section-comment-reply-info,
+			.section-comment-reply-content {
+				display: inline;
+			}
+
+			.section-list-audio {
+				width: 100%;
+				height: 50px;
+			}
+
+			.section-list-audio-border {
+				stroke: #1DB8F1;
+				fill: none;
+			}
+
+			.section-audio-icon {
+				fill: none;
+				stroke-width: 2px;
+			}
+
+			.section-list-audio-icon {
+				stroke: #B7B7B7;
+				fill: none;
+				stroke-width: 2px;
+			}
+
+			.section-list-audio-icon-white {
+				stroke: white;
+				fill: none;
+				stroke-width: 2px;
+			}
+
+			.section-list-audio-time,
+			.section-audio-time {
+				fill: #B7B7B7;
+				font-size: 15px;
+			}
+
+			.section-audio-time {
+				fill: #474747;
+			}
+
+			.section-comment-title {
+				/*评论栏标题*/
+				display: none;
+				background-color: #F2F2F2;
+				padding: 10px;
+				border-left: 3px solid #1DB8F1;
+				font-size: 15px;
+				color: #323232;
+				height: 40px;
+			}
+
+			.section-comment-personal-headimage {
+				/*评论者头像*/
+				width: 40px;
+				height: 40px;
+				border-radius: 50%;
+				float: left;
+				margin-right: 10px;
+			}
+
+			.section-comment .icon-zanzan1 {
+				/*评论点赞按钮*/
+				float: right;
+				line-height: 40px;
+				margin-left: 30px;
+			}
+
+			.section-comment-personal-name {
+				/*评论者昵称*/
+				font-size: 15px;
+				color: #323232;
+				line-height: 40px;
+			}
+
+			.section-comment-content {
+				/*评论的内容*/
+				margin: 11px 0;
+				color: #808080;
+				font-size: 14px;
+			}
+
+			.section-comment-reply {
+				/*评论回复区域*/
+				font-size: 14px;
+				background-color: #F2F2F2;
+				padding: 5px;
+				margin-top: 11px;
+			}
+
+			.section-comment-reply-name {
+				/*回复者的名称*/
+				display: inline;
+				color: #1DB8F1;
+				font-size: 14px;
+			}
+
+			.section-comment-reply-all {
+				/*查看所有回复*/
+				color: #1DB8F1;
+				font-size: 14px;
+			}
+
+			.section-comment-reply-content {
+				font-size: 14px;
+				color: #808080;
+			}
+
+			.section-shield {
+				/*节次屏蔽*/
+				display: none;
+				background-color: white;
+				justify-content: center;
+				align-items: center;
+				height: 150px;
+				text-align: center;
+				background-color: white;
+				border-bottom: 8px solid #EFEFF4;
+			}
+
+			.section-shield .mui-table-view-cell {
+				width: 100%;
+				background-color: white;
+			}
+
+			.section-shield .icon-jinggao-copy {
+				font-size: 60px;
+				color: #dbdbdb;
+				padding-top: 5px;
+			}
+
+			.section-shield .section-shield-text {
+				font-size: 14px;
+				color: #999999;
+			}
+
+			.section-show .section-title {
+				/*当前显示的节次*/
+				color: #00A5E0;
+			}
+
+			.section-comment-zan,
+			.section-zan {
+				/*点赞*/
+				color: #1db8f1;
+			}
+
+			.section-comment-notzan,
+			.section-notzan {
+				/*不点赞*/
+				color: #dbdbdb;
+			}
+
+			.mui-scroll-wrapper {
+				z-index: 1;
+				bottom: 50px;
+				top: 45px;
+			}
+
+			.video-area {
+				/*视频区域*/
+				display: none;
+			}
+
+			.video-area video {
+				position: absolute;
+				top: 45px;
+				z-index: 2;
+				width: 100%;
+				background-color: black;
+			}
+
+			.audio-area {
+				/*音频区域*/
+				display: none;
+				position: absolute;
+				z-index: 2;
+				background-color: white;
+				width: 100%;
+				top: 45px;
+				height: 100px;
+			}
+
+			.section-list-audio-border-fill {
+				/*音频背景*/
+				fill: #1DB8F1;
+			}
+
+			.audio-area-svg {
+				margin-top: 28px;
+				margin-left: 15px;
+				margin-right: 15px;
+			}
+
+			.audio-area-svg-rect {
+				fill: white;
+				height: 50px;
+			}
+
+			.video-area video {
+				background-color: black;
+				background-position: 50% 50%;
+				background-repeat: no-repeat;
+				-webkit-background-size: 100%;
+				-moz-background-size: 100%;
+				-o-background-size: 100%;
+				background-size: 100%;
+			}
+
+			.icon-gerenziliao {
+				font-size: 18px !important;
+				margin-top: 2px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title"></h1>
+			<a id="introduction" class="mui-icon iconfont icon-gerenziliao mui-pull-right"></a>
+		</header>
+		<nav id="bar_tab" class="mui-bar mui-bar-tab">
+			<a class="mui-tab-item">
+				<button id="comment_section" type="button" class="mui-btn mui-btn-block mui-btn-outlined">请输入评论</button>
+			</a>
+		</nav>
+		<div id="content" class="mui-content">
+			<div id="audio_area" class="audio-area">
+				<div id="audio_area_svg" class="audio-area-svg">
+					<svg id="audio_svg" class="section-list-audio">
+						<path id="audio_svg_border_fill" class="section-list-audio-border-fill" />
+						<rect id="audio_svg_rect" class="audio-area-svg-rect" x="10" y="0">
+							<animate id="audio_svg_rect_ani" attributeName="x" from="10" begin="indefinite" repeatCount="1" />
+						</rect>
+						<path id="audio_svg_border" class="section-list-audio-border" />
+						<path class="section-list-audio-icon" d="M30 18 A5 5 0 0 1 30 23">
+							<animate id="audio_svg_icon_first_ani" attributeName="stroke" from="white" to="#B7B7B7" begin="indefinite" />
+						</path>
+						<path class="section-list-audio-icon" d="M35 14 A10 10 0 0 1 35 27">
+							<animate id="audio_svg_icon_second_ani" attributeName="stroke" from="white" to="#B7B7B7" begin="indefinite" />
+						</path>
+						<path class="section-list-audio-icon" d="M40 10 A 15 15 0 0 1 40 31">
+							<animate id="audio_svg_icon_third_ani" attributeName="stroke" from="white" to="#B7B7B7" begin="indefinite" />
+						</path>
+						<text id="audio_svg_time" class="section-audio-time" x="60" y="26"></text>
+					</svg>
+				</div>
+				<audio id="audio" preload="none"></audio>
+			</div>
+			<div id="video_area" class="video-area">
+				<video id="video" controls="controls" webkit-playsinline playsinline preload="none" poster="null">
+					您的浏览器不支持video标签
+				</video>
+			</div>
+			<div id="scroll_wrapper" class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<ul id="section_shield" class="mui-table-view section-shield">
+						<li class="mui-table-view-cell">
+							<div class="mui-icon iconfont icon-jinggao-copy"></div>
+							<div class="section-shield-text">该内容已被作者屏蔽</div>
+						</li>
+					</ul>
+					<ul id="section_top" class="mui-table-view section-top">
+						<li class="mui-table-view-cell">
+							<div id="collapse_content_show" class="mui-navigate-right"></div>
+							<div id="section_top_title" class="section-title">
+							</div>
+						</li>
+						<li id="collapse_content_li" class="mui-table-view-cell mui-collapse">
+							<div id="section_top_content" class="mui-collapse-content">
+							</div>
+						</li>
+						<li class="mui-table-view-cell section-info">
+							<div id="section_top_zan" class="mui-icon iconfont icon-zanzan1"></div>
+							<div id="section_top_time" class="mui-pull-right"></div>
+						</li>
+					</ul>
+					<ul id="section_list" class="mui-table-view section-list">
+						<!--<li id="test_li" class="mui-table-view-cell section-list-li"></li>-->
+						<li id="section_more" class="mui-table-view-cell section-more">
+							<div class="section-more-text">查看更多</div>
+							<div class="mui-icon mui-icon-arrowdown"></div>
+						</li>
+					</ul>
+					<div id="section_comment_title" class="section-comment-title">
+						评论(0)
+					</div>
+					<ul id="section_comment_list" class="mui-table-view section-comment">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script type="text/javascript" src="../../js/libs/myStorage/myStorage.js"></script>
+		<script type="text/javascript" src="../../js/storageKeyName.js"></script>
+		<script type="text/javascript" src="../../js/utils/playutil.js"></script>
+		<script type="text/javascript" src="../../js/publicMicroClass.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/micro-course/coursedetails.js"></script>
+		<script type="text/javascript">
+			var main; //当webView
+			var sectionData = {
+				key: [],
+				value: {}
+			}; //当前课程的数据
+			var allUserInfo = {
+				key: [],
+				value: {}
+			}; //评论，回复者的账号信息
+			var sectionComments = []; //当前节次的评论
+			var sectionId; //当前显示的节次id
+			var pageIndex = 0; //当前页数
+			var svgWidth; //SVG中的宽度
+			var audioState = 0; //0,未播放;1,播放中;2,暂停中;3,结束播放;4,未加载
+			mui.init({
+				gestureConfig: {
+					doubletap: true,
+				}
+			});
+			mui.plusReady(function() {
+				//events.closeWaiting();
+				var wd = events.showWaiting();
+				initData();
+				courseDetails.init();
+				initControl();
+				initListener();
+				getAllSectionsAndComments(pageIndex + 1, wd);
+			});
+
+			/**
+			 * 初始化数据
+			 */
+			function initData() {
+				main = plus.webview.currentWebview();
+				//console.log("main data " + JSON.stringify(main.data));
+				document.getElementById("title").innerText = main.data.CourseName;
+			}
+
+			/**
+			 * 初始化控件
+			 */
+			function initControl() {
+				//初始化下拉，上拉控件
+				var deceleration = mui.os.ios ? 0.003 : 0.0009;
+				mui('.mui-scroll-wrapper').scroll({
+					bounce: false,
+					indicators: true, //是否显示滚动条
+					deceleration: deceleration
+				});
+
+				//初始化视频播放区域
+				var video = document.getElementById("video");
+				video.style.height = plus.screen.resolutionWidth * 190 / 360 + "px";
+				video.onplaying = function() {
+					//console.log("video-onplaying");
+					video.style.backgroundImage = "";
+				}
+				//初始化音频播放区域
+				svgWidth = plus.screen.resolutionWidth - 60;
+				var d = courseDetails.getAudioBorderPath(svgWidth);
+				//console.log("top audio " + d);
+				//外框和背景
+				document.getElementById("audio_svg_border_fill").setAttribute("d", d);
+				document.getElementById("audio_svg_border").setAttribute("d", d);
+				//进度控制区域
+				document.getElementById("audio_svg_rect").setAttribute("width", plus.screen.resolutionWidth - 50);
+				var audio = document.getElementById("audio");
+
+				audio.oncanplaythrough = function() { //可以播放
+					//console.log("audio-oncanplaythrough " + audioState);
+					if(audioState == 4) {
+						audioState = 0;
+						audio.play();
+					}
+				}
+
+				audio.onplaying = function() { //播放
+					//console.log("audio-playing" + audio.duration);
+					if(audioState == 0 || audioState == 3) { //从头开始播放
+						var audio_svg_rect_ani = document.getElementById("audio_svg_rect_ani");
+						var audio_svg_icon_first_ani = document.getElementById("audio_svg_icon_first_ani");
+						var repeatCount = parseInt(audio.duration);
+						var ids = ["audio_svg_icon_first_ani", "audio_svg_icon_second_ani", "audio_svg_icon_third_ani"];
+
+						audio_svg_rect_ani.setAttribute("to", svgWidth + 20);
+						audio_svg_rect_ani.setAttribute("dur", audio.duration + "s");
+						for(var i in ids) {
+							var ele = document.getElementById(ids[i]);
+							ele.setAttribute("repeatCount", repeatCount);
+							ele.setAttribute("dur", "1s");
+							ele.beginElement();
+						}
+						audio_svg_rect_ani.beginElement();
+					} else { //继续播放
+						document.getElementById("audio_svg").unpauseAnimations();
+					}
+					audioState = 1;
+				}
+
+				audio.onpause = function() { //暂停或结束
+					//console.log("audio-onpause");
+					//console.log("paused " + audio.paused);
+					//console.log("ended " + audio.ended);
+					if(audio.paused && !audio.ended) { //暂停
+						//console.log("暂停");
+						audioState = 2;
+						document.getElementById("audio_svg").pauseAnimations();
+					} else if(audio.ended) {
+						//console.log("结束");
+						audioState = 3;
+					}
+				}
+			}
+
+			/**
+			 * 初始化监听
+			 */
+			function initListener() {
+
+				//显示，隐藏课程简介
+				document.getElementById('collapse_content_show').addEventListener('tap', function() {
+					var collapse_content_li = document.getElementById("collapse_content_li");
+					var classNameList = collapse_content_li.className.split(" ");
+					var show = false;
+					for(var i in classNameList) {
+						if(classNameList[i] == "mui-active") {
+							show = true;
+							break;
+						}
+					}
+					if(show) {
+						collapse_content_li.className = "mui-table-view-cell mui-collapse";
+					} else {
+						collapse_content_li.className = "mui-table-view-cell mui-collapse mui-active";
+					}
+				});
+
+				//课程介绍
+				document.getElementById('introduction').addEventListener('tap', function() {
+					document.getElementById("audio").pause();
+					events.openNewWindowWithData('course-info.html', main.data);
+				});
+
+				//查看其它节次或者查看更多
+				mui('.section-list').on('tap', '.mui-table-view-cell', function() {
+					var ids = this.id.split("_");
+					if(ids[1] == "more") { //更多
+						getAllSectionsAndComments(pageIndex + 1);
+					} else if(ids[1] != sectionId) { //查看其它节次
+						getSectionDetails(ids[1]);
+					}
+				});
+
+				//点击评论区域
+				mui('.section-comment').on('tap', '.mui-table-view-cell', function(e) {
+					//console.log('mui-table-view-cell id ' + this.id + " e " + e.target.getAttribute("data-type"));
+					var self = this;
+					if(events.judgeLoginMode(self)) { //判断是否是游客身份登录
+						document.getElementById("audio").pause();
+						return;
+					}
+					if(sectionData.value[sectionId].SecStatus == 0) { //内容被屏蔽
+						mui.toast("该内容已被作者屏蔽");
+						self.disabled = false;
+						jQuery(self).css("pointerEvents", "all");
+						return;
+					}
+					var ids = this.id.split("_");
+					var type = e.target.getAttribute("data-type");
+					switch(type) {
+						case "zan":
+						case "notzan":
+							var comData = {
+								secId: sectionId, //小节ID
+								commentId: ids[1], //评论ID
+								userId: myStorage.getItem(storageKeyName.PERSONALINFO).utid, //点赞用户ID
+								status: 0 //点赞状态，0 取消点赞，1 点赞
+							};
+							if(type == "notzan") { //评论-点赞
+								comData.status = 1;
+							}
+							commontLikeOrNot(comData, e.target, ids[2]);
+							break;
+						case "comment_reply": //评论回复
+						case "comment_reply_cell": //评论回复
+						case "view_cell": //评论评论
+							var userId; //被评论者的utid
+							if(type == "view_cell") {
+								userId = this.getAttribute('data-UserId');
+							} else if(type == "comment_reply") {
+								userId = e.target.getAttribute("data-UserId");
+							} else if(type = "comment_reply_cell") {
+								userId = e.target.parentNode.getAttribute("data-UserId");
+							}
+							var data = {
+								secId: sectionId,
+								upperId: ids[1],
+								userId: myStorage.getItem(storageKeyName.PERSONALINFO).utid,
+								userNick: myStorage.getItem(storageKeyName.PERSONALINFO).unick,
+								commentContent: '',
+								replyId: allUserInfo.value[userId].utid,
+								replyNick: allUserInfo.value[userId].unick,
+								arrayIndex: ids[2],
+								webId: main.id,
+								winId: "addCommont"
+							}
+							document.getElementById("audio").pause();
+							////console.log("data " + JSON.stringify(data));
+							events.openNewWindowWithData('course_addReply.html', data);
+							break;
+						case "reply_all": //显示所有的评论
+							showAllCommonts(sectionData.value[sectionId].Comments[ids[2]]);
+							e.target.parentNode.removeChild(e.target);
+							break;
+						default:
+							break;
+					}
+					self.disabled = false;
+					jQuery(self).css("pointerEvents", "all");
+				});
+
+				//评论节次
+				document.getElementById('comment_section').addEventListener('tap', function() {
+					//console.log("comment_section " + sectionId);
+					var self = this;
+					if(events.judgeLoginMode(self)) { //判断是否是游客身份登录
+						document.getElementById("audio").pause();
+						return;
+					}
+					if(!sectionData.value[sectionId]) {
+						self.disabled = false;
+						jQuery(self).css("pointerEvents", "all");
+						return;
+					}
+					if(sectionData.value[sectionId].SecStatus == 0) { //内容被屏蔽
+						mui.toast("该内容已被作者屏蔽");
+						self.disabled = false;
+						jQuery(self).css("pointerEvents", "all");
+						return;
+					}
+					var data = {
+						secId: sectionId,
+						upperId: 0,
+						userId: myStorage.getItem(storageKeyName.PERSONALINFO).utid,
+						userNick: myStorage.getItem(storageKeyName.PERSONALINFO).unick,
+						commentContent: '',
+						replyId: 0,
+						webId: main.id,
+						winId: "addCommont"
+					}
+					document.getElementById("audio").pause();
+					events.openNewWindowWithData('course_addReply.html', data);
+					self.disabled = false;
+					jQuery(self).css("pointerEvents", "all");
+				});
+
+				//顶部节次点赞按钮
+				mui('#section_top').on('tap', '.icon-zanzan1', function() {
+					var self = this;
+					if(events.judgeLoginMode(self)) { //判断是否是游客身份登录
+						document.getElementById("audio").pause();
+						return;
+					}
+					sectionLikeOrNot();
+					self.disabled = false;
+					jQuery(self).css("pointerEvents", "all");
+				});
+
+				//双击标题返回列表顶部
+				document.getElementById('title').addEventListener('doubletap', function() {
+					mui("#scroll_wrapper").scroll().scrollTo(0, 0, 0);
+				});
+
+				//新增评论
+				window.addEventListener('addCommont', function(e) {
+					//console.log("addCommont " + JSON.stringify(e.detail.data));
+					if(e.detail.data.replyId == 0) { //对节次评论
+						sectionComments.unshift({
+							CommentDate: new Date(new Date().getTime()).toJSON().replace("T", " "),
+							TabId: e.detail.data.TabId,
+							Replys: [],
+							ReplyId: e.detail.data.replyId,
+							CommentContent: e.detail.data.commentContent,
+							UserId: e.detail.data.userId,
+							LikeNum: 0,
+							UpperId: e.detail.data.upperId,
+							IsLiked: 0
+						});
+					} else { //对评论进行评论
+						sectionComments[e.detail.data.arrayIndex].Replys.unshift({
+							CommentDate: new Date(new Date().getTime()).toJSON().replace("T", " "),
+							TabId: e.detail.data.TabId,
+							status: 1,
+							secID: e.detail.data.secId,
+							ReplyId: e.detail.data.replyId,
+							CommentContent: e.detail.data.commentContent,
+							CommentType: 2,
+							UserId: e.detail.data.userId,
+							UpperId: e.detail.data.upperId
+						});
+					}
+					showCommentsFirst(sectionComments);
+				});
+
+				//音频SVG
+				document.getElementById('audio_svg').addEventListener('tap', function() {
+					//console.log("audio_svg " + audioState);
+					var eleAudio = document.getElementById("audio");
+					if(audioState == 0) { //未播放
+						eleAudio.play();
+					} else if(audioState == 1) { //播放中
+						audioState = 2;
+						eleAudio.pause();
+					} else if(audioState == 2) { //暂停播放
+						eleAudio.play();
+					} else if(audioState == 3) { //播放结束
+						eleAudio.play();
+					} else {
+						mui.toast("音频加载中");
+						eleAudio.setAttribute("preload", "auto");
+						eleAudio.load();
+					}
+				});
+			}
+
+			/**
+			 * 获取课程节次和评论
+			 * @param {Object} index 当前页数
+			 * @param {Object} wd 等待框
+			 */
+			function getAllSectionsAndComments(index, wd) {
+				wd = wd || events.showWaiting();
+				var comData = {
+					userId: myStorage.getItem(storageKeyName.PERSONALINFO).utid, //用户ID,登录用户
+					courseId: main.data.TabId, //课程ID
+					pageIndex: index, //当前页数
+					pageSize: 1000 //每页记录数,传入0，获取总记录数
+				};
+				postDataMCPro_getAllSectionsByCourse(comData, wd, function(data) {
+					console.log('3 获取课程的节次 ' + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						pageIndex = index;
+						if(data.RspData.Data.length != 0) {
+							if(index == 1) {
+								showTopData(data.RspData.Data[0], wd);
+								if(data.RspData.Data[0].SecStatus == 1) { //没被屏蔽
+									getSectionDetails(sectionId, 1, wd);
+								}
+							}
+							showSectionList(data.RspData.Data);
+							if(index != 1) {
+								wd.close();
+							}
+						} else {
+							wd.close();
+						}
+						wd.close();
+						if(pageIndex >= data.RspData.totalPage) {
+							//console.log('节次列表没有下一页');
+							document.getElementById("section_more").style.display = "none";
+						} else {
+							document.getElementById("section_more").style.display = "block";
+						}
+						if(sectionId == undefined) {
+							mui.toast("没有节次");
+							document.getElementById("bar_tab").style.display = "none";
+						} else {
+							document.getElementById("bar_tab").style.display = "block";
+						}
+					} else {
+						wd.close();
+						mui.toast(data.RspTxt);
+					}
+				});
+			}
+
+			//获取课程详情
+			function getSectionDetails(secId, sectionPageIndex, wd) {
+				wd = wd || events.showWaiting();
+				var comData = {
+					userId: myStorage.getItem(storageKeyName.PERSONALINFO).utid, //用户ID，登录用户
+					courseId: main.data.TabId, //课程ID
+					secId: secId, //节次ID
+					pageIndex: sectionPageIndex || 1, //当前页数
+					pageSize: 0 //每页记录数，传入0，获取总记录数
+				};
+				postDataMCPro_getSectionById(comData, wd, function(data) {
+					//console.log('16 获取课程详情 ' + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						//更换课程列表中选中的课程
+						var ele = document.getElementById("section_" + sectionId);
+						ele.className = ele.className.replace(" section-show", "");
+						var ele_show = document.getElementById("section_" + secId)
+						ele_show.className = ele_show.className + " section-show";
+						mui("#scroll_wrapper").scroll().scrollTo(0, 0, 0);
+						sectionComments = data.RspData.Data;
+						if(secId != sectionId) { //显示新的课程详细
+							showTopData(data.RspData, wd);
+						}
+						if(data.RspData.SecStatus == 1) { //没被屏蔽
+							//加载评论列表
+							showCommentsFirst(data.RspData.Data, wd);
+						}
+					} else {
+						wd.close();
+						mui.toast(data.RspTxt);
+					}
+				});
+			}
+
+			/**
+			 * 显示顶部节次的数据
+			 */
+			function showTopData(data, wd) {
+				console.log("showTopData " + JSON.stringify(data));
+				sectionId = data.SecId;
+				if(data.SecStatus == 0) { //被屏蔽
+					document.getElementById("section_top").style.display = "none";
+					document.getElementById("section_shield").style.display = 'flex';
+					document.getElementById("section_comment_title").style.display = "none";
+					document.getElementById("section_comment_list").style.display = "none";
+					showOrHiddenVideoAudio(0);
+					if(wd) {
+						wd.close();
+					}
+				} else {
+					document.getElementById("section_shield").style.display = "none";
+					document.getElementById("section_top").style.display = "block";
+					document.getElementById("section_comment_title").style.display = "block";
+					document.getElementById("section_comment_list").style.display = "block";
+					document.getElementById("section_top_title").innerHTML = data.SecName;
+					document.getElementById("section_top_content").innerHTML = data.SecNote;
+					document.getElementById("section_top_time").innerHTML = "上传时间 : " + data.UpTime.split(" ")[0];
+					var section_top_zan = document.getElementById("section_top_zan");
+					section_top_zan.innerHTML = "(" + data.LikeNum + ")";
+					if(data.IsLiked) { //节次点赞
+						section_top_zan.className = "mui-icon iconfont icon-zanzan1 section-zan";
+					} else {
+						section_top_zan.className = "mui-icon iconfont icon-zanzan1 section-notzan";
+					}
+					//视频音频区域
+					showOrHiddenVideoAudio(data.EncType, data.EncAddr, data.EncLen, data.EncImgAddr);
+				}
+			}
+
+			/**
+			 * 显示中间节次列表
+			 * @param {Object} data
+			 */
+			function showSectionList(data) {
+				////console.log("showSectionList " + JSON.stringify(data));
+				var more = document.getElementById("section_more");
+				for(var i in data) {
+					sectionData.key[sectionData.key.length] = data[i].SecId;
+					sectionData.value[data[i].SecId] = data[i];
+					////console.log("showSectionList " + i + JSON.stringify(data[i]));
+					////console.log("EncImgAddr "+data[i].EncImgAddr);
+					var ele = document.createElement("li");
+					ele.id = "section_" + data[i].SecId;
+					var html = '';
+					if(data[i].EncType == 1) { //视频
+						ele.className = "mui-table-view-cell section-list-li";
+						html = '<div class="section-list-li-left">\
+									<div class="section-title mui-ellipsis-2">' + data[i].SecName + '</div>\
+									<div class="section-info">上传时间 : ' + data[i].UpTime.split(" ")[0] + '</div>\
+								</div>\
+								<div class="section-list-img-div">\
+									<div class="section-list-img" style="height:' + courseDetails.height + 'px;">\
+										<img src="' + data[i].EncImgAddr + '" class="section-list-img" onload="courseDetails.onImageLoad(this);" onerror="courseDetails.onImageError(this);"/>\
+									</div>\
+									<div class="section-list-img-mask" style="height:' + courseDetails.height + 'px;width:' + courseDetails.width + 'px;margin-top:' + (-courseDetails.height) + 'px;">\
+										<img src="../../image/utils/playvideo.png" class="section-image-play" style="margin-top:' + courseDetails.playMarginTop + 'px;margin-left:' + courseDetails.playMarginLeft + 'px;"/>\
+										<div class="section-image-time">' + courseDetails.getAudioTime(data[i].EncLen) + '</div>\
+									</div>\
+								</div>';
+					} else if(data[i].EncType == 2) { //音频
+						ele.className = "mui-table-view-cell";
+						html = '<div class="section-title mui-ellipsis-2">' + data[i].SecName + '</div>\
+						<div>\
+							<svg class="section-list-audio">\
+								<path class="section-list-audio-border" d="' + courseDetails.getAudioBorderPath() + '" />\
+								<path class="section-list-audio-icon" d="M30 18 A5 5 0 0 1 30 23 M35 14 A10 10 0 0 1 35 27 M40 10 A 15 15 0 0 1 40 31" />\
+								<text class="section-list-audio-time" x="60" y="26">' + courseDetails.getAudioTime(data[i].EncLen) + '</text>\
+							</svg>\
+						</div>\
+						<div class="section-info">上传时间 : ' + data[i].UpTime.split(" ")[0] + '</div>';
+					} else if(data[i].EncType == 3) { //文章
+						if(!data[i].EncImgAddr) { //没有图片
+							ele.className = "mui-table-view-cell";
+							html = '<div class="section-title">' + data[i].SecName + '</div>\
+							<div class="section-info">上传时间 : ' + data[i].UpTime.split(" ")[0] + '</div>';
+						} else {
+							ele.className = "mui-table-view-cell section-list-li";
+							html = '<div class="section-list-li-left">\
+									<div class="section-title mui-ellipsis-2">' + data[i].SecName + '</div>\
+									<div class="section-info">上传时间 : ' + data[i].UpTime.split(" ")[0] + '</div>\
+								</div>\
+								<div class="section-list-img-div">\
+									<div class="section-list-img" style="height:' + courseDetails.height + 'px;">\
+										<img src="' + data[i].EncImgAddr + '" class="section-list-img" onload="courseDetails.onImageLoad(this);" onerror="courseDetails.onImageError(this);"/>\
+									</div>\
+								</div>';
+						}
+					}
+					if(sectionId == data[i].SecId) {
+						//当前显示的节次
+						ele.className = ele.className + ' section-show';
+					}
+					ele.innerHTML = html;
+					document.getElementById("section_list").insertBefore(ele, more);
+				}
+			}
+
+			/**
+			 * 显示评论1.获取用户昵称
+			 * @param {Object} data
+			 */
+			function showCommentsFirst(comments, wd) {
+				wd = wd || events.showWaiting();
+				//console.log("showCommentsFirst " + JSON.stringify(comments));
+				document.getElementById("section_comment_list").innerHTML = "";
+				document.getElementById("section_comment_title").innerText = "评论(" + comments.length + ")";
+				var utids = [];
+				for(var i in comments) {
+					//评论节次用户
+					if(!allUserInfo.value[comments[i].UserId] && comments[i].UserId != 0) {
+						utids[utids.length] = comments[i].UserId;
+					}
+					//回复评论
+					for(var j in comments[i].Replys) {
+						if(!allUserInfo.value[comments[i].Replys[j].UserId] && comments[i].Replys[j].UserId != 0) {
+							utids[utids.length] = comments[i].Replys[j].UserId;
+						}
+					}
+				}
+				if(utids.length != 0) {
+					var utidStr = utids.join(',');
+					comData = {
+						vvl: utidStr, //用户id，查询的值,p传个人ID,g传ID串
+						vtp: 'g' //查询类型,p(个人)g(id串)
+					};
+					//21.通过用户ID获取用户资料
+					postDataPro_PostUinf(comData, wd, function(data) {
+						//console.log('21 通过用户ID获取用户资料' + JSON.stringify(data));
+						if(data.RspCode == 0) {
+							for(var k in data.RspData) {
+								if(!allUserInfo.value[data.RspData[k].utid]) {
+									allUserInfo.key[allUserInfo.key.length] = data.RspData[k].utid;
+									allUserInfo.value[data.RspData[k].utid] = data.RspData[k];
+								}
+							}
+							showCommontsSecond(comments, wd);
+						} else {
+							mui.toast(data.RspTxt);
+							wd.close();
+						}
+					});
+				} else {
+					showCommontsSecond(comments, wd);
+				}
+			}
+
+			/**
+			 * 显示评论和回复
+			 * @param {Object} data
+			 * @param {Object} wd
+			 */
+			function showCommontsSecond(data, wd) {
+				//console.log("showCommontsSecond " + JSON.stringify(data));
+				for(var i in data) {
+					////console.log("showCommontsSecond " + JSON.stringify(data[i]));
+					var ele = document.createElement("li");
+					ele.className = "mui-table-view-cell";
+					ele.setAttribute("data-UserId", data[i].UserId);
+					ele.setAttribute("data-type", "view_cell");
+					ele.id = "commont_" + data[i].TabId + '_' + i;
+					//点赞数
+					var html_zan = '';
+					if(data[i].IsLiked) {
+						//点赞
+						html_zan = '<div data-type="zan" class="mui-icon iconfont icon-zanzan1 section-comment-zan">(' + data[i].LikeNum + ')</div>'
+					} else {
+						html_zan = '<div data-type="notzan" class="mui-icon iconfont icon-zanzan1 section-comment-notzan">(' + data[i].LikeNum + ')</div>'
+					}
+					//评论节次
+					var html_0 = "";
+					//回复评论
+					var html_1 = "";
+					if(allUserInfo.value[data[i].UserId]) {
+						html_0 = '<img data-type="view_cell" src="' + updateHeadImg(allUserInfo.value[data[i].UserId].uimg, 2) + '" class="section-comment-personal-headimage" />\
+						' + html_zan + '\
+						<div class="mui-ellipsis section-comment-personal-name" data-type="view_cell">' + allUserInfo.value[data[i].UserId].unick + '</div>\
+						<div class="section-comment-content" data-type="view_cell">' + data[i].CommentContent + '</div>\
+						<div class="section-comment-info">回复' + data[i].Replys.length + '</div>\
+						<div class="mui-pull-right section-comment-info">' + data[i].CommentDate.split(" ")[0] + '</div>';
+
+						for(var j in data[i].Replys) {
+							if(j == 0) {
+								html_1 = '<div data-type="reply" id="commont_reply_' + data[i].TabId + '" class="section-comment-reply">';
+							}
+							if(j == 5) {
+								html_1 = html_1 + '<div data-type="reply_all" class="section-comment-reply-all">查看全部>></div>';
+								break;
+							} else {
+								html_1 = html_1 + '<div id="commont_reply_' + data[i].TabId + '_' + data[i].Replys[j].TabId + '" data-type="comment_reply" data-UserId="' + data[i].Replys[j].UserId + '">\
+								<div class="section-comment-reply-name" data-type="comment_reply_cell">' + allUserInfo.value[data[i].Replys[j].UserId].unick + '</div><div\
+								class="section-comment-reply-info" data-type="comment_reply_cell">@</div><div \
+								class="section-comment-reply-name" data-type="comment_reply_cell">' + allUserInfo.value[data[i].Replys[j].ReplyId].unick + '</div>\
+								<div class="section-comment-reply-info" data-type="comment_reply_cell">:</div>\
+								<div class="section-comment-reply-content" data-type="comment_reply_cell">' + data[i].Replys[j].CommentContent + '</div>\
+							</div>';
+							}
+						}
+					}
+					if(html_1 != "") {
+						html_1 = html_1 + '</div>';
+					}
+					ele.innerHTML = html_0 + html_1;
+					document.getElementById("section_comment_list").appendChild(ele);
+				}
+				if(data.length == 0) {
+					document.getElementById("section_comment_list").innerHTML = '<div style="text-align: center;color: #808080;margin: 50px 0px;">\
+						<img src="../../image/qiuzhi/qiuzhi_noanswer.png" style="width: 50%;"/>\
+						<div style="padding-bottom: 10px;">暂无评论~~~</div>\
+					</div>';
+				}
+
+				if(wd) {
+					wd.close();
+				}
+			}
+
+			/**
+			 * 对评论点赞或者取消点赞
+			 * @param {Object} data
+			 * @param {Object} element
+			 */
+			function commontLikeOrNot(commonData, element, index) {
+				var wd = events.showWaiting();
+				postDataMCPro_setCommentLike(commonData, wd, function(data) {
+					//console.log('9 设置某条评论的点赞' + JSON.stringify(data));
+					if(data.RspCode == 0 && data.RspData.Result == 1) {
+						if(commonData.status == 0) { //取消赞
+							element.className = "mui-icon iconfont icon-zanzan1 section-comment-notzan";
+							element.setAttribute('data-type', "notzan");
+							sectionComments[index].IsLiked = 0;
+							sectionComments[index].LikeNum = sectionComments[index].LikeNum - 1;
+						} else { //点赞
+							element.className = "mui-icon iconfont icon-zanzan1 section-comment-zan";
+							element.setAttribute('data-type', "zan");
+							sectionComments[index].IsLiked = 1;
+							sectionComments[index].LikeNum = sectionComments[index].LikeNum + 1;
+						}
+						element.innerText = "(" + sectionComments[index].LikeNum + ")";
+						wd.close();
+					} else {
+						mui.toast(data.RspTxt);
+						wd.close();
+					}
+				});
+			}
+
+			/**
+			 * 显示全部的评论
+			 */
+			function showAllCommonts(data) {
+				//console.log("showAllCommonts " + JSON.stringify(data));
+				for(var i in data.Replys) {
+					if(i > 4) {
+						var ele = document.createElement('div');
+						ele.id = "commont_reply_" + data.TabId + "_" + data.Replys[i].TabId;
+						ele.setAttribute("data-type", "comment_reply");
+						ele.setAttribute("data-UserId", data.Replys[i].UserId);
+						ele.innerHTML = '<div class="section-comment-reply-name" data-type="comment_reply_cell">' + allUserInfo.value[data.Replys[i].UserId].unick + '</div><div\
+								class="section-comment-reply-info" data-type="comment_reply_cell">@</div><div \
+								class="section-comment-reply-name" data-type="comment_reply_cell">' + allUserInfo.value[data.Replys[i].ReplyId].unick + '</div>\
+								<div class="section-comment-reply-info" data-type="comment_reply_cell">:</div>\
+								<div class="section-comment-reply-content" data-type="comment_reply_cell">' + data.Replys[i].CommentContent + '</div>';
+						document.getElementById("commont_reply_" + data.TabId).appendChild(ele);
+					}
+				}
+			}
+
+			/**
+			 * 显示或隐藏视频区域
+			 * @param {int} type 1,显示视频区域;2,显示音频区域;
+			 */
+			function showOrHiddenVideoAudio(type, fpath, time, thumb) {
+				//console.log("showOrHiddenVideoAudio " + type + " " + fpath + " " + time + " " + thumb);
+				var video = document.getElementById("video");
+				//重置音频区域
+				var audio = document.getElementById("audio");
+				audio.pause(); //暂停播放
+				audio.src = ""; //取消视频
+				audio.setAttribute("preload", "none");
+				audio_svg_rect_ani.removeAttribute("to");
+				audio_svg_rect_ani.removeAttribute("dur");
+				var ids = ["audio_svg_icon_first_ani", "audio_svg_icon_second_ani", "audio_svg_icon_third_ani"];
+				for(var i in ids) {
+					var ele = document.getElementById(ids[i]);
+					ele.removeAttribute("repeatCount");
+					//					ele.removeAttribute("dur");
+				}
+				audio_svg.unpauseAnimations();
+				audioState = 4;
+				//重置视频区域
+				video.src = "";
+				video.style.backgroundImage = "";
+				var collapse_content_show = document.getElementById("collapse_content_show");
+				if(type == 1) { //视频
+					document.getElementById("scroll_wrapper").style.top = 44 + parseInt(plus.screen.resolutionWidth * 190 / 360) + "px";
+					document.getElementById("video_area").style.display = "inline";
+					document.getElementById("audio_area").style.display = "none";
+					show = false;
+					document.getElementById("collapse_content_li").className = "mui-table-view-cell mui-collapse";
+					collapse_content_show.style.display = 'block';
+					document.getElementById("section_top_title").style.marginRight = collapse_content_show.offsetWidth + 6 + "px";
+					video.src = fpath;
+					video.style.backgroundImage = "url(" + thumb + ")";
+					events.playVideoCheckWeb();
+				} else if(type == 2) { //音频
+					document.getElementById("scroll_wrapper").style.top = "144px";
+					document.getElementById("video_area").style.display = "none";
+					document.getElementById("audio_area").style.display = "inline";
+					show = false;
+					document.getElementById("collapse_content_li").className = "mui-table-view-cell mui-collapse";
+					collapse_content_show.style.display = 'block';
+					document.getElementById("section_top_title").style.marginRight = collapse_content_show.offsetWidth + 6 + "px";
+					document.getElementById("audio_svg_time").innerHTML = courseDetails.getAudioTime(time);
+					audio.src = fpath;
+				} else {
+					document.getElementById("scroll_wrapper").style.top = "45px";
+					document.getElementById("video_area").style.display = "none";
+					document.getElementById("audio_area").style.display = "none";
+					collapse_content_show.style.display = 'none';
+					show = true;
+					document.getElementById("collapse_content_li").className = "mui-table-view-cell mui-collapse mui-active";
+					document.getElementById("section_top_title").style.marginRight = "0px";
+				}
+			}
+
+			/**
+			 * 对课程点赞或取消点赞
+			 */
+			function sectionLikeOrNot() {
+				var wd = events.showWaiting();
+				//console.log("sectionLikeOrNot sectionId " + sectionId);
+				var commonData = {
+					secId: sectionId,
+					userId: myStorage.getItem(storageKeyName.PERSONALINFO).utid,
+					status: !sectionData.value[sectionId].IsLiked * 1
+				}
+				//console.log("commonData " + JSON.stringify(commonData));
+				postDataMCPro_setSecLike(commonData, wd, function(data) {
+					//console.log('14 设置某小节的点赞 ' + JSON.stringify(data));
+					if(data.RspCode == 0 && data.RspData.Result == 1) {
+						var section_top_zan = document.getElementById("section_top_zan");
+						if(commonData.status == 0) { //取消赞
+							section_top_zan.className = "mui-icon iconfont icon-zanzan1 section-notzan"
+							sectionData.value[sectionId].IsLiked = 0;
+							sectionData.value[sectionId].LikeNum = sectionData.value[sectionId].LikeNum - 1;
+						} else { //点赞
+							section_top_zan.className = "mui-icon iconfont icon-zanzan1 section-zan";
+							sectionData.value[sectionId].IsLiked = 1;
+							sectionData.value[sectionId].LikeNum = sectionData.value[sectionId].LikeNum + 1;
+						}
+						section_top_zan.innerHTML = "(" + sectionData.value[sectionId].LikeNum + ")";
+						wd.close();
+					} else {
+						mui.toast(data.RspTxt);
+						wd.close();
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

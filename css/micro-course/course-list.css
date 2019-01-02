@@ -1,0 +1,123 @@
+/*课程容器*/
+
+.course-container {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: flex;
+}
+
+.img-container {
+	position: relative;
+	width: 100px;
+	height: 60px;
+}
+
+
+/**
+ * 课程图片
+ */
+
+.course-img {
+	width: 100px;
+	height: 60px;
+}
+
+.red-circle {
+	position: absolute;
+	top: -5px;
+	left: 95px;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background-color: red;
+}
+
+
+/**
+ * 课程详情
+ */
+
+.course-detail {
+	padding-left: 10px;
+	width: 20%;
+	flex-grow: 1;
+	-webkit-box-flex: 1;
+	-moz-box-flex: 1;
+	-webkit-flex-grow: 1;
+	-ms-flex: 1;
+}
+
+
+/**
+ * 课程名称和按钮
+ */
+
+.courseName-button {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -moz-box;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-pack: justify;
+	-webkit-justify-content: space-between;
+	-ms-flex-pack: justify;
+	justify-content: space-between;
+}
+
+
+/**
+ * 课程名称
+ */
+
+.course-name {
+	width: 50%;
+	flex-grow: 1;
+	font-size: 16px;
+	color: #323232;
+}
+
+
+/**
+ * 课程信息
+ */
+
+.course-info {
+	margin-top: -5px;
+	font-size: 15px;
+	color: #B7B7B7;
+	padding-top: 10px;
+}
+
+
+/**
+ * 课程按钮
+ */
+
+.input-btn {
+	width: 50px;
+	height: 20px;
+	font-size: 12px;
+	padding: 0px;
+}
+
+
+/**
+ * 已关注
+ */
+
+.btn-focused {
+	border: solid 1px #B7B7B7;
+	color: #B7B7B7;
+}
+
+
+/**
+ * 未关注
+ */
+
+.btn-unfocus {
+	border: solid 1px #1DB8F1;
+	color: #1DB8F1;
+}

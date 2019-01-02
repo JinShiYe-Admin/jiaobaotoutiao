@@ -1,0 +1,225 @@
+<!--编辑备注-->
+<!--@anthor an-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<style>
+			html,.mui-content {
+				background-color: white;
+			}
+			
+			input[type=text] {
+				border: none;
+			}
+			
+			.input-container {
+				height: 43px;
+				display: flex;
+				display: -webkit-flex;
+				background-color: white;
+			}
+			
+			.remark-input {
+				width: 50%;
+				flex-grow: 1;
+			}
+			
+			.input-left {
+				align-self: flex-end;
+				padding-right: 10px;
+			}
+			
+			textarea {
+				border: none;
+			}
+			
+			p {
+				margin-bottom: 0;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">编辑备注</h1>
+			<a id="save-remark" class="mui-pull-right">保存</a>
+		</header>
+		<div class="mui-content">
+			<div class="input-container">
+				<textarea id="remark-input" class="remark-input" type="text" style="height: 42px;min-height: 42px;" placeholder="请输入,最多20字!"></textarea>
+				<p class="input-left">20</p>
+			</div>
+			<div style="background-color: #00A5E0;height: 1px;margin-left: 2.5%;width: 95%;"></div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script src="../../js/utils/self-adaptive-input.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			var groupInfo;
+			var remarkInfo;
+			var type = 0; //修改东西0备注1昵称2群信息
+			mui.plusReady(function() {
+				events.blurBack();
+				window.addEventListener('editRemark', function(e) {
+					jQuery("#remark-input").prop("maxLength",20);
+					autoTextArea.set(document.querySelector(".input-container"), document.getElementById("remark-input"), document.querySelector(".input-left"), 20);
+					type = 0;
+					remarkInfo = e.detail.data;
+					//console.log('备注传过来的值' + JSON.stringify(remarkInfo));
+					document.getElementById('remark-input').value = remarkInfo.bunick ? remarkInfo.bunick : "";
+					document.getElementById('remark-input').placeholder = "群昵称：" + remarkInfo.ugname + "(请输入备注,最多20字!)"
+					document.querySelector('.mui-title').innerText = '编辑备注';
+					setBackHeight(20);
+				})
+				window.addEventListener('editNick', function(e) {
+					jQuery("#remark-input").prop("maxLength",20);
+					autoTextArea.set(document.querySelector(".input-container"), document.getElementById("remark-input"), document.querySelector(".input-left"), 20);
+					type = 1;
+					remarkInfo = e.detail.data;
+					//console.log('备注传过来的值' + JSON.stringify(remarkInfo));
+					document.getElementById('remark-input').value = remarkInfo.ugname;
+					document.getElementById('remark-input').placeholder = "请输入群昵称，最多20字";
+					document.querySelector('.mui-title').innerText = '编辑群昵称';
+					setBackHeight(20);
+				})
+				window.addEventListener('editGroupInfo', function(e) {
+					jQuery("#remark-input").prop("maxLength",30);
+					type = 2;
+					groupInfo = e.detail.data;
+					document.getElementById('remark-input').value =groupInfo.info;
+					document.getElementById('remark-input').placeholder = "请输入群说明，最多30字";
+					document.querySelector('.mui-title').innerText = '群说明';
+					autoTextArea.set(document.querySelector(".input-container"), document.getElementById("remark-input"), document.querySelector(".input-left"), 30);
+					setBackHeight(30);
+				})
+
+				var save = document.getElementById('save-remark');
+				save.addEventListener('tap',
+					function() {
+						var inputValue = getInputValue();
+						if(inputValue && inputValue.length > 0) {
+							if(type == 0) {
+								if(events.limitInput(inputValue, 20)) {
+									return;
+								}
+								editRemark(inputValue);
+							} else if(type == 1) {
+								if(events.limitInput(inputValue, 20)) {
+									return;
+								}
+								editNick(inputValue);
+							} else {
+								if(events.limitInput(inputValue, 30)) {
+									return;
+								}
+								editGroupInfo(inputValue);
+							}
+						} else if(type == 0 && remarkInfo.bunick) {
+							events.setDialog("删除备注", "确认要删除备注？", function() {
+								delRemark();
+							})
+						} else {
+							mui.toast('请输入！');
+						}
+					})
+			})
+			var editGroupInfo = function(inputValue) {
+				var wd = events.showWaiting();
+				postDataPro_PostReGinfo({
+					vtp: 'gnote', //指更改用户信息的相应项,对应后面的vvl值,gimg(头像),gname(群名)
+					vvl: inputValue, //要修改成的值
+					rid: groupInfo.gid //要修改的群id
+				}, wd, function(data) {
+					wd.close();
+					//console.log("修改群信息的返回值：" + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						mui.toast("修改群信息成功！");
+						mui.fire(plus.webview.currentWebview().opener(), "groupInfoChanged", inputValue);
+						mui.back();
+					} else {
+						mui.toast(data.RspTxt);
+					}
+				})
+			}
+			var setBackHeight = function(len) {
+				document.querySelector(".input-container").style.height = "46px";
+				document.getElementById("remark-input").style.height = "45px";
+				document.querySelector(".input-left").innerText = len - document.getElementById("remark-input").value.length;
+				autoTextArea.change(document.querySelector(".input-container"), document.getElementById("remark-input"), document.querySelector(".input-left"), len);
+			}
+			var delRemark = function() {
+				var wd = events.showWaiting();
+				postDataPro_PostUmkD({
+					vvl: remarkInfo.utid
+				}, wd, function(data) {
+					//console.log(JSON.stringify(data));
+					wd.close();
+					if(data.RspCode == 0) {
+						mui.toast("删除备注成功！")
+						document.getElementById('remark-input').value = "";
+						mui.fire(plus.webview.getWebviewById("group-pInfo.html"), 'remarkChanged');
+						mui.back();
+					} else {
+						mui.toast(data.RspTxt);
+					}
+				})
+			}
+			//改变昵称
+			var editNick = function(inputValue) {
+				var wd = events.showWaiting();
+				postDataPro_PostGuNameE({
+					vvl: remarkInfo.gutid, //群成员群ID，gutid
+					vvl1: inputValue //群昵称
+				}, wd, function(data) {
+					wd.close()
+					JSON.stringify('更改群昵称后返回的数据' + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						remarkInfo.ugname = inputValue;
+						document.getElementById('remark-input').value = "";
+						mui.fire(plus.webview.getWebviewById("group-pInfo.html"), 'nickChanged', remarkInfo);
+						mui.toast('修改群昵称成功！');
+						mui.back();
+					} else {
+						mui.toast(data.RspTxt);
+					}
+				})
+			}
+			//改变备注
+			var editRemark = function(inputValue) {
+				var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+				postDataPro_PostUmkA({
+					vvl: remarkInfo.utid,
+					vvl1: inputValue
+				}, wd, function(data) {
+					wd.close();
+					//console.log('修改群备注的返回值：' + JSON.stringify(data))
+					if(data.RspCode == '0000') {
+						document.getElementById('remark-input').value = "";
+						mui.fire(plus.webview.getWebviewById("group-pInfo.html"), 'remarkChanged');
+						//console.log("上级页面的id"+plus.webview.currentWebview().opener().id)
+						mui.toast('修改备注成功！');
+						mui.back();
+					} else {
+						mui.toast(data.RspTxt);
+					}
+				})
+			}
+			var getInputValue = function() {
+				if(document.getElementById('remark-input').value) {
+					return jQuery.trim(document.getElementById('remark-input').value.replace(/\/n/g, ""));
+				}
+				return "";
+			}
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,230 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			
+			.mui-bar~.mui-content .mui-fullscreen {
+				top: 44px;
+				height: auto;
+			}
+			
+			.mui-pull-top-tips {
+				position: absolute;
+				top: -20px;
+				left: 50%;
+				margin-left: -25px;
+				width: 40px;
+				height: 40px;
+				border-radius: 100%;
+				z-index: 1;
+			}
+			
+			.mui-bar~.mui-pull-top-tips {
+				top: 24px;
+			}
+			
+			.mui-pull-top-tips.mui-transitioning {
+				-webkit-transition-duration: 200ms;
+				transition-duration: 200ms;
+			}
+			
+			.mui-pull-top-tips .mui-pull-loading {
+				/*-webkit-backface-visibility: hidden;
+				-webkit-transition-duration: 400ms;
+				transition-duration: 400ms;*/
+				margin: 0;
+			}
+			
+			.mui-slider-indicator {
+				margin-left: -10px;
+				bottom: -3px;
+			}
+			
+			.mui-slider-indicator .mui-indicator {
+				margin: 1px 2px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">全部</h1>
+			<div id="header-indicator" class="mui-slider-indicator">
+				<div class="mui-indicator mui-active"></div>
+				<div class="mui-indicator"></div>
+			</div>
+		</header>
+		<div class="mui-content" id="course-home">
+			<div id="slider" class="mui-slider mui-fullscreen">
+				<div id="sliderSegmentedControl" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+					<div class="mui-scroll">
+						<a class="mui-control-item mui-active" href="#item1mobile" data-wid="course-attended.html">
+						</a>
+						<a class="mui-control-item" href="#item2mobile" data-wid="course-all.html">
+						</a>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/vue.js"></script>
+		<script src="../../js/utils/webviewGroup.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script src="../../js/publicMicroClass.js"></script>
+		<script type="text/javascript">
+			var group;
+			var detailReady = false;
+			var attendedItem = {
+				id: "course-attended.html",
+				url: "course-attended.html",
+				styles: {
+					top: '44px',
+					bottom: 0
+				},
+				extras: {}
+			};
+			var allItem = {
+				id: "course-all.html",
+				url: "course-all.html",
+				styles: {
+					top: '44px',
+					bottom: 0
+				},
+				extras: {}
+			}
+			var items = [allItem,attendedItem];
+			mui.init();
+			var courseHome = new Vue({
+				el: '#course-home',
+				data: {
+					isAttended: 0,
+					canReload: false
+				},
+				watch: {
+				}
+			})
+			mui.plusReady(function() {
+				mui.fire(plus.webview.getLaunchWebview(), "indexReady");
+				setWebGroup();
+				setTitle(10);
+				setListener();
+			});
+
+			function setListener() {
+				window.addEventListener("detailReady", function() {
+					detailReady = true;
+				})
+				window.addEventListener('focus', function() {
+					getAttendedClasses(function(isShow) {
+						console.log("getAttendedClasses获取的值：",isShow);
+						attendedItem.extras.isAttended = isShow;
+						courseHome.canReload = true;
+						courseHome.isAttended = isShow;
+						console.log("course-home.html获取关注事件" + isShow)
+						events.fireToPageNone("course-attended.html", "courseAttended", isShow);
+					})
+				})
+				window.addEventListener('courseAttended', function(e) {
+					console.log("######course-home.html传过来的值："+e.detail.data);
+					var isShow = parseInt(e.detail.data);
+					attendedItem.extras.isAttended = isShow;
+					courseHome.isAttended = isShow;
+//					events.fireToPageNone("course-attended.html", "courseAttended", isShow);
+				})
+			}
+
+			function setWebGroup() {
+				console.log("获取的item:" + items.length, items)
+				group = new webviewGroup("course-home.html", {
+					items: items,
+					onChange: function(obj) {
+						console.log("当前界面index:" + parseInt(obj.index));
+						if(items.length > 1) {
+							if(parseInt(obj.index) === 1) {
+								setTitle(11);
+							} else {
+								setTitle(10);
+							}
+						}
+					}
+				});
+			}
+			/**
+			 * 获取关注的课程
+			 * @param {Object} callback
+			 */
+			function getAttendedClasses(callback) {
+				if(events.getUtid()) {
+					// 等待的对话框
+					var wd = events.showWaiting();
+					postDataMCPro_getAllFocusCourses({
+						userId: events.getUtid(), //用户ID,登录用户
+						pageIndex: 1, //当前页数
+						pageSize: 1 //每页记录数,传入0，获取总记录数
+					}, wd, function(data) {
+						wd.close();
+						console.log("course-home微课主界面：", data);
+						if(data.RspCode == 0 && data.RspData.totalCount) {
+							callback(1);
+						} else {
+							callback(0);
+						}
+					})
+				} else {
+					if(myStorage.getItem(storageKeyName.FOCUSECOURSES) && myStorage.getItem(storageKeyName.FOCUSECOURSES).length > 0) {
+						callback(1);
+					} else {
+						callback(0);
+					}
+				}
+
+			}
+			/**
+			 * 设置标题
+			 * @param {Object} type 0 只有全部 10 显示全部 11 显示关注
+			 */
+			function setTitle(type) {
+				var title = document.querySelector(".mui-title");
+				var indicator = document.querySelector("#header-indicator");
+				switch(type) {
+					case 0: //全部
+						title.innerText = "全部";
+						indicator.style.display = "none";
+						break;
+					case 10: //全部
+						title.innerText = "全部";
+						indicator.style.display = "block";
+						indicator.firstElementChild.className = "mui-indicator mui-active";
+						indicator.lastElementChild.className = "mui-indicator ";
+						break;
+					case 11: //关注
+						title.innerText = "关注";
+						indicator.style.display = "block";
+						indicator.firstElementChild.className = "mui-indicator";
+						indicator.lastElementChild.className = "mui-indicator mui-active";
+						break;
+					case 12:
+						indicator.style.display = "block";
+						break;
+					default:
+						break;
+				}
+			}
+		</script>
+	</body>
+
+</html>

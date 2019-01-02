@@ -1,0 +1,257 @@
+.search-form .mui-input-row {
+	line-height: 2rem;
+	text-align: left;
+}
+
+.search-form .search-btn {
+	width: 11%;
+	line-height: 3rem;
+	padding: 0px 0;
+	font-size: 16px;
+	/*margin: 0.8rem 0 0.7rem 0;*/
+	display: inline;
+	height: 44px;
+}
+
+input::-webkit-input-placeholder,
+textarea::-webkit-input-placeholder {
+	color: #b7b7b7;
+	font-size: 14px;
+	padding: 0 0rem;
+}
+
+input:-moz-placeholder,
+textarea:-moz-placeholder {
+	color: #b7b7b7;
+	font-size: 14px;
+	padding: 0 0rem;
+}
+
+input::-moz-placeholder,
+textarea::-moz-placeholder {
+	color: #b7b7b7;
+	font-size: 14px;
+	padding: 0 0rem;
+}
+
+input:-ms-input-placeholder,
+textarea:-ms-input-placeholder {
+	color: #b7b7b7;
+	font-size: 14px;
+	padding: 0 0rem;
+}
+
+.mui-btn-blue,
+.mui-btn-primary,
+input[type=submit] {
+	color: #fff;
+	border: #13b7f6;
+	background-color: #13b7f6;
+	font-size: 16px;
+	/*//1.5rem;*/
+	/*font-weight: bold;*/
+	line-height: 44px;
+}
+
+.mui-btn-blue,
+.mui-btn-primary,
+input[type=submit]:enabled:active {
+	color: #fff;
+	border: #13b7f6;
+	background-color: #13b7f6;
+	/*font-size: 1.5rem;*/
+	font-size: 20px;
+	/*font-weight: bold;*/
+}
+
+.mui-bar .mui-title {
+	width: 100%;
+}
+
+.search-form input:nth-child(1) {
+	width: 75%;
+	background-color: #ffffff;
+	text-align: left;
+	border-radius: 50px;
+	padding: 0 1.5rem;
+	margin-top: 8px;
+	margin-bottom: 0.7rem;
+	/*color: #323232;*/
+	color: #323232;
+	font-size: 15px;
+}
+
+#history_container {
+	position: absolute;
+	width: 100%;
+	margin-top: -1.5rem;
+	z-index: 2;
+	padding-top: 44px;
+}
+
+#history_container .mui-table-view-cell .mui-icon-search {
+	font-size: 1.5rem;
+}
+
+
+/*#history_container .mui-table-view-cell>a {
+	line-height: 1rem;
+	padding: 0.5rem 1.5rem;
+	margin: -1.1rem -1.5rem;
+}*/
+
+#history_container span {
+	color: #323232;
+	line-height: 24px;
+	height: 24px;
+}
+
+#list-container .mui-table-view-cell p span {
+	color: #00a5e0;
+}
+
+.mui-table-view-cell {
+	/*border-bottom: #EFEFEF solid 1px;*/
+	/*padding: 1.5rem 1rem;*/
+}
+
+#history_container .mui-table-view-cell:last-child {
+	line-height: 1rem;
+	text-align: center;
+}
+
+.icon-del {
+	width: 3rem;
+	text-align: center;
+	float: right;
+}
+
+.icon-del:after {
+	font-size: 19px;
+	color: #bbb;
+	content: '\e646';
+	font-family: iconfont!important;
+}
+
+.search-input {
+	max-width: 80%;
+}
+
+.mui-search .mui-placeholder {
+	text-align: left;
+	padding-left: .5rem;
+	font-size: 1.5rem;
+}
+
+.mui-input-row.mui-search .mui-icon-clear {
+	right: 20%;
+}
+
+#list-container {
+	padding-top: 3.5rem;
+}
+
+.mui-table-view-cell p {}
+
+.mui-table-view-cell p:nth-child(1) {
+	font-size: 1.5rem;
+	/*font-weight: bold;*/
+	color: #000000;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.mui-bar~.mui-content .mui-fullscreen {
+	top: 10px;
+	height: auto;
+}
+
+.mui-pull-top-tips {
+	position: absolute;
+	top: -20px;
+	left: 50%;
+	margin-left: -25px;
+	width: 40px;
+	height: 40px;
+	border-radius: 100%;
+	z-index: 1;
+}
+
+.mui-bar~.mui-pull-top-tips {
+	top: 24px;
+}
+
+.mui-pull-top-wrapper {
+	width: 42px;
+	height: 42px;
+	display: block;
+	text-align: center;
+	background-color: #efeff4;
+	border: 1px solid #ddd;
+	border-radius: 25px;
+	background-clip: padding-box;
+	box-shadow: 0 4px 10px #bbb;
+	overflow: hidden;
+}
+
+.mui-pull-top-tips.mui-transitioning {
+	-webkit-transition-duration: 200ms;
+	transition-duration: 200ms;
+}
+
+.mui-pull-top-tips .mui-pull-loading {
+	/*-webkit-backface-visibility: hidden;
+				-webkit-transition-duration: 400ms;
+				transition-duration: 400ms;*/
+	margin: 0;
+}
+
+.mui-pull-top-wrapper .mui-icon,
+.mui-pull-top-wrapper .mui-spinner {
+	margin-top: 7px;
+}
+
+.mui-pull-top-wrapper .mui-icon.mui-reverse {
+	/*-webkit-transform: rotate(180deg) translateZ(0);*/
+}
+
+.mui-pull-bottom-tips {
+	text-align: center;
+	background-color: #efeff4;
+	font-size: 15px;
+	line-height: 40px;
+	color: #777;
+}
+
+.mui-pull-top-canvas {
+	overflow: hidden;
+	background-color: #fafafa;
+	border-radius: 40px;
+	box-shadow: 0 4px 10px #bbb;
+	width: 40px;
+	height: 40px;
+	margin: 0 auto;
+}
+
+.mui-pull-top-canvas canvas {
+	width: 40px;
+}
+
+.mui-slider-indicator.mui-segmented-control {
+	background-color: #efeff4;
+}
+
+.search-form .mui-icon-clear {
+	position: relative!important;
+	top: 1px!important;
+	right: 38px!important;
+	color: #e4e4e4!important;
+	margin-right: -38px!important;
+}
+
+.mui-icon-clear:before,
+.mui-icon-close-filled:before {
+	font-family: "iconfont" !important;
+	content: '\e647'!important;
+}

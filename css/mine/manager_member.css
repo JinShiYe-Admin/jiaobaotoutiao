@@ -1,0 +1,45 @@
+/*---成员---start---*/
+
+.mui-table-view:before,
+.mui-table-view:after {
+	height: 0px;
+}
+
+.mui-table-view-cell:after {
+	height: 0px;
+}
+
+.mui-table-view-cell {
+	padding: 11px 0px;
+}
+
+.member-item,
+.member-add {
+	width: 25%;
+	float: left;
+	background: white;
+}
+
+.member-add span {
+	font-size: 40px;
+	/*font-weight: 600;*/
+	color: #CECECE;
+	padding-top: 8px;
+	margin-bottom: 4px;
+
+}
+
+.mui-ellipsis {
+	padding: 0px;
+	color: #868686;
+}
+
+img {
+	border-radius: 50%;
+	height: 40px;
+	width: 40px;
+	margin-top: 5px;
+	margin-bottom: 8px;
+}
+
+/*---成员---end---*/

@@ -1,0 +1,448 @@
+<!--专家详情-->
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/publicQiuzhiProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css"></style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav common-background-bar">
+			<h1 id="title" class="mui-title">专家</h1>
+			<div id="random_icon">
+				<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left common-color-white"></a>
+
+				<!--<a id="pub-dynamic" class="mui-icon mui-icon-compose  mui-pull-right mui-plus-visible" style="padding-left: 20px;"></a>-->
+			</div>
+		</header>
+
+		<div class="mui-content" style="background-color: white;">
+			<div id="expertInfo" style="min-height: 150px;height: auto;background-image:url(../../image/qiuzhi/expertBG.jpg) ;"><br/>
+				<div style="text-align: center;">
+					<img id="expertImg" style="width: 50px;height: 50px;border-radius: 50%;" src="../../image/utils/default_personalimage.png" />
+				</div>
+				<div style="text-align: center;">
+					<h4 id="ExpertChannels" style="color: #e8fa50;font-size::16px;font-family:'楷体';font-weight:500;"></h4>
+				</div>
+				<div style="margin-bottom: 10px;">
+					<p id="UserNote" style="margin: 5px;font-size: 14px;font-family:'楷体';line-height: 18px;text-align: center;color: white;"></p>
+				</div>
+
+				<!--<textarea  id="UserNote" id='leaveTitle'  onblur="inputOnblur(this)" class="mui-input-clear question" placeholder="" style="min-height: 30px;height: 30px;；width: 100%;background-color: transparent;font-size: 15px;border-color:transparent ;"></textarea>-->
+			</div>
+			<!--<hr style="height:1px;border:none;border-top:1px solid lightgray;" />-->
+
+			<div style="margin-top: 0px;margin-left: 20px;">
+				<div id="FocusAsk" style="float: left;width: 70px;margin-left: 5px;">
+					<div style="color: #808080;">
+						关注的问题
+					</div>
+					<div id="FocusAskNum" style="margin-left: 20px;">
+
+					</div>
+				</div>
+				<div id="FocusMan" style="float: left;width: 70px;margin-left: 40px;">
+					<div style="color: #808080;" id="titleFlag0">
+
+					</div>
+					<div id="FocusManNum" style="margin-left: 20px;">
+
+					</div>
+				</div>
+				<div id="IsFocusedMan" style="float: left;width: 70px;margin-left: 40px;">
+					<div style="color: #808080;" id="titleFlag1">
+
+					</div>
+					<div id="IsFocusedManNum" style="margin-left: 20px;">
+
+					</div>
+				</div>
+			</div>
+			<div style="width: device-width;margin-top: 60px;margin-left: 20px;margin-bottom: 20px;margin-right: 20px;">
+				<a class="mui-icon iconfont icon-support dynamic-icon-praise" style="color: #e4e4e4;margin-top: 5px;"></a><span id="IsLikeNum" style="padding-left: 10px;"></span>
+				<button id="focusBtn" class="mui-btn mui-btn-green btn-commit mui-pull-right" style="background-color: #1db8F1;border-color:#1db8F1 ;height: 30px;width: 55px;border: 0;padding: 0;">关注</button>
+			</div>
+			<div>
+				<ul class="mui-table-view">
+					<li id="AnswerLi" class="mui-table-view-cell mui-media ">
+						<img class="mui-media-object mui-pull-left" style="width: 20px ;height: 20px;" src="../../image/qiuzhi/answer.png" />
+						<div class="mui-media-body" id="titleFlag2" style="color: #323232;"></div>
+						<p id="AnswerNum" style="font-size: 13px;margin-top: -20px;color: #808080;" class="mui-pull-right"></p>
+
+					</li>
+					<li id="AskLi" class="mui-table-view-cell mui-media ">
+						<img class="mui-media-object mui-pull-left" style="width: 20px ;height: 20px;" src="../../image/qiuzhi/question.png" />
+						<div class="mui-media-body" id="titleFlag3" style="color: #323232;"></div>
+						<div>
+							<p id="AskNum" style="font-size: 13px;margin-top: -20px;color: #808080;" class="mui-pull-right"></p>
+					</li>
+					<li id="CommentLi" class="mui-table-view-cell mui-media ">
+						<img class="mui-media-object mui-pull-left" style="width: 20px ;height: 20px;" src="../../image/qiuzhi/comment.png" />
+						<div class="mui-media-body" id="titleFlag4" style="color: #323232;"></div>
+						<div>
+							<p id="CommentNum" style="font-size: 13px;margin-top: -20px;color: #808080;" class="mui-pull-right"></p>
+					</li>
+					<li id="inviteNumLi" class="mui-table-view-cell mui-media mui-hidden ">
+						<img class="mui-media-object mui-pull-left" style="width: 20px ;height: 20px;" src="../../image/qiuzhi/yaoqing.png" />
+						<div class="mui-media-body" id="titleFlag5" style="color: #323232;"></div>
+						<div>
+							<p id="inviteNum" style="font-size: 13px;margin-top: -20px;color: #808080;" class="mui-pull-right"></p>
+					</li>
+				</ul>
+				</div>
+
+				</div>
+	</body>
+
+	<script type="text/javascript">
+		var nodes = {
+			expertImg: document.getElementById("expertImg"), //专家头像
+			AskNum: document.getElementById("AskNum"), //他的回答数量
+			UserNote: document.getElementById("UserNote"), //专家简介
+			FocusManNum: document.getElementById("FocusManNum"), //他关注的人
+			ExpertLevel: document.getElementById("ExpertLevel"), //
+			FocusAskNum: document.getElementById("FocusAskNum"), //关注的问题数量
+			ExpertChannels: document.getElementById("ExpertChannels"), //专家话题
+			IsLikeNum: document.getElementById("IsLikeNum"), //点赞数量
+			CommentNum: document.getElementById("CommentNum"), //评论数量
+			IsFocusedManNum: document.getElementById("IsFocusedManNum"), //关注他的人
+			AnswerNum: document.getElementById("AnswerNum"), //他的回答
+			inviteNum: document.getElementById("inviteNum"), //邀请他的回答
+			focusBtn: document.getElementById("focusBtn"), //关注按钮
+
+			titleFlag0: document.getElementById("titleFlag0"), //他关注的人
+			titleFlag1: document.getElementById("titleFlag1"), //关注他的人
+			titleFlag2: document.getElementById("titleFlag2"), //他的回答
+			titleFlag3: document.getElementById("titleFlag3"), //他的提问
+			titleFlag4: document.getElementById("titleFlag4"), //他的评论
+			titleFlag5: document.getElementById("titleFlag5"), //邀请他回答
+
+		}
+		var ExpertsInfo;
+		var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid; //当前登录账号utid
+		mui.plusReady(function() {
+//			events.preload('focus-question.html', 10);
+			var main = plus.webview.currentWebview(); //获取当前窗体对象
+			ExpertsInfo = main.data; //接收页面传入参数值，传过来的专家model
+			var utid = window.myStorage.getItem(storageKeyName.PERSONALINFO).utid;
+
+			mui('.mui-table-view').on('tap', '.mui-table-view-cell', function() {
+				//console.log(this.id);
+				if(utid == 0 && utid == ExpertsInfo.UserId) {
+					//判断是否是游客身份登录
+					if(events.judgeLoginMode(this)) {
+						return;
+					}
+				}
+
+				var webUrl;
+				if(this.id == 'AnswerLi') { //他的回答
+					webUrl = 'qiuzhi-expertAllAnswer.html';
+				} else if(this.id == 'AskLi') { //他的提问
+					webUrl = 'expert-ask.html';
+				} else if(this.id == 'CommentLi') { //他的评论
+					webUrl = "qiuzhi-expertAllComment.html";
+				} else { //邀请他的回答
+					webUrl = "qiuzhi-inviteAnswer.html";
+				}
+				events.singleWebviewInPeriod(this, webUrl, ExpertsInfo);
+			})
+			window.addEventListener('refresh_expertdetail', function(data) {
+				getExpertsInfo(ExpertsInfo.UserId);
+			})
+			events.addTap('UserNote', function() {
+				var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid; //当前登录账号utid
+				if(ExpertsInfo.UserId == personalUTID) {
+					//判断是否是游客身份登录
+					if(events.judgeLoginMode(this)) {
+						return;
+					}
+					events.singleWebviewInPeriod(this, 'modifyExpertNote.html', ExpertsInfo.UserNote);
+					//					events.openNewWindowWithData('modifyExpertNote.html', ExpertsInfo.UserNote);
+				}
+
+			})
+			events.addTap('FocusAsk', function() {
+				//console.log('关注的问题');
+				events.openNewWindowWithData('focus-question.html', ExpertsInfo);
+//				events.fireToPage('focus-question.html', 'focus-question', function() {
+//					return ExpertsInfo;
+//				})
+			})
+			events.addTap('FocusMan', function() {
+				this.disabled = true;
+				events.singleWebviewInPeriod(this, "AttentionPersons.html", {
+					expertInfo: ExpertsInfo,
+					type: 0
+				})
+				//console.log('他关注的人');
+			})
+			events.addTap('IsFocusedMan', function() {
+				if(utid == 0 && utid == ExpertsInfo.UserId) {
+					//判断是否是游客身份登录
+					if(events.judgeLoginMode(this)) {
+						return;
+					}
+				}
+				events.singleWebviewInPeriod(this, "AttentionPersons.html", {
+					expertInfo: ExpertsInfo,
+					type: 1
+				});
+				//console.log('专家信息：' + JSON.stringify(ExpertsInfo))
+			})
+			events.addTap('focusBtn', function() {
+				if(!events.getUtid()) {
+					var isDel = this.innerText == '关注' ? 0 : 1;
+					events.toggleStorageArray(storageKeyName.FOCUSEPERSEN, parseInt(ExpertsInfo.UserId), isDel);
+					//刷新界面显示
+					if(this.innerText == '已关注') {
+						nodes.focusBtn.innerText = '关注';
+						nodes.focusBtn.style.background = '#1db8F1';
+						nodes.focusBtn.style.color = 'white'
+						nodes.focusBtn.style.border = '#1db8F1';
+					} else {
+						nodes.focusBtn.innerText = '已关注';
+						nodes.focusBtn.style.color = 'lightgrey'
+						nodes.focusBtn.style.background = '#e4e4e4';
+						nodes.focusBtn.style.border = 'lightgrey';
+					}
+					return;
+				}
+				//console.log('点击关注');
+				if(this.innerText == '关注') {
+					setUserFocus(ExpertsInfo.UserId, 1);
+				} else {
+					setUserFocus(ExpertsInfo.UserId, 0);
+				}
+			})
+
+			events.addTap('expertImg', function() {
+				//判断是否是游客身份登录
+				if(events.judgeLoginMode(this)) {
+					return;
+				}
+				this.disabled = false;
+				jQuery(this).css("pointerEvents","all");
+			})
+			events.addTap('ExpertChannels', function() {
+				//判断是否是游客身份登录
+				if(events.judgeLoginMode(this)) {
+					return;
+				}
+				this.disabled = false;
+				jQuery(this).css("pointerEvents","all");
+			})
+			if(utid == 0 && utid == ExpertsInfo.UserId) {
+				nodes.expertImg.src = updateHeadImg('', 2);
+				nodes.ExpertChannels.style.color = 'white'
+				nodes.ExpertChannels.innerHTML = '注册/登录'
+				document.getElementById('focusBtn').style.display = 'none';
+				nodes.titleFlag0.innerHTML = '我关注的人';
+				nodes.titleFlag1.innerHTML = '关注我的人';
+				nodes.titleFlag2.innerHTML = '我的回答';
+				nodes.titleFlag3.innerHTML = '我的提问';
+				nodes.titleFlag4.innerHTML = '我的评论';
+				var focusequestion = window.myStorage.getItem(window.storageKeyName.FOCUSEQUESTION);
+				var focuseperson = window.myStorage.getItem(window.storageKeyName.FOCUSEPERSEN);
+				//console.log('focusequestion=' + focusequestion + ',' + JSON.stringify(focusequestion));
+				nodes.FocusAskNum.innerHTML = focusequestion ? focusequestion.length : 0;
+				nodes.FocusManNum.innerHTML = focuseperson ? focuseperson.length : 0;
+				return;
+			}
+			//console.log('expert-detail.html:' + JSON.stringify(ExpertsInfo));
+			//3.获取某个用户的信息
+			getExpertsInfo(ExpertsInfo.UserId);
+			nodes.expertImg.src = updateHeadImg(ExpertsInfo.uimg, 2);
+			window.addEventListener('expert-detail', function(data) {
+				ExpertsInfo = data.detail.data; //接收页面传入参数值，传过来的专家model
+				//console.log('expert-detail.html:' + JSON.stringify(ExpertsInfo.UserId));
+				//3.获取某个用户的信息
+				getExpertsInfo(ExpertsInfo.UserId);
+				nodes.expertImg.src = updateHeadImg(ExpertsInfo.uimg, 2);
+			});
+			//判断是不是自己，如果是自己，不显示关注按钮
+			if(ExpertsInfo.UserId == personalUTID) {
+				document.getElementById('focusBtn').style.display = 'none';
+				nodes.titleFlag0.innerHTML = '我关注的人';
+				nodes.titleFlag1.innerHTML = '关注我的人';
+				nodes.titleFlag2.innerHTML = '我的回答';
+				nodes.titleFlag3.innerHTML = '我的提问';
+				nodes.titleFlag4.innerHTML = '我的评论';
+				nodes.titleFlag5.innerHTML = '邀请我的回答';
+			} else {
+				nodes.titleFlag0.innerHTML = '他关注的人';
+				nodes.titleFlag1.innerHTML = '关注他的人';
+				nodes.titleFlag2.innerHTML = '他的回答';
+				nodes.titleFlag3.innerHTML = '他的提问';
+				nodes.titleFlag4.innerHTML = '他的评论';
+				nodes.titleFlag5.innerHTML = '邀请他的回答';
+			}
+			//22.获取是否已对某个用户关注
+			getUserFocus(ExpertsInfo.UserId);
+
+		});
+
+		//3.获取某个用户的信息
+		function getExpertsInfo(userId) {
+			//需要加密的数据
+			var comData = {
+				userId: userId //用户ID
+			};
+			// 等待的对话框
+			var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+			//3.获取某个用户的信息
+			postDataQZPro_getUserInfo(comData, wd, function(data) {
+				wd.close();
+				//console.log('3.获取某个用户的信息:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+				if(data.RspCode == 0) {
+					//合并，刷新界面
+					ExpertsInfo = $.extend(ExpertsInfo, data.RspData);
+					//console.log('合并后ExpertsInfo:' + JSON.stringify(ExpertsInfo));
+					addData();
+					//修改nav显示昵称
+					var titleTemp = document.getElementById("title");
+					titleTemp.innerText = events.shortForString(ExpertsInfo.unick.replace(/[\r\n]/g, ""), 10);
+				} else {
+					mui.toast(data.RspTxt);
+				}
+			});
+		};
+
+		//22.获取是否已对某个用户关注
+		function getUserFocus(userId) {
+			var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid; //当前登录账号utid
+			//需要加密的数据
+			var comData = {
+				userId: personalUTID, //用户ID
+				focusUserId: userId //关注用户ID
+			};
+			// 等待的对话框
+			var wd = events.showWaiting();
+			//22.获取是否已对某个用户关注
+			postDataQZPro_getUserFocusByUser(comData, wd, function(data) {
+				wd.close();
+				//console.log('22.获取是否已对某个用户关注:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+				if(data.RspCode == 0) {
+					if(personalUTID == 0 && personalUTID != ExpertsInfo.UserId) {
+						var focuseperson = window.myStorage.getItem(window.storageKeyName.FOCUSEPERSEN);
+						if(focuseperson) {
+							for(var i in focuseperson) {
+								if(focuseperson[i] == ExpertsInfo.UserId) {
+									data.RspData.Result = 1
+								} else {
+									data.RspData.Result = 0
+								}
+							}
+						}
+
+					}
+					//修改界面显示
+					//					ExpertsInfo = $.extend(ExpertsInfo, data.RspData);
+					if(data.RspData.Result == 0) {
+						nodes.focusBtn.innerText = '关注';
+						nodes.focusBtn.style.background = '#1db8F1';
+						nodes.focusBtn.style.border = '#1db8F1';
+					} else {
+						nodes.focusBtn.innerText = '已关注';
+						nodes.focusBtn.style.background = '#b7b7b7';
+						nodes.focusBtn.style.border = '#b7b7b7';
+					}
+
+				} else {
+					mui.toast(data.RspTxt);
+				}
+			});
+		};
+
+		//23.设置对某个用户的关注
+		function setUserFocus(userId, status) {
+			var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid; //当前登录账号utid
+			//需要加密的数据
+			var comData = {
+				userId: personalUTID, //用户ID
+				focusUserId: userId, //关注用户ID
+				status: status //关注状态,0 不关注,1 关注
+			};
+			// 等待的对话框
+			var wd = events.showWaiting();
+			//23.设置对某个用户的关注
+			postDataQZPro_setUserFocus(comData, wd, function(data) {
+				wd.close();
+				//console.log('23.设置对某个用户的关注:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+				if(data.RspCode == 0) {
+					//刷新界面显示
+					//console.log(nodes.focusBtn.innerText);
+					//刷新界面显示
+					if(nodes.focusBtn.innerText == '已关注') {
+						nodes.focusBtn.innerText = '关注';
+						nodes.focusBtn.style.background = '#1db8F1';
+						nodes.focusBtn.style.color = 'white'
+						nodes.focusBtn.style.border = '#1db8F1';
+					} else {
+						nodes.focusBtn.innerText = '已关注';
+						nodes.focusBtn.style.color = 'lightgrey'
+						nodes.focusBtn.style.background = '#e4e4e4';
+						nodes.focusBtn.style.border = 'lightgrey';
+					}
+				} else {
+					mui.toast(data.RspTxt);
+				}
+			});
+		};
+
+		function addData() {
+			nodes.AskNum.innerHTML = ExpertsInfo.AskNum + '<span class="mui-icon  iconfont icon-fanhui2" style="color:#b7b7b7;"></span>';
+			//如果是自己，显示编辑简介按钮
+			if(ExpertsInfo.UserId == personalUTID) {
+				if(ExpertsInfo.UserNote == '') {
+					nodes.UserNote.innerHTML = '<img id="bianji" style = "width:13px;height:13px;"  src="../../image/qiuzhi/bianji1.png" />' + ' ' + '编辑简介';
+				} else {
+					nodes.UserNote.innerHTML = ExpertsInfo.UserNote + ' ' + '<img id="bianji" style = "width:13px;height:13px;"  src="../../image/qiuzhi/bianji1.png" />';
+				}
+
+			} else {
+				if(ExpertsInfo.UserNote == '') {
+					nodes.UserNote.innerHTML = '暂无简介';
+				} else {
+					nodes.UserNote.innerHTML = ExpertsInfo.UserNote;
+				}
+			}
+
+			nodes.FocusManNum.innerText = ExpertsInfo.FocusManNum;
+
+			if(ExpertsInfo.ExpertChannelNames.length == 0) {
+				//				nodes.ExpertChannels.innerText = '无话题'
+			} else {
+				nodes.ExpertChannels.innerText = ExpertsInfo.ExpertChannelNames;
+			}
+			nodes.IsLikeNum.innerHTML = ExpertsInfo.IsLikeNum;
+			nodes.FocusAskNum.innerText = ExpertsInfo.FocusAskNum;
+			nodes.CommentNum.innerHTML = ExpertsInfo.CommentNum + '<span class="mui-icon  iconfont icon-fanhui2" style="color:#b7b7b7"></span>';
+			//console.log(nodes.CommentNum.innerHTML)
+			nodes.IsFocusedManNum.innerText = ExpertsInfo.IsFocusedManNum;
+			nodes.AnswerNum.innerHTML = ExpertsInfo.AnswerNum + '<span class="mui-icon  iconfont icon-fanhui2" style="color:#b7b7b7"></span>';
+			//console.log(nodes.AnswerNum.innerHTML)
+			var inviteNumLi = document.getElementById("inviteNumLi");
+			if(ExpertsInfo.IsExpert == 1) {
+				inviteNumLi.className = 'mui-table-view-cell '
+				nodes.inviteNum.innerHTML = ExpertsInfo.InviteNum + '<span class="mui-icon  iconfont icon-fanhui2" style="color:#b7b7b7"></span>';
+			} else {
+				inviteNumLi.className = 'mui-table-view-cell mui-media mui-hidden '
+			}
+
+		}
+	</script>
+
+</html>

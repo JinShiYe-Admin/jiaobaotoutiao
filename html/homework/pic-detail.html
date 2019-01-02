@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">详情</h1>
+		</header>
+		<div class="mui-content">
+		<br />
+
+		</div>
+		<div id="slider" class="mui-slider" >
+			<div class="mui-slider-group mui-slider-loop">
+				<!-- 额外增加的一个节点(循环轮播：第一个节点是最后一张轮播) -->
+				<div class="mui-slider-item mui-slider-item-duplicate">
+					<a href="#">
+						<img class="img" src="">
+					</a>
+				</div>
+				<!--<div class="mui-slider-item">
+					<a href="#">
+						<img class="img" src="../images/shuijiao.jpg">
+					</a>
+				</div>-->
+
+				<!-- 额外增加的一个节点(循环轮播：最后一个节点是第一张轮播) -->
+				<div class="mui-slider-item mui-slider-item-duplicate">
+					<a href="#">
+						<img  class="img" src="">
+					</a>
+				</div>
+			</div>
+			<div class="mui-slider-indicator">
+				<div class="mui-indicator mui-active"></div>
+			</div>
+		</div>
+		<script type="text/javascript" charset="utf-8">
+			mui.init({
+				swipeBack:true //启用右滑关闭功能1
+			});
+			var slider = mui("#slider");
+			mui.plusReady(function(){
+				var title = plus.webview.currentWebview().data.title;
+				//console.log(title);
+				document.getElementsByTagName('h1')[0].innerHTML = title
+			var imgArr = plus.webview.currentWebview().data.data;
+						var div = mui('.mui-slider-item-duplicate');
+						div[0].getElementsByTagName('img').src =imgArr[imgArr.length-1].Url
+						div[1].getElementsByTagName('img').src =imgArr[0].Url;
+
+			for(var i=0;i<imgArr.length;i++){
+				if(i>0){
+					var indicator = document.createElement('div');
+					indicator.className = 'mui-indicator';
+					mui('.mui-slider-indicator')[0].appendChild(indicator)
+				}
+				//console.log(imgArr[i].Url);
+				var imgDiv = document.createElement('div');
+				imgDiv.className = 'mui-slider-item';
+				var a = document.createElement('a');
+				a.href = '#';
+				imgDiv.appendChild(a);
+				var img = document.createElement('img');
+				img.src =imgArr[i].Url;
+				a.appendChild(img);
+				div[0].parentElement.insertBefore(imgDiv,div[1]);
+			}
+			})
+		</script>
+	</body>
+
+</html>

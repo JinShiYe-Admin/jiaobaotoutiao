@@ -1,0 +1,413 @@
+<!--
+	作者：444811716@qq.com
+	时间：2017-06-02
+	描述：课程详情列表
+-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/iconfont/iconfont.css" />
+		<!--<link rel="stylesheet" href="../../css/utils/pullToRefresh.css" />-->
+		<style>
+			.mui-scroll-wrapper {
+				padding-top: 44px;
+			}
+
+			.mui-bar~.mui-content .mui-fullscreen {
+				top: 44px;
+				height: auto;
+			}
+
+			.mui-pull-top-tips {
+				position: absolute;
+				top: -20px;
+				left: 50%;
+				margin-left: -25px;
+				width: 40px;
+				height: 40px;
+				border-radius: 100%;
+				z-index: 1;
+			}
+
+			.mui-bar~.mui-pull-top-tips {
+				top: 24px;
+			}
+
+			.mui-pull-top-wrapper {
+				width: 42px;
+				height: 42px;
+				display: block;
+				text-align: center;
+				background-color: #efeff4;
+				border: 1px solid #ddd;
+				border-radius: 25px;
+				background-clip: padding-box;
+				box-shadow: 0 4px 10px #bbb;
+				overflow: hidden;
+			}
+
+			.mui-pull-top-tips.mui-transitioning {
+				-webkit-transition-duration: 200ms;
+				transition-duration: 200ms;
+			}
+
+			.mui-pull-top-tips .mui-pull-loading {
+				/*-webkit-backface-visibility: hidden;
+				-webkit-transition-duration: 400ms;
+				transition-duration: 400ms;*/
+				margin: 0;
+			}
+
+			.mui-pull-top-wrapper .mui-icon,
+			.mui-pull-top-wrapper .mui-spinner {
+				margin-top: 7px;
+			}
+
+			.mui-pull-top-wrapper .mui-icon.mui-reverse {
+				/*-webkit-transform: rotate(180deg) translateZ(0);*/
+			}
+
+			.mui-pull-bottom-tips {
+				text-align: center;
+				background-color: #efeff4;
+				font-size: 15px;
+				line-height: 40px;
+				color: #777;
+			}
+
+			.mui-pull-top-canvas {
+				overflow: hidden;
+				background-color: #fafafa;
+				border-radius: 40px;
+				box-shadow: 0 4px 10px #bbb;
+				width: 40px;
+				height: 40px;
+				margin: 0 auto;
+			}
+
+			.mui-pull-top-canvas canvas {
+				width: 40px;
+			}
+
+			body,
+			.mui-content {
+				word-wrap: break-word;
+			}
+
+			.section-title {
+				font-size: 16px;
+				color: #323232;
+			}
+
+			.section-list .mui-table-view-cell {
+				/*padding: 8px 15px;*/
+			}
+
+			.section-list .section-title {
+				margin-bottom: 11px;
+				margin-right: 18px;
+			}
+
+			.section-info,
+			.section-comment-info {
+				color: #B7B7B7;
+				font-size: 14px;
+			}
+
+			.section-info .mui-pull-right {
+				display: inline;
+			}
+
+			.section-list-li {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			.section-list-li-left {
+				width: 65%;
+				float: left;
+			}
+
+			.section-list-img-div {
+				float: right;
+				overflow: hidden;
+				width: 35%;
+				line-height: 0px;
+			}
+
+			.section-list-img {
+				/*课程列表图片*/
+				visibility: hidden;
+				width: 100%;
+			}
+
+			.section-list-img-mask {
+				/*课程列表图片遮罩*/
+				background-color: rgba(0, 0, 0, 0.5);
+				position: absolute;
+			}
+
+			.section-image-play {
+				/*视频播放按钮*/
+				position: absolute;
+				width: 35px;
+				height: 35px;
+			}
+
+			.section-image-time {
+				/*视频的时间*/
+				position: absolute;
+				font-size: 12px;
+				color: white;
+				right: 5px;
+				bottom: 0px;
+				line-height: 21px;
+			}
+
+			.section-list-audio {
+				width: 100%;
+				height: 50px;
+			}
+
+			.section-list-audio-border {
+				stroke: #1DB8F1;
+				fill: none;
+			}
+
+			.section-list-audio-icon {
+				stroke: #B7B7B7;
+				fill: none;
+				stroke-width: 2px;
+			}
+
+			.section-list-audio-time {
+				fill: #B7B7B7;
+				font-size: 15px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title"></h1>
+		</header>
+
+		<div id="refreshContainer" class="mui-content mui-fullscreen" style="z-index:0">
+			<div class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<ul id="section_list" class="mui-table-view section-list">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script type="text/javascript" src="../../js/libs/myStorage/myStorage.js"></script>
+		<script type="text/javascript" src="../../js/storageKeyName.js"></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<script type="text/javascript" src="../../js/utils/playutil.js"></script>
+		<script type="text/javascript" src="../../js/publicMicroClass.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/micro-course/coursedetails.js"></script>
+		<script type="text/javascript">
+			var main; //当webView
+			var sectionData = {
+				key: [],
+				value: {}
+			}; //当前课程的数据
+			var pageIndex = 0; //当前页数
+			var totalPage = 0;
+			mui.init();
+			mui.plusReady(function() {
+				initData();
+				courseDetails.init();
+				initControl();
+				initListener();
+				getAllSectionsAndComments(pageIndex + 1, 0);
+			});
+
+			/**
+			 * 初始化数据
+			 */
+			function initData() {
+				main = plus.webview.currentWebview();
+				//console.log("main data " + JSON.stringify(main.data));
+				document.getElementById("title").innerText = main.data.CourseName;
+			}
+
+			/**
+			 * 初始化控件
+			 */
+			function initControl() {
+				//初始化下拉，上拉控件
+				var deceleration = mui.os.ios ? 0.003 : 0.0009;
+				mui('.mui-scroll-wrapper').scroll({
+					bounce: false,
+					indicators: true, //是否显示滚动条
+					deceleration: deceleration
+				});
+				mui(".mui-scroll-wrapper .mui-scroll").pullToRefresh({
+					down: {
+						callback: function() {
+							//清除节点
+							mui(".mui-pull-loading")[0].innerHTML = "";
+							var self = this;
+							getAllSectionsAndComments(1, 1, self);
+						}
+					},
+					up: {
+						callback: function() {
+							//console.log("上拉加载更多");
+							var self = this;
+							if(pageIndex <= totalPage) {
+								getAllSectionsAndComments(pageIndex + 1, 2, self);
+							} else { //上拉加载更多
+								self.endPullUpToRefresh();
+								mui(".mui-pull-loading")[0].innerHTML = "没有更多了";
+							}
+						}
+					}
+				});
+			}
+
+			/**
+			 * 初始化监听
+			 */
+			function initListener() {
+				//查看节次
+				mui('.section-list').on('tap', '.mui-table-view-cell', function() {
+					var data = sectionData.value[this.id.replace('section_', '')];
+					//console.log(JSON.stringify(data));
+					if(data.SecStatus == 1) {
+						data.courseId = main.data.TabId; //课程id
+						events.openNewWindowWithData('course_section.html', data);
+					} else {
+						mui.toast("该内容已被作者屏蔽");
+					}
+
+				});
+			}
+
+			/**
+			 * 获取课程节次和评论
+			 * @param {Object} index 当前页数
+			 * @param {Object} wd 等待框
+			 */
+			function getAllSectionsAndComments(index, type, self) {
+				var wd = null;
+				if(type == 0) { //获取初始数据
+					wd = events.showWaiting();
+				}
+				var comData = {
+					userId: myStorage.getItem(storageKeyName.PERSONALINFO).utid, //用户ID,登录用户
+					courseId: main.data.TabId, //课程ID
+					pageIndex: index, //当前页数
+					pageSize: 10 //每页记录数,传入0，获取总记录数
+				};
+				postDataMCPro_getAllSectionsByCourse(comData, wd, function(data) {
+					//console.log('3 获取课程的节次 ' + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						pageIndex = index;
+						totalPage = data.RspData.totalPage;
+						if(index == 1) { //获取第一页
+							document.getElementById('section_list').innerHTML = "";
+						}
+						if(data.RspData.Data.length != 0) {
+							showSectionList(data.RspData.Data);
+						}
+
+						if(pageIndex >= data.RspData.totalPage) {
+							mui(".mui-pull-loading")[0].innerHTML = "";
+						}
+
+						if(pageIndex == 1 && data.RspData.Data.length == 0) {
+							mui.toast('没有节次')
+						}
+					} else {
+						mui.toast(data.RspTxt);
+					}
+					if(type == 0) {
+						wd.close();
+					} else if(type == 1) { //结束下拉刷新
+						self.endPullDownToRefresh();
+					} else if(type == 2) { //结束上拉加载
+						self.endPullUpToRefresh();
+					}
+				});
+			}
+
+			/**
+			 * 显示中间节次列表
+			 * @param {Object} data
+			 */
+			function showSectionList(data) {
+				////console.log("showSectionList " + JSON.stringify(data));
+				var more = document.getElementById("section_more");
+				for(var i in data) {
+					sectionData.key[sectionData.key.length] = data[i].SecId;
+					sectionData.value[data[i].SecId] = data[i];
+					////console.log("showSectionList " + i + " " + JSON.stringify(data[i]));
+					var ele = document.createElement("li");
+					ele.id = "section_" + data[i].SecId;
+					var html = '';
+					if(data[i].EncType == 1) { //视频
+						ele.className = "mui-table-view-cell section-list-li";
+						html = '<div class="section-list-li-left">\
+									<div class="section-title mui-ellipsis-2">' + data[i].SecName + '</div>\
+									<div class="section-info">上传时间 : ' + data[i].UpTime.split(" ")[0] + '</div>\
+								</div>\
+								<div class="section-list-img-div">\
+									<div class="section-list-img" style="height:' + courseDetails.height + 'px;">\
+										<img src="' + data[i].EncImgAddr + '" class="section-list-img" onload="courseDetails.onImageLoad(this);" onerror="courseDetails.onImageError(this);"/>\
+									</div>\
+									<div class="section-list-img-mask" style="height:' + courseDetails.height + 'px;width:' + courseDetails.width + 'px;margin-top:' + (-courseDetails.height) + 'px;">\
+										<img src="../../image/utils/playvideo.png" class="section-image-play" style="margin-top:' + courseDetails.playMarginTop + 'px;margin-left:' + courseDetails.playMarginLeft + 'px;"/>\
+										<div class="section-image-time">' + courseDetails.getAudioTime(data[i].EncLen) + '</div>\
+									</div>\
+								</div>';
+					} else if(data[i].EncType == 2) { //音频
+						ele.className = "mui-table-view-cell";
+						html = '<div class="section-title mui-ellipsis-2">' + data[i].SecName + '</div>\
+						<div>\
+							<svg class="section-list-audio">\
+								<path class="section-list-audio-border" d="' + courseDetails.getAudioBorderPath() + '" />\
+								<path class="section-list-audio-icon" d="M30 18 A5 5 0 0 1 30 23 M35 14 A10 10 0 0 1 35 27 M40 10 A 15 15 0 0 1 40 31" />\
+								<text class="section-list-audio-time" x="60" y="26">' + courseDetails.getAudioTime(data[i].EncLen) + '</text>\
+							</svg>\
+						</div>\
+						<div class="section-info">上传时间 : ' + data[i].UpTime.split(" ")[0] + '</div>';
+					} else if(data[i].EncType == 3) { //文章
+						if(!data[i].EncImgAddr) { //没有图片
+							ele.className = "mui-table-view-cell";
+							html = '<div class="section-title">' + data[i].SecName + '</div>\
+							<div class="section-info">上传时间 : ' + data[i].UpTime.split(" ")[0] + '</div>';
+						} else {
+							ele.className = "mui-table-view-cell section-list-li";
+							html = '<div class="section-list-li-left">\
+									<div class="section-title mui-ellipsis-2">' + data[i].SecName + '</div>\
+									<div class="section-info">上传时间 : ' + data[i].UpTime.split(" ")[0] + '</div>\
+								</div>\
+								<div class="section-list-img-div">\
+									<div class="section-list-img" style="height:' + courseDetails.height + 'px;">\
+										<img src="' + data[i].EncImgAddr + '" class="section-list-img" onload="courseDetails.onImageLoad(this);" onerror="courseDetails.onImageError(this);"/>\
+									</div>\
+								</div>';
+						}
+					}
+					ele.innerHTML = html;
+					document.getElementById("section_list").appendChild(ele);
+				}
+			}
+		</script>
+	</body>
+
+</html>

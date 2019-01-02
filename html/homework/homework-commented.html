@@ -1,0 +1,117 @@
+<!--学生作业结果界面-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<link href="../../css/homework/subjects-icon.css" rel="stylesheet" />
+		<link href="../../css/utils/preview.css" rel="stylesheet" />
+		<style type="text/css">
+			/*标题图片*/
+			
+			.subject-icon {
+				font-size: 50px;
+			}
+			/*cell标题*/
+			
+			.divider-color {
+				color: #383838;
+				background-color: #f2f3f5;
+			}
+			/*cell*/
+			
+			.cell-color {
+				color: #808080;
+				background-color: white;
+			}
+			
+			.dynamic-personal-image {
+				/*个人头像圆形*/
+				border-radius: 50%;
+				width: 50px;
+				height: 50px;
+			}
+			
+			.homework-img {
+				padding: 0 3px;
+			}
+			
+			.mui-content>.mui-table-view:first-child {
+				margin-top: 0;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">作业详情</h1>
+			<a id="modifyHomework" class="mui-pull-right display-none">修改</a>
+		</header>
+
+		<div id="work-commented" v-show="workCommented.Contents" class="mui-content">
+			<ul id="list" class="mui-table-view">
+				<li class="mui-table-view-cell mui-media">
+					<img id="headImg" style="display: none;margin-top: 5px;" class="mui-media-object mui-pull-left dynamic-personal-image" />
+					<!--<img id="headImg">-->
+					<span id="img" class=" iconfont subject-icon dynamic-personal-image" style="margin-left: -10px;display: none;" hidden="hidden"></span>
+					<!--</img>-->
+					<div class="mui-media-body" style="margin-top: 5px;">
+						<h5 id="homeworkTitle" style="color: #404040;"></h5>
+						<p id="publishDate" class='mui-ellipsis' style="color: #747474;"></p>
+					</div>
+					<div style="margin-top: 10px;">
+						<hr id="hr" style="height:1px;border:none;border-top:1px solid #ededed;" />
+					</div>
+					<div class="mui-media-body">
+						<p id="homeWorkContent" style="color: #323232;font-size: 15px;margin-bottom: 5px;"></p>
+						<div id="brief-imgs" class="brief-imgs"></div>
+
+					</div>
+				</li>
+				<li id="stuHomework" class="mui-table-view-divider divider-color">学生答案</li>
+				<li id="stuCell" class="mui-table-view-cell">
+					<div class="mui-media-body">
+						<font id="stuResult" class="cell-color" style="font-size: 15px;color: #323232;"></font>
+						<div id="brief-imgs-stu" class="brief-imgs"></div>
+					</div>
+				</li>
+				<li id="comment" class="mui-table-view-divider divider-color">作业评语</li>
+				<li class="mui-table-view-cell">
+					<div class="mui-media-body" style="min-height: 50px;">
+						<font id="commentContent" class="cell-color" style="font-size: 15px;color: #323232;"></font>
+					</div>
+				</li>
+			</ul>
+		</div>
+		
+		<script src="../../js/utils/vue.min.js"></script>
+		<script type="text/javascript">
+			var workCommented = new Vue({
+				el: '#work-commented',
+				data: {
+					workCommented: {}
+				},
+				methods: {
+					resetData: function() {
+						this.workCommented = {};
+					}
+				}
+			})
+		</script>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/mui.zoom.js"></script>
+		<script src="../../js/mui.previewimage.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script src="../../js/publicHomeworkProtocol.js"></script>
+		<script src="../../js/homework/homework-commented.js"></script>
+	</body>
+
+</html>

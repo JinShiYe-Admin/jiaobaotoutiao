@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>视频播放</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="author" content="莫尚霖,email:444811716@qq.com" />
+		<meta name="description" content="视频播放" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<style>
+			body,
+			.mui-content {
+				background-color: black;
+			}
+
+			.mui-bar-nav {
+				box-shadow: none;
+			}
+
+			#video {
+				width: 100%;
+				background-color: black;
+				background-position: 0% 50%;
+				background-repeat: no-repeat;
+				-webkit-background-size: cover;
+				-moz-background-size: cover;
+				-o-background-size: cover;
+				background-size: cover;
+			}
+
+			.mui-content {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">视频播放</h1>
+		</header>
+		<div class="mui-content mui-fullscreen">
+			<video id="video" controls="controls" poster="null" webkit-playsinline playsinline>
+				您的浏览器不支持 video 标签。
+			</video>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/qiniu/qiniu.js"></script>
+		<script type="text/javascript" src="../../js/utils/cryption.js"></script>
+		<script type="text/javascript" src="../../js/storageKeyName.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script type="text/javascript" src="../../js/utils/CloudFileUtil.js"></script>
+		<script type="text/javascript" src="../../js/utils/playutil.js"></script>
+		<script type="text/javascript">
+			mui.init();
+			//播放器
+			var video = document.getElementById("video");
+
+			var token = ''; //token
+			mui.plusReady(function() {
+				var waiting = events.showWaiting();
+				video.style.height = parseInt(video.offsetWidth * 3 / 4) + "px";
+				var main = plus.webview.currentWebview();
+				//console.log(main.id + " " + JSON.stringify(main.data));
+				//设置缩略图
+				if(main.data.thumbPath) {
+					video.style.backgroundImage = "url(" + main.data.thumbPath + ")";
+				}
+				video.onplaying = function() {
+					video.style.backgroundImage = "";
+				}
+				video.onerror = function() {
+					//console.log("video.onerror");
+					mui.toast("视频播放失败");
+				}
+				if(main.data.type == 0) {
+					//获得凭证
+					getAllToken(main.data.path, waiting);
+				} else {
+					video.src = main.data.path;
+				}
+			});
+
+			/**
+			 * 获取文件的凭证
+			 */
+			function getAllToken(fpath, wd) {
+				var getDownToken = {
+					appId: 4, //int 必填 项目id
+					urls: [fpath] //array 必填 需要获取下载token文件的路径
+				}
+				var getDownTokenUrl = window.storageKeyName.QNGETDOWNTOKENFILE;
+				CloudFileUtil.getQNDownToken(getDownTokenUrl, getDownToken, function(data) {
+					//console.log('七牛下载token ' + JSON.stringify(data));
+					token = data.Data[0].Value;
+					//console.log('token ' + token);
+					video.src = token;
+					wd.close();
+				}, function(xhr, type, errorThrown) {
+					wd.close();
+					mui.toast('获取文件失败 ' + type);
+				});
+			}
+		</script>
+	</body>
+
+</html>

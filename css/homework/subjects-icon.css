@@ -1,0 +1,63 @@
+.icon-yuwen{
+	color: #46B1CA;
+}
+.icon-shuxue{
+	color: #D46B44;
+}
+.icon-yingyu{
+	color: #66B03C;
+}
+.icon-lishi{
+	color: #3A84F2;
+}
+.icon-zhengzhi{
+	color: #32A697;
+}
+.icon-dili{
+	color: #3290BD;
+}
+.icon-shengwu{
+	color: #7D5AC8;
+}
+.icon-huaxue{
+	color: #DF60A1;
+}
+.icon-wuli{
+	color: #CB8939;
+}
+.icon-qita{
+	color: #F54D55;
+}
+.subject-icon{
+	display: inline-block;
+	float: left;
+	padding: 1rem;
+	margin-top: 1rem;
+	font-size: 5rem;
+	/*width: 20%;*/
+}
+.isCommentedBG{
+	background-image: url(../../image/homework/commented.png);
+	background-repeat: no-repeat;
+	background-position: right;
+}
+.noCommentedBG{
+	background-image: url(../../image/homework/no-comment.png);
+	background-repeat: no-repeat;
+	background-position: right;
+}
+.isSubmitted{
+	background-image: url(../../image/homework/submitted.png);
+	background-repeat: no-repeat;
+	background-position: right;
+}
+.submitOnline{
+	background-image: url(../../image/homework/need-submit.png);
+	background-repeat: no-repeat;
+	background-position: right;
+}
+
+.header-words{
+	/*margin-top: -1.5rem;*/
+	width: 60%;
+}

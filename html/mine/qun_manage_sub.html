@@ -1,0 +1,197 @@
+<!--
+	作者：444811716@qq.com
+	时间：2017-02-07
+	描述：群管理第二版
+-->
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/iconfont/iconfont.css" />
+		<style>
+			body,
+			.mui-content {
+				background-color: white;
+			}
+
+			.mui-table-view:before,
+			.mui-table-view:after,
+			.mui-table-view-cell:after {
+				height: 0px;
+			}
+
+			.mui-table-view {
+				text-align: center;
+			}
+
+			img {
+				border-radius: 50%;
+				height: 40px;
+				width: 40px;
+			}
+
+			.icon-tianjia {
+				/*创建群按钮*/
+				position: fixed;
+				bottom: 4rem;
+				right: 4rem;
+				z-index: 666;
+				font-size: 5rem;
+				color: #12B7F5;
+				border-radius: 50%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!--下拉刷新容器-->
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<!--数据列表-->
+				<ul class="mui-table-view">
+					<div id="allQun" class="mui-row">
+					</div>
+				</ul>
+			</div>
+			<a id="addQun" class="mui-icon iconfont icon-tianjia"></a>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script>
+			mui.init({
+				pullRefresh: {
+					container: '#pullrefresh',
+					down: {
+						callback: pulldownRefresh
+					},
+				},
+				gestureConfig: {
+					longtap: true, //默认为false
+				}
+			});
+
+			mui.plusReady(function() {
+				var main = plus.webview.currentWebview(); //获取当前窗体对象
+				var data = main.data; //接收A页面传入参数值
+				//console.log('qun_manage_sub.html:' + JSON.stringify(data));
+				//获取创建的群
+				getCGQun();
+
+				//创建群的监听
+				document.getElementById('addQun').addEventListener('tap', function() {
+					events.openNewWindow('qun_manage_info.html');
+				});
+
+				//点击群
+				mui('#allQun').on('tap', '.mui-table-view-cell', function() {
+					var gid = this.id.replace('qun_', ''); //群id
+					var gname = this.lastElementChild.innerText; //群名称
+					//console.log(gid + ' ' + gname);
+					if(data.type == '0') { //群管理
+						events.openNewWindowWithData('qun_manage_member_main.html', {
+							gid: gid, //群id
+							gname: gname //群名称
+						});
+					} else { //人员资料
+						events.openNewWindowWithData('qun_manage_data_main.html', {
+							gid: gid, //群id
+							gname: gname //群名称
+						});
+					}
+				});
+
+				//长按修改群信息
+				mui('#allQun').on('longtap', '.mui-table-view-cell', function() {
+					var gid = this.id.replace('qun_', '');
+					//console.log(this.id + '|' + gid);
+					events.openNewWindowWithData('qun_manage_info_change.html', {
+						gid: gid, //群ID
+					});
+				});
+
+				//修改群信息（群名称或者群头像）
+				window.addEventListener('changeQunInfo', function(e) {
+					var data = e.detail;
+					//console.log('changeQunInfo ' + JSON.stringify(data));
+					if(data.type == 'gname') { //群名称
+						document.getElementById("gname_" + data.gid).innerText = data.value;
+					} else if(data.type == 'gimg') {
+						document.getElementById("gimg_" + data.gid).src = updateHeadImg(data.value);
+					}
+				});
+
+				//创建一个群
+				window.addEventListener('createQun', function(e) {
+					var data = e.detail.data;
+					//console.log('createQun ' + JSON.stringify(data));
+					addQunItem(data);
+				});
+			});
+
+			/**
+			 * 下拉刷新具体业务实现
+			 */
+			function pulldownRefresh() {
+				setTimeout(function() {
+					//获取创建的群
+					getCGQun();
+				}, 1500);
+			}
+
+			/**
+			 * 界面中创建一个群
+			 * @param {Object} data
+			 */
+			function addQunItem(data) {
+				////console.log('addQunItem ' + JSON.stringify(data));
+				var element = document.createElement('li');
+				element.id = 'qun_' + data.gid;
+				element.className = 'mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-3';
+				element.innerHTML = '<img id="gimg_' + data.gid + '" src="' + updateHeadImg(data.gimg, 2) + '" />\
+									<div id="gname_' + data.gid + '" class="mui-media-body mui-ellipsis"></div>';
+				document.getElementById("allQun").appendChild(element);
+				document.getElementById("gname_" + data.gid).innerText = data.gname;
+			}
+
+			/**
+			 * 获取创建的群
+			 */
+			function getCGQun() {
+				var wd = events.showWaiting();
+				//9.获取用户群
+				//获取个人信息
+				var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid;
+				//需要参数
+				var getQunData = {
+					vtp: 'cg', //要获取的项:cg(创建的群),ug(参与群),mg(协管的群),ag(所有的群)
+					vvl: personalUTID, //查询的各项，对应人的utid，可以是查询的任何人
+				};
+				postDataPro_PostGList(getQunData, wd, function(data) {
+					mui('#pullrefresh').pullRefresh().endPulldownToRefresh(); //refresh completed
+					//console.log('9.获取用户创建的群success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						document.getElementById("allQun").innerHTML = '';
+						mui.each(data.RspData, function(index, element) {
+							addQunItem(element);
+						});
+					} else if(data.RspCode == 9) {
+						//未获取到数据
+						mui.toast('查询为空');
+					} else {
+						mui.toast(data.RspTxt);
+					}
+					wd.close();
+				});
+			}
+		</script>
+	</body>
+
+</html>

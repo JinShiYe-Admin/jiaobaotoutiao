@@ -1,0 +1,378 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<link href="../../css/show/show-detail.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/preview.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">详情</h1>
+			<a id="del-dynamic" class="mui-pull-right iconfont icon-moreandroid display-none" style="font-size: 20px;"></a>
+		</header>
+		<div id="show-detail" v-show="showDetail.TabId>0" class="mui-content">
+			<div>
+				<h4 class="detail-head triple-line" v-if="showDetail.MsgTitle">{{showDetail.MsgTitle}}</h4>
+				<div class="publisher-container">
+					<img class="publisher-img" v-bind:src="showDetail.PublisherImg" v-on:tap="openPersonSpace(showDetail.PublisherId)" />
+					<div class="publisher-info">
+						<div class="publisher-name single-line">{{showDetail.PublisherName}}</div>
+						<div class="publisher-date">
+							{{getSimpleDate(showDetail.PublishDate)}}
+						</div>
+					</div>
+					<button v-if="!isSelfDynamic" class="attention-btn btn-unfocus" v-bind:class="{'btn-focused':showDetail.IsFocused}" v-on:tap="toggleFocus">{{getFocused(showDetail)?'已关注':'关注'}}</button>
+				</div>
+				<div v-if="showDetail.EncType === 5" class="show-content" v-html="showDetail.MsgContent.replace(/<br>/g,'\n<br>')"></div>
+				<div v-else class="show-content">{{showDetail.MsgContent}}</div>
+				<div v-if="showDetail.EncType!==5" style="width: 100%;padding-top: 4px;">
+					<div v-for="(img,index) of getImgs(showDetail)" v-if="img.type === 2" class="display-inlineBlock" v-bind:style="[flexStyle,{background:'linear-gradient(to bottom,rgba(0,0,0,0.4),rgba(0,0,0,0) 20%,rgba(0,0,0,0) 80%,rgba(0,0,0,0.4)),url('+img.encImg+')'},imgDivRe,{'background-size':'contain','background-repeat':'no-repeat'}]" style="position: relative; margin: 0 2.5px;" v-on:tap.stop="exFileTapListener(showDetail,img,index)">
+						<img src="../../image/utils/playvideo.png" style="width:50px;height:50px;margin: auto 0;">
+						<p v-if="img.encLen>0" style="position: absolute;bottom: 0;right: 5px;color: white;line-height: 0;">{{img.encLen}}"</p>
+					</div>
+					<img v-for="(img,index) of getImgs(showDetail)" v-if="img.type===1" class="display-inlineBlock" v-bind:src="img.encImg" v-bind:style="[imgDivRe]" style="margin: 0 2.5px;" v-bind:data-preview-src="img.encAddr" v-bind:data-preview-group="showDetail.TabId" />
+
+				</div>
+				<div class="mui-pull-right extra-container">
+					<span class="iconfont icon-support" v-bind:class="{isLiked:showDetail.IsLike,isUnlike:!showDetail.IsLike}" v-on:tap="toggleLike"></span>
+					<span class="iconfont icon-liaotian1" v-on:click="openComment(0)"></span>
+				</div>
+				<!--<hr style="width: 100%;height: 1px;color: #E4E4E4;border: none;" />-->
+				<br />
+				<br />
+				<div style="width: 100%;height: 1px; background-color: #E4E4E4;margin-bottom: 12px;"></div>
+				<div v-if="showDetail.LikeUsers&&showDetail.LikeUsers.length>0" style="width: 100%;">
+					<p v-on:tap="openLikers" class="p-likers">
+						<img src="../../image/dynamic/praise.png" style="width: 15px;height: 15px;vertical-align: middle;" />
+						<span class="liker-name" v-for="(liker,likerIndex) of showDetail.LikeUsers" v-if="likerIndex<20" v-on:tap.stop="openPersonSpace(liker.userId)">{{liker.userName}}
+							<span v-if="likerIndex<showDetail.LikeUsers.length-1&&likerIndex<19">,</span>
+						</span>
+						<span v-if="showDetail.LikeUsers.length>20">等人觉得很赞</span>
+					</p>
+				</div>
+			</div>
+			<div class="comments-container" v-if="showDetail.Comments.length>0">
+				<div class="comments-li mui-table-view-cell" v-for="(comment,index0) of showDetail.Comments" v-on:tap.stop="openComment(1,index0)" v-on:longtap.stop="showSheet(comment,index0)">
+					<p class="reply-content"><span class="reply-name">{{comment.UserName}}</span>:{{comment.CommentContent}}</p>
+					<div class="replies-container" v-if="comment.Replys.length>0">
+						<div class="reply-li mui-table-view-cell" v-for="(reply,index1) of comment.Replys" v-on:tap.stop="openComment(1,index0,index1)" v-on:longtap.stop="showSheet(comment,index0,index1)">
+							<p class="reply-content"><span class="reply-name">{{reply.UserName}}</span>
+								<template v-if="reply.ReplyName">
+									@<span class="reply-name">{{reply.ReplyName}}</span>
+								</template>
+								:{{reply.CommentContent}}
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="videoPopover" class="mui-popover" style="top: 0px;">
+			<video id="video" style="position: absolute;z-index: 999;" controls="controls">
+				您的浏览器不支持 video 标签。
+			</video>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/utils/vue.min.js"></script>
+		<script src="../../js/mui.zoom.js"></script>
+		<script src="../../js/mui.previewimage.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/utils/showvideoutil.js"></script>
+		<script src="../../js/utils/video.js"></script>
+		<script src="../../js/show/show-comment.js"></script>
+		<script src="../../js/mui.zoom.js"></script>
+		<script src="../../js/utils/all-preview.js"></script>
+		<script type="text/javascript">
+			var wd;
+			var pageIndex = 1;
+			var tableId = 0;
+			mui.init({
+				beforeback: function() {
+					if(!mui.getPreviewImage().isShown()) {
+						commentList.resetData();
+					}
+					return true;
+				},
+				pullRefresh: {
+					container: '#show-detail',
+					down: {
+						style: 'circle',
+						offset: '50px',
+						callback: pulldownRefresh
+					},
+					up: {
+						auto: true,
+						contentrefresh: '正在加载...',
+						callback: pullupRefresh
+					}
+				},
+				gestureConfig: {
+					longtap: true
+				}
+			})
+			mui.plusReady(function() {
+				mui.previewImage();
+				commentList.winWidth = document.querySelector('header').clientWidth;
+				ShowVideoUtil.initVideo(document.getElementById("video"));
+				events.preload('../quan/classSpace-persons.html', 50);
+				events.fireToPageNone("../quan/aboutme.html", "detailReady");
+				events.fireToPageNone("show-home.html", "detailReady");
+				myStorage.setItem(storageKeyName.ISSHOWDETAILREADY, true);
+				window.addEventListener('showDetail', function(e) {
+					pageIndex = 1;
+					//console.log("获取的数据:" + JSON.stringify(e.detail.data));
+					var showInfo = e.detail.data;
+					tableId = showInfo.TabId;
+					requestShowDetail();
+				})
+				window.addEventListener("commented", function() {
+					pageIndex = 1;
+					requestShowDetail();
+				})
+				commentList.$watch('isSelfDynamic', function(newVal, oldVal) {
+					if(newVal) {
+						document.getElementById("del-dynamic").style.display = "inline-block";
+					} else {
+						document.getElementById("del-dynamic").style.display = "none";
+					}
+				})
+				setListener();
+			})
+			/**
+			 * 加载监听
+			 */
+			function setListener() {
+				events.addTap("del-dynamic", function() {
+					var titles = [{
+						title: "删除",
+						dia: 1
+					}];
+					var funcs = [delDynamic];
+					events.showActionSheet(titles, funcs);
+				})
+			}
+			/**
+			 * 删除动态
+			 */
+			function delDynamic() {
+				var wd = events.showWaiting();
+				postDataPro_delUserSpaceById({
+					userSpaceId: commentList.showDetail.TabId
+				}, wd, function(data) {
+					//console.log("删除用户动态后返回的值：" + JSON.stringify(data));
+					wd.close();
+					if(data.RspCode == 0) {
+						if(data.RspData.Result === 1) {
+							mui.toast("删除动态成功！");
+							mui.back();
+						}
+					} else {
+						mui.toast(data.RspTxt + ",请重新删除!");
+					}
+				})
+			}
+
+			function pulldownRefresh() {
+				pageIndex = 1;
+				requestShowDetail();
+				setTimeout(function() {
+					mui('#show-detail').pullRefresh().endPulldown();
+				}, 1000)
+			}
+
+			function pullupRefresh() {
+				if(pageIndex > commentList.showDetail.TotalPage) {
+					mui('#show-detail').pullRefresh().endPullup(true);
+				} else {
+					requestShowDetail();
+				}
+				setTimeout(function() {
+
+				}, 1500);
+			}
+			/**
+			 * 获取展现详情
+			 */
+			function requestShowDetail() {
+				wd = events.showWaiting();
+				postDataPro_getUserSpaceByUser({
+					userId: events.getUtid(), //用户ID
+					userSpaceId: tableId, //用户动态ID
+					pageIndex: pageIndex, //评论当前页数
+					pageSize: 10 //评论每页记录数
+				}, wd, function(data) {
+
+					//console.log("获取的展现详情:" + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						pageIndex++;
+						getUserInfos(data.RspData.Data, rechargeData);
+					} else {
+						wd.close();
+						mui.toast(data.RspTxt);
+					}
+				})
+			}
+
+			function rechargeData(showDetail, personInfoes) {
+				wd.close();
+				for(var i in personInfoes) {
+					if(showDetail.PublisherId == personInfoes[i].utid) {
+						showDetail.PublisherName = getName(personInfoes[i]);
+						showDetail.PublisherImg = updateHeadImg(personInfoes[i].uimg, 2);
+					}
+					if(showDetail.LikeUsers.length > 0) {
+						var likers = showDetail.LikeUsers;
+						for(var n in likers) {
+							if(likers[n].userId == personInfoes[i].utid) {
+								likers[n].userName = getName(personInfoes[i]);
+							}
+						}
+					}
+					if(showDetail.Comments.length > 0) {
+						var comments = showDetail.Comments;
+						for(var j in comments) {
+							if(comments[j].UserId) {
+								if(comments[j].UserId == personInfoes[i].utid) {
+									comments[j].UserName = getName(personInfoes[i]);
+									comments[j].UserImg = updateHeadImg(personInfoes[i].uimg, 2)
+								}
+							}
+							if(comments[j].ReplyId) {
+								if(comments[j].ReplyId == personInfoes[i].utid) {
+									comments[j].ReplyName = getName(personInfoes[i]);
+									comments[j].ReplyImg = updateHeadImg(personInfoes[i].uimg, 2)
+								}
+							}
+							if(comments[j].Replys.length > 0) {
+								var replies = comments[j].Replys;
+								for(var m in replies) {
+									if(replies[m].UserId) {
+										if(replies[m].UserId == personInfoes[i].utid) {
+											replies[m].UserName = getName(personInfoes[i]);
+										}
+									}
+									if(replies[m].ReplyId) {
+										if(replies[m].ReplyId == personInfoes[i].utid) {
+											replies[m].ReplyName = getName(personInfoes[i]);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+				//console.log("pageIndex:" + pageIndex);
+				if((pageIndex - 1) === 1) {
+					commentList.showDetail = showDetail;
+					commentList.showDetail.Ised = commentList.getFocused(showDetail);
+				} else {
+					if(commentList.TabId) {
+						commentList.Comments = commentList.Comments.concat(showDetail.Comments);
+					}
+				}
+				console.log("获取人员信息后的展现详情：" + JSON.stringify(commentList.showDetail));
+
+			}
+
+			function getName(info) {
+				return info.bunick ? info.bunick : info.unick;
+			}
+
+			function getIds(data) {
+				//console.log("要处理的数据：" + JSON.stringify(data))
+				var ids = [];
+				ids.push(data.PublisherId);
+				if(data.LikeUsers.length > 0) {
+					for(var n in data.LikeUsers) {
+						ids.push(data.LikeUsers[n].userId);
+					}
+				}
+				if(data.Comments.length > 0) {
+					var comments = data.Comments;
+					for(var i in comments) {
+						if(comments[i].UserId) {
+							ids.push(comments[i].UserId);
+						}
+						if(comments[i].ReplyId) {
+							ids.push(comments[i].ReplyId);
+						}
+						if(comments[i].Replys.length > 0) {
+							var replies = comments[i].Replys;
+							for(var j in replies) {
+								if(replies[j].UserId) {
+									ids.push(replies[j].UserId);
+								}
+								if(replies[j].ReplyId) {
+									ids.push(replies[j].ReplyId);
+								}
+							}
+						}
+					}
+				}
+				ids = events.arraySingleItem(ids);
+				//console.log("获取的id数据：" + ids);
+				return ids;
+			}
+			/**
+			 * 21
+			 * 获取用户信息
+			 */
+			function getUserInfos(showDetail, callback) {
+				var ids = getIds(showDetail);
+				postDataPro_PostUinf({
+					vvl: ids.toString(),
+					vtp: 'g'
+				}, wd, function(data) {
+
+					//console.log("获取的数据：" + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						getRemark(showDetail, ids, data.RspData, callback);
+					} else {
+						wd.close();
+					}
+					//					getRemark(showDetail, ids, [], callback);
+				})
+			}
+			/**
+			 * 35
+			 * * 通过ids获取对用户的备注
+			 * @param {Object} ids
+			 */
+			function getRemark(showDetail, ids, dataInfos, callback) {
+
+				postDataPro_PostUmk({
+					vvl: ids.toString()
+				}, wd, function(data) {
+					//console.log("获取的用户备注：" + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						if(data.RspData.length > 0) {
+							var remarkInfos = data.RspData;
+							for(var i in dataInfos) {
+								for(var j in remarkInfos) {
+									if(dataInfos[i].utid == remarkInfos[j].butid) {
+										jQuery.extend(dataInfos[i], remarkInfos[j]);
+									}
+								}
+
+							}
+						}
+					} else {
+						wd.close();
+					}
+					callback(showDetail, dataInfos);
+				})
+			}
+		</script>
+	</body>
+
+</html>

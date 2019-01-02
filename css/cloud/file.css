@@ -1,0 +1,41 @@
+/*云盘文件的图标的色值*/
+
+.icon-excel {
+	color: #1E7145;
+}
+
+.icon-word {
+	color: #4867B3;
+}
+
+.icon-pdf {
+	color: #eb062b;
+}
+
+.icon-file {
+	color: #01adda;
+}
+
+.icon-zip {
+	color: #FF9779;
+}
+
+.icon-txt {
+	color: #4867B3;
+}
+
+.icon-mp3 {
+	color: #FFA70F;
+}
+
+.icon-imge {
+	color: #FF8F00;
+}
+
+.icon-video {
+	color: #057599;
+}
+
+.icon-yasuobao {
+	color: #6D55AE;
+}

@@ -1,0 +1,305 @@
+<!--
+	作者：444811716@qq.com
+	时间：2017-06-19
+	描述：选择上传的文件
+-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/iconfont/iconfont.css" />
+		<link rel="stylesheet" href="../../css/cloud/file.css" />
+		<style type="text/css">
+			body,
+			.mui-content {
+				background: white;
+			}
+			
+			nav {
+				background-color: #383E4E !important;
+			}
+			
+			.bar-tab-div {
+				margin: 5px;
+			}
+			
+			.bar-tab-div .mui-pull-left,
+			.bar-tab-div .mui-pull-right {
+				width: 45%;
+			}
+			
+			.bar-tab-div .mui-pull-left div:first-child {
+				color: white;
+				margin-left: 10%;
+			}
+			
+			.bar-tab-div .mui-pull-left button {
+				width: 100%;
+				margin-bottom: 15px;
+				margin-left: 5%;
+				background: #7F8594;
+				border-color: #7F8594;
+				height: 40px;
+			}
+			
+			.bar-tab-div .mui-pull-left button img {
+				width: 20%;
+				height: 20px;
+			}
+			
+			.bar-tab-div .mui-pull-left button div {
+				width: 80%;
+				text-align: center;
+			}
+			
+			.bar-tab-div .mui-pull-right button {
+				width: 100%;
+				margin-bottom: 15px;
+				margin-left: -5%;
+				background: #636770;
+				border-color: #636770;
+				height: 40px;
+			}
+			
+			.mui-backdrop {
+				background-color: rgba(0, 0, 0, 0.03);
+			}
+			
+			.mui-popover-arrow {
+				display: none;
+			}
+			
+			.mui-popover {
+				width: 100%;
+			}
+			
+			.mui-popover.mui-active {
+				left: 0px !important;
+				height: 200px;
+			}
+			
+			.popover-background {
+				width: 100% !important;
+				background-color: wheat;
+				height: 100%;
+			}
+			
+			.mui-bar-tab~.mui-content {
+				padding-bottom: 81px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">选择文件</h1>
+			<div id="addfiles" class="title-text-pull-right">添加</div>
+		</header>
+		<nav class="mui-bar mui-bar-tab">
+			<div class="bar-tab-div">
+				<div class="mui-pull-left">
+					<div>选择上传的位置</div>
+					<button id="choose" type="button" class="mui-btn mui-btn-blue">
+						<img class="mui-pull-left" src="../../image/cloud/A_folder.png"/>
+						<div id="yunpath" class="mui-ellipsis mui-pull-right"></div>
+					</button>
+				</div>
+				<div class="mui-pull-right">
+					<br />
+					<button id="upload" type="button" class="mui-btn mui-btn-blue">上传</button>
+				</div>
+			</div>
+		</nav>
+		<div class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<ul id="filesList" class="mui-table-view">
+					<file-item v-for="(fileItem,indexItem) of filesArr" v-bind:file="fileItem" v-bind:index="indexItem" v-on:delcell="delFile" v-on:showpic="showPic"></file-item>
+				</ul>
+			</div>
+		</div>
+		<div id="filter" v-if="isShow" v-bind:style="filterContainer" v-on:tap="setIsShow(false)">
+			<img v-if="showType==1" v-bind:src="showPath" style="max-width: 100%; max-height: 100%; width: 100%;height: auto;" />
+			<ul v-else class="mui-col-sm-4 mui-col-xs-4" style="align-self: center;-webkit-padding-start: 0px;">
+				<filter-item v-for="item of options" v-bind:option="item" v-if="cellIsShow(item)"></filter-item>
+			</ul>
+		</div>
+
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script src="../../js/utils/camera.js"></script>
+		<script src="../../js/cloud/cloud.js"></script>
+		<script src="../../js/utils/gallerypick.js"></script>
+		<script src="../../js/utils/vue.js"></script>
+
+		<script type="text/javascript" src="../../js/cloud/AndroidFileSystem.js"></script>
+		<script type="text/javascript" src="../../js/storageKeyName.js"></script>
+		<script type="text/javascript" src="../../js/utils/compress.js"></script>
+		<script src="../../js/cloud/upload-filter.js"></script>
+		<script src="../../js/cloud/file-list.js"></script>
+		<script type="text/javascript">
+			var main; //当前webview对象
+			var chooseData = {
+				pid: 0,
+				pname: "我的教宝云盘",
+			}; //当前页面的数据
+			mui(".mui-scroll-wrapper").scroll();
+			mui.init({
+				beforeback: function() {
+					if(filter.isShow) {
+						filter.setIsShow(false);
+						return false;
+					} else {
+						return true;
+					}
+				}
+			});
+			mui.plusReady(function() {
+				//				filter.isShow=true;
+				initData();
+				initListener();
+				//				initPopover();
+			});
+
+			/**
+			 * 初始化数据
+			 */
+			function initData() {
+				main = plus.webview.currentWebview(); //获取当前窗体对象
+				//console.log(main.id + " " + JSON.stringify(main.data));
+				document.getElementById("yunpath").innerHTML = chooseData.pname;
+			}
+
+			/**
+			 * 初始化监听
+			 */
+			function initListener() {
+				//文件数组变化的事件
+				fileList.$watch('filesArr', function(newVal, oldVal) {
+					//console.log("newVal " + newVal.length);
+					//console.log("oldVal " + oldVal.length);
+					if(newVal.length == 0) {
+						//console.log("没有文件");
+						changeUpBtnColorToDefault()
+					}
+					if(oldVal.length == 0 && newVal.length > 0) {
+						//console.log("有文件");
+						changeUpBtnColor()
+					}
+				});
+
+				//增加文件的事件
+				window.addEventListener("chose-files", function(e) {
+					//console.log("chose-files事件：" + JSON.stringify(e.detail.data));
+					fileList.pushFilesArr(rechargeFileArr(e.detail.data));
+					mui(".mui-scroll-wrapper").scroll().scrollTo(0, 0, 100);
+				});
+				//添加文件
+				document.getElementById('addfiles').addEventListener('tap', function() {
+					//console.log("添加文件");
+					filter.isShow = true;
+					filter.fileNo = fileList.filesArr.length;
+					filter.showType = 0;
+				});
+
+				/**
+				 * 获取云存储界面传递的数据
+				 */
+				window.addEventListener('getCloudData', function(e) {
+					var data = e.detail.data;
+					//console.log("getCloudData " + JSON.stringify(data));
+					chooseData.pid = data.pid;
+					chooseData.pname = data.pname;
+					document.getElementById("yunpath").innerHTML = chooseData.pname;
+					fileList.filesArr = [];
+				});
+
+				//选择上传的路径
+				window.addEventListener('chooseFolder', function(e) {
+					var data = e.detail.data; //接收页面传入的参数值
+					//console.log('chooseFolder ' + JSON.stringify(data));
+					chooseData.pid = data.pid;
+					chooseData.pname = data.pname;
+					document.getElementById("yunpath").innerHTML = chooseData.pname;
+				});
+
+				//修改存储到云盘的路径
+				document.getElementById('choose').addEventListener('tap', function() {
+					events.openNewWindowWithData("storage_main_choose.html", {
+						type: 1,
+						webid: main.id,
+						winid: "chooseFolder"
+					});
+				});
+
+				//上传选择的文件
+				document.getElementById('upload').addEventListener('tap', function() {
+					if(fileList.filesArr.length != 0) {
+						//跳转到传输列表
+						events.fireToPageWithData('storage_transport.html', 'addUpload', {
+							pid: chooseData.pid,
+							files: fileList.filesArr
+						});
+						plus.webview.hide(main, 'slide-out-left');
+						fileList.filesArr = [];
+						changeUpBtnColorToDefault();
+					} else {
+						mui.toast('请添加上传的文件');
+					}
+				});
+			}
+
+			function rechargeFileArr(fileArr) {
+				var reFiles = [];
+				var isLocalVideo=false;
+				if(fileArr.local) {
+					for(var j in fileArr.dataInfo) {
+						reFiles.push(fileArr.dataInfo[j].fullPath);
+					}
+					fileArr = reFiles;
+				}
+				if(fileArr.localVideo) {
+					isLocalVideo=true;
+					fileArr = [fileArr.video];
+				}
+				var reArr = [];
+				for(var i in fileArr) {
+					var fileInfo; 
+					if(isLocalVideo) {
+						fileInfo= cloud.getFileImgStyle(fileArr[i].path);
+						fileInfo.fileName =fileArr[i].fileName;
+					}else{
+						fileInfo = cloud.getFileImgStyle(fileArr[i])
+						fileInfo.fileName = events.getFileName(fileArr[i]);
+					}
+					
+					reArr.push(fileInfo);
+				}
+				//console.log("获取的数组：" + JSON.stringify(reArr));
+				return reArr;
+			}
+
+			/**
+			 * 将上传按钮颜色设置为默认颜色
+			 */
+			function changeUpBtnColorToDefault() {
+				document.getElementById('upload').style.background = '#636770';
+				document.getElementById('upload').style.border = '#636770';
+			}
+
+			/**
+			 * 将上传按钮颜色设置为蓝色
+			 */
+			function changeUpBtnColor() {
+				document.getElementById('upload').style.background = '#4DA3F5';
+				document.getElementById('upload').style.border = '#4DA3F5';
+			}
+		</script>
+	</body>
+
+</html>

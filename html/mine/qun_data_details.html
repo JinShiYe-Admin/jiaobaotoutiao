@@ -1,0 +1,896 @@
+<!--
+	作者：444811716@qq.com
+	时间：2016-11-24
+	描述：资料详情
+-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>资料详情</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+
+		<style>
+			body,
+			.mui-content {
+				background: white;
+			}
+
+			.mui-content>.mui-table-view:first-child {
+				margin-top: 0px
+			}
+
+			.mui-table-view-cell:last-child:after {
+				height: 1px;
+			}
+
+			.mui-table-view:before,
+			.mui-table-view:after {
+				height: 0px;
+			}
+
+			.mui-table-view-cell {
+				padding: 5px 15px;
+				padding-right: 0px;
+			}
+
+			.mui-table-view-cell:after {
+				left: 0px;
+				color: #e4e4e4;
+			}
+
+			.mui-input-row label {
+				width: 25%;
+				padding: 0px;
+				font-size: 14px;
+				line-height: 40px;
+				height: 40px;
+				color: #323232;
+			}
+
+			.mui-input-row label~input {
+				width: 75%;
+				line-height: 40px;
+				padding-right: 30px;
+			}
+
+			input[type=text],
+			input[type=tel] {
+				font-size: 14px;
+				line-height: 40px;
+				color: #666666;
+			}
+
+			.text-color-disabled,
+			.text-color-disabled .mui-input-row label,
+			.text-color-disabled .mui-input-row label~input {
+				color: #CCCCCC;
+			}
+
+			.mui-input-row .mui-input-clear~.mui-icon-clear {
+				/*删除按钮*/
+				color: #e4e4e4;
+			}
+
+			input::-webkit-input-placeholder {
+				color: #999999;
+				font-size: 14px;
+				/* WebKit browsers */
+			}
+
+			input:-moz-placeholder {
+				color: #999999;
+				font-size: 14px;
+				/* Mozilla Firefox 4 to 18 */
+			}
+
+			input::-moz-placeholder {
+				color: #999999;
+				font-size: 14px;
+				/* Mozilla Firefox 19+ */
+			}
+
+			input:-ms-input-placeholder {
+				color: #999999;
+				font-size: 14px;
+				/* Internet Explorer 10+ */
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title" style="color: white;">资料详情</h1>
+			<div id="finish" class="title-text-pull-right" style="color: gray;">保存</div>
+		</header>
+
+		<div class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<ul id="stu_show" class="mui-table-view" style="display:none;">
+					<li class="mui-table-view-cell" style="padding-right: 15px;">
+						<div style="position: absolute;right: 15px;top: 20px;color: red;font-size: 24px;">*</div>
+						<div class="mui-input-row">
+							<label>学生姓名:</label>
+							<input id="stu_name" type="text" maxlength="10" placeholder="姓名,最多10个字">
+						</div>
+					</li>
+					<li class="mui-table-view-cell text-color-disabled">
+						<div class="mui-input-row">
+							<label>昵称:</label>
+							<input id="stu_unick" type="text" readonly="readonly">
+						</div>
+					</li>
+					<li class="mui-table-view-cell text-color-disabled">
+						<div class="mui-input-row">
+							<label>学生账号:</label>
+							<input id="stu_uname" type="text" readonly="readonly">
+						</div>
+					</li>
+					<li class="mui-table-view-cell text-color-disabled">
+						<div class="mui-input-row">
+							<label>学生电话:</label>
+							<input id="stu_phone" type="text" readonly="readonly">
+						</div>
+					</li>
+					<li class="mui-table-view-cell text-color-disabled">
+						<div class="mui-input-row ">
+							<label>性别:</label>
+							<input id="stu_gender" type="text" readonly="readonly">
+						</div>
+					</li>
+				</ul>
+				<ul id="par_show" class="mui-table-view" style="display:none;">
+					<div style="height: 10px;background-color: #EFEFF4;"></div>
+				</ul>
+				<ul id="tea_show" class="mui-table-view" style="display:none;">
+					<li class="mui-table-view-cell">
+						<div style="position: absolute;right: 15px;top: 20px;color: red;font-size: 24px;">*</div>
+						<div class="mui-input-row">
+							<label>姓名:</label>
+							<input id="tea_name" type="text" maxlength="10" placeholder="姓名最多10个字">
+						</div>
+					</li>
+					<li class="mui-table-view-cell text-color-disabled">
+						<div class="mui-input-row">
+							<label>昵称:</label>
+							<input id="tea_unick" type="text" readonly="readonly">
+						</div>
+					</li>
+					<li class="mui-table-view-cell text-color-disabled">
+						<div class="mui-input-row">
+							<label>账号:</label>
+							<input id="tea_uname" type="text" readonly="readonly">
+						</div>
+					</li>
+					<li class="mui-table-view-cell text-color-disabled">
+						<div class="mui-input-row">
+							<label>手机号:</label>
+							<input id="tea_phone" type="text" readonly="readonly">
+						</div>
+					</li>
+					<li class="mui-table-view-cell text-color-disabled">
+						<div class="mui-input-row">
+							<label>性别:</label>
+							<input id="tea_gender" type="text" readonly="readonly">
+						</div>
+					</li>
+					<li id="tea_job_li" class="mui-table-view-cell">
+						<div class="mui-input-row">
+							<label>职位:</label>
+							<input id="tea_job" type="text" maxlength="10" placeholder="职位最多10个字">
+						</div>
+					</li>
+					<li id="tea_sub_li" class="mui-table-view-cell">
+						<div class="mui-input-row">
+							<label>科目:</label>
+							<input id="tea_sub" type="text" maxlength="10" placeholder="科目最多10个字">
+						</div>
+					</li>
+					<li id="tea_title_li" class="mui-table-view-cell">
+						<div class="mui-input-row">
+							<label>职称:</label>
+							<input id="tea_title" type="text" maxlength="10" placeholder="职称最多10个字">
+						</div>
+					</li>
+					<li id="tea_expsch_li" class="mui-table-view-cell">
+						<div class="mui-input-row">
+							<label>教龄:</label>
+							<input id="tea_expsch" type="tel" placeholder="教龄0-99">
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<script type="text/javascript">
+			mui.init();
+
+			//---学生界面中相关的元素---start---
+			var stu_name = document.getElementById("stu_name"); //学生姓名
+			var stu_uname = document.getElementById("stu_uname"); //学生账号
+			var stu_phone = document.getElementById("stu_phone"); //学生电话
+			var stu_gender = document.getElementById("stu_gender"); //学生性别
+			var stu_unick = document.getElementById("stu_unick"); //学生群昵称
+			//---学生界面中相关的元素---end---
+
+			//---老师界面中相关的元素---start---
+			var tea_name = document.getElementById("tea_name"); //老师姓名
+			var tea_uname = document.getElementById("tea_uname"); //老师账号
+			var tea_phone = document.getElementById("tea_phone"); //老师手机号
+			var tea_unick = document.getElementById("tea_unick"); //老师群昵称
+			var tea_gender = document.getElementById("tea_gender"); //老师性别
+			var tea_job = document.getElementById("tea_job"); //老师职位
+			var tea_sub = document.getElementById("tea_sub"); //老师科目
+			var tea_title = document.getElementById("tea_title"); //老师职称
+			var tea_expsch = document.getElementById("tea_expsch"); //老师教龄
+			//---老师界面中相关的元素---end---
+
+			var mstype = ''; //查询的资料类型0家长,2老师,3学生
+			var teaData = null; //记录获取的老师的资料
+			var stuData = []; //记录获取的学生资料
+			var parData = []; //记录获取的学生资料的家长信息
+			var postNum = 0; //记录发送修改协议的次数
+			var change = false; //判断是否允许保存
+			var main; //获取当前窗体对象
+			var mainData; //接收页面传入的参数值
+			mui.plusReady(function() {
+				events.blurBack();
+				initData();
+				initScroll();
+				initListener();
+			});
+
+			/**
+			 * 初始化数据
+			 */
+			function initData() {
+				//---从父页面获取数据---start---
+				main = plus.webview.currentWebview(); //获取当前窗体对象
+				mainData = main.data; //接收页面传入的参数值
+				//var mainData = {
+				//	gid: gid, //群id
+				//	gname: gname, //群名称
+				//	mstype: mstype, //用户管理角色,0家长,1管理员,2老师,3学生
+				//	stuid: stuid, //资料id
+				//	stuname: stuname, //资料名称
+				//	stuimg: stuimg, //资料头像
+				//	type: type, //资料类型
+				//}
+				//console.log('从群资料页面获取的数据:' + JSON.stringify(mainData));
+
+				switch(mainData.type) {
+					case 'student': //学生
+						mstype = 3;
+						showStu();
+						break;
+					case 'teacher': //老师
+						mstype = 2;
+						showTea();
+						break;
+					case 'parents': //家长
+						mstype = 3;
+						showStu();
+						break;
+					default:
+						switch(mainData.stumstype) {
+							case 3: //学生
+								mstype = 3;
+								showStu();
+								break;
+							case 2: //老师
+								mstype = 2;
+								showTea();
+								break;
+							case 0: //家长
+								//mstype = 0;
+								//createPar();
+								mstype = 3;
+								showStu();
+								break;
+							default:
+								switch(mainData.mstype) {
+									case 1: //老师
+										mstype = 2;
+										showTea();
+										break;
+									case 3: //学生
+										mstype = 3;
+										showStu();
+										break;
+									case 2: //老师
+										mstype = 2;
+										showTea();
+										break;
+									case 0: //家长
+										//mstype = 0;
+										//createPar();
+										mstype = 3;
+										showStu();
+										break;
+									default:
+										//console.log('资料类型选择出错3');
+										break;
+								}
+								//console.log('资料类型选择出错2');
+								break;
+						}
+						//console.log('资料类型选择出错');
+						break;
+				}
+			}
+
+			/**
+			 * 初始化滚动
+			 */
+			function initScroll() {
+				mui(".mui-scroll-wrapper").scroll({
+					scrollY: true, //是否竖向滚动
+					scrollX: false, //是否横向滚动
+					indicators: true, //是否显示滚动条
+					deceleration: 0.0006, //阻尼系数,系数越小滑动越灵敏
+					bounce: true, //是否启用回弹
+				});
+			}
+
+			/**
+			 * 初始化监听
+			 */
+			function initListener() {
+				//保存按钮
+				document.getElementById('finish').addEventListener('tap', function() {
+					////console.log('保存：' + mstype + '|change:' + change);
+					if(change) {
+						document.getElementById("finish").style.color = 'gray';
+						change = false;
+
+						if(mstype == 2) {
+							//老师
+							if(tea_name.value.length > 10) {
+								mui.toast('姓名最多10个字');
+							} else if(tea_job.value.length > 10) {
+								mui.toast('职位最多10个字');
+							} else if(tea_sub.value.length > 10) {
+								mui.toast('科目最多10个字');
+							} else if(tea_title.value.length > 10) {
+								mui.toast('职称最多10个字');
+							} else {
+								changeTea(); //修改老师资料
+							}
+						} else if(mstype == 3) {
+							//学生
+							var stuName = stu_name.value;
+							var toLong = false;
+							for(var i = 0; i < parData.length; i++) {
+								var urel = document.getElementById("par_urel_" + parData[i].utid).value;
+								if(urel.length > 10) {
+									toLong = true;
+								}
+							}
+							if(stuName.length > 10) {
+								mui.toast('姓名最多10个字');
+							} else if(toLong) {
+								mui.toast('关系最多10个字');
+							} else {
+								if(stuName != mainData.stuname) { //判断是否修改了学生姓名
+									//console.log('更改学生姓名:' + stuName);
+									postNum++;
+									changeStuName(stuName); //更改学生姓名
+								}
+
+								mui.each(parData, function(index, item) {
+									//console.log('家长信息:' + JSON.stringify(item));
+									var urel = document.getElementById("par_urel_" + item.utid).value;
+									if(urel != item.urel) { //判断是否修改了家长关系
+										//console.log('更改家长关系:' + item.utid + '|' + urel);
+										postNum++;
+										changeParUrel(item.ustuid, urel); //更新与家长关系
+									}
+								});
+							}
+
+						}
+					}
+				});
+
+				//输入判断，如果未改变不允许保存
+				mui('.mui-content').on('input', 'input', function() {
+					if(mstype == 2) { //老师
+						if(this.id == 'tea_expsch') { //教龄的判断
+							//console.log('this ' + this.value + '|' + this.value.length);
+							if(this.value.length > 2) { //限制两位数
+								this.value = this.value.slice(0, 2);
+							}
+							var value = this.value;
+							var temp = '';
+							//console.log('value ' + value);
+							for(var i = 0; i < value.length; i++) {
+								if(value[i].replace(/^[1-9]\d*|0$/, '') == '') { //只允许输入数字
+									//console.log('this.value ' + i + '|' + value[i]);
+									temp = temp + value[i];
+								}
+							}
+							this.value = temp;
+						}
+						if(tea_name.value == teaData.stuname && tea_job.value == teaData.job && tea_title.value == teaData.title && tea_sub.value == teaData.sub && (parseInt(tea_expsch.value) == parseInt(teaData.expsch) || (tea_expsch.value == '' && teaData.expsch == null))) {
+							//判断是否改变资料
+							document.getElementById("finish").style.color = 'gray';
+							change = false;
+						} else {
+							document.getElementById("finish").style.color = 'white';
+							change = true;
+						}
+						if(tea_name.value.replace(/(^\s*)|(\s*$)/g, "") == "") {
+							//名字为空不允许保存
+							document.getElementById("finish").style.color = 'gray';
+							change = false;
+						}
+					} else if(mstype == 3) { //学生
+						var parChange = false; //家长关系是否改变
+						mui.each(parData, function(index, element) {
+							//判断家长关系是否修改
+							var urel = document.getElementById("par_urel_" + element.utid).value;
+							if(urel != element.urel) {
+								parChange = true;
+							}
+						});
+						if(stu_name.value == mainData.stuname && !parChange) {
+							//判断是否改变资料
+							document.getElementById("finish").style.color = 'gray';
+							change = false;
+						} else {
+							document.getElementById("finish").style.color = 'white';
+							change = true;
+						}
+						if(stu_name.value.replace(/(^\s*)|(\s*$)/g, "") == "") {
+							//名字为空不允许保存
+							document.getElementById("finish").style.color = 'gray';
+							change = false;
+						}
+					}
+				});
+			}
+
+			//展示老师资料
+			function showTea() {
+				document.getElementById("tea_show").style.display = 'inline';
+				getData(2);
+			}
+
+			//展示学生资料
+			function showStu() {
+				document.getElementById("stu_show").style.display = 'inline';
+				getData(3);
+			}
+
+			/**
+			 * 通过用户资料ID获取用户各项资料
+			 * @param {Object} type 资料类型2老师,3学生
+			 */
+			function getData(type) {
+				var wd = events.showWaiting();
+				//console.log('type:' + type + '|stuid:' + mainData.stuid);
+				//22.通过用户资料ID获取用户各项资料
+				//所需参数
+				var comData = {
+					vvl: mainData.stuid //查询的用户资料ID
+				};
+				var stuid = mainData.stuid;
+				//console.log('stuid ' + stuid);
+				postDataPro_PostUuinf(comData, wd, function(data) {
+					//console.log('22通过用户资料ID获取用户各项资料postDataPro_PostUuinf:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						if(type == 2) { //老师
+							teaData = data.RspData[0];
+							//console.log('老师资料 ' + JSON.stringify(teaData));
+
+							mainData.stuname = teaData.stuname;
+							tea_name.value = mainData.stuname;
+							if(teaData.ugname != null) { //昵称
+								tea_unick.value = teaData.ugname;
+							}
+							if(teaData.job != null) { //职位
+								tea_job.value = teaData.job;
+							}
+							if(teaData.sub != null) { //科目
+								tea_sub.value = teaData.sub;
+							}
+							if(teaData.title != null) { //职称
+								tea_title.value = teaData.title;
+							}
+							if(teaData.expsch != null) { //教龄
+								tea_expsch.value = teaData.expsch;
+							}
+							if(teaData.utid != null && teaData.utid != '') {
+								getUserData([{
+									utid: teaData.utid,
+									dataType: '2'
+								}]); //查找关联的老师账号信息
+							}
+						} else if(type == 3) { //学生
+							var utidArray = [];
+							//console.log('学生资料 ' + data.RspData.length);
+							mui.each(data.RspData, function(index, item) {
+								////console.log('学生资料 :' + JSON.stringify(item));
+								if(stuid == item.stuid) {
+									stuData.push(item); //记录获取的学生资料
+									//资料名称
+									mainData.stuname = item.stuname;
+									stu_name.value = mainData.stuname;
+
+									if(item.umstype == 0) {
+										//关联家长
+										//console.log('关联家长 :' + JSON.stringify(item));
+										document.getElementById("par_show").style.display = 'inline';
+										parData.push(item);
+										addParents(item);
+										utidArray.push({
+											utid: item.utid,
+											dataType: '0'
+										});
+									} else {
+										if(item.umstype == 3 && item.utid != null && item.utid != '') {
+											//关联学生
+											//console.log('关联学生 :' + JSON.stringify(item));
+											stu_unick.value = item.ugname;
+											utidArray.push({
+												utid: item.utid,
+												dataType: '3'
+											});
+										} else {
+											//console.log('学生资料 :' + JSON.stringify(item));
+										}
+									}
+								}
+							});
+
+							if(utidArray.length != 0) {
+								getUserData(utidArray); //获取关联账号的信息
+							}
+						}
+					} else {
+						if(data.RspCode != 9) {
+							mui.toast(data.RspTxt);
+						} else {
+							if(type == 2) { //老师
+								tea_name.value = mainData.stuname;
+								teaData = {
+									stuid: mainData.stuid, //资料ID,更新学生老师必填,关系留0
+									stuname: mainData.stuname, //资料名称
+									stuimg: '', //资料头像,学生必填,其他留0
+									job: '', //职位,老师必填,其他留空
+									title: '', //职称,老师必填,其他留空
+									expsch: '', //教龄,老师必填,其他留空
+									sub: '', //科目,老师必填,其他留空
+								}
+								tea_job.readOnly = 'readonly'; //老师职位
+								tea_sub.readOnly = 'readonly'; //老师科目
+								tea_title.readOnly = 'readonly'; //老师职称
+								tea_expsch.readOnly = 'readonly'; //老师教龄
+								document.getElementById("tea_job_li").className = 'mui-table-view-cell text-color-disabled';
+								document.getElementById("tea_sub_li").className = 'mui-table-view-cell text-color-disabled';
+								document.getElementById("tea_title_li").className = 'mui-table-view-cell text-color-disabled';
+								document.getElementById("tea_expsch_li").className = 'mui-table-view-cell text-color-disabled';
+							} else if(type == 3) { //学生
+								stu_name.value = mainData.stuname;
+							}
+						}
+					}
+					wd.close();
+				});
+			}
+
+			/**
+			 * 添加家长信息
+			 * @param {Object} data
+			 */
+			function addParents(data) {
+				var div = document.createElement('div');
+				div.id = 'par_' + data.utid;
+				var html1 = '<li class="mui-table-view-cell text-color-disabled">\
+									<div class="mui-input-row">\
+										<label>家长昵称:</label>\
+										<input id="par_ugname_' + data.utid + '" type="text"  value="' + data.ugname + '" readonly="readonly">\
+									</div>\
+								</li>\
+								<li class="mui-table-view-cell text-color-disabled">\
+									<div class="mui-input-row">\
+										<label>家长账号:</label>\
+										<input id="par_uname_' + data.utid + '" type="text"  readonly="readonly">\
+									</div>\
+								</li>';
+				var html2 = '<li class="mui-table-view-cell">\
+									<div class="mui-input-row">\
+										<label>关系:</label>\
+										<input id="par_urel_' + data.utid + '" type="text"  maxlength="10" placeholder="关系最多10个字" value="' + data.urel + '">\
+									</div>\
+								</li>';
+				var html3 = '<li class="mui-table-view-cell text-color-disabled">\
+									<div class="mui-input-row">\
+										<label>家长电话:</label>\
+										<input id="par_phone_' + data.utid + '" type="text"  readonly="readonly">\
+									</div>\
+								</li >\
+								<div style="height:1px;width:100%;"></div>';
+				div.innerHTML = html1 + html2 + html3;
+				document.getElementById("par_show").appendChild(div);
+			}
+
+			/**
+			 * 获取账号的信息
+			 * @param {Object} utidArray
+			 * utidArray[i]={
+			 * 	utid:'',//用户id
+			 *  dataType:'' //0家长,2老师,3学生
+			 * }
+			 */
+			function getUserData(utidArray) {
+				var wd = events.showWaiting();
+				var comData = null;
+				//					var comData = {
+				//						vvl: utid, //用户id，查询的值,p传个人ID,g传ID串
+				//						vtp: 'p' //查询类型,p(个人)g(id串)
+				//					};
+				if(utidArray.length == 1) {
+					//21.通过用户ID获取用户资料
+					//所需参数
+					comData = {
+						vvl: utidArray[0].utid, //用户id，查询的值,p传个人ID,g传ID串
+						vtp: 'p' //查询类型,p(个人)g(id串)
+					};
+				} else {
+					var tempUtidArray = [];
+					mui.each(utidArray, function(index, element) {
+						tempUtidArray.push(element.utid);
+					});
+					var utidStr = tempUtidArray.join(',');
+					comData = {
+						vvl: utidStr, //用户id，查询的值,p传个人ID,g传ID串
+						vtp: 'g' //查询类型,p(个人)g(id串)
+					};
+				}
+				postDataPro_PostUinf(comData, wd, function(data) {
+					//console.log('21.通过用户ID获取用户资料postDataPro_PostUinf:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						var tempData = utidArray;
+						var tempArry = [];
+						mui.each(data.RspData, function(index, element) {
+							mui.each(tempData, function(index2, element2) {
+								if(element.utid == element2.utid) {
+									var uData = element;
+									if(element2.dataType == '3') { //学生
+										//console.log('学生账号 ' + JSON.stringify(uData));
+										stu_unick.value = uData.unick; //昵称
+										stu_uname.value = uData.uname; //账号
+										stu_phone.value = uData.uid; //手机号
+										if(uData.usex == 1) { //性别
+											stu_gender.value = '男';
+										} else if(uData.usex == 2) {
+											stu_gender.value = '女';
+										} else {
+											stu_gender.value = '';
+										}
+									} else if(element2.dataType == '0') { //家长
+										document.getElementById("par_uname_" + uData.utid).value = uData.uname;
+										document.getElementById("par_phone_" + uData.utid).value = uData.uid;
+									} else if(element2.dataType == '2') { //教师
+										tea_unick.value = uData.unick; //昵称
+										tea_uname.value = uData.uname; //账号
+										tea_phone.value = uData.uid; //手机号
+										if(uData.usex == 1) { //性别
+											tea_gender.value = '男';
+										} else if(uData.usex == 2) {
+											tea_gender.value = '女';
+										} else {
+											tea_gender.value = '';
+										}
+									} else {
+										//console.log('账号:设置类型出错');
+									}
+									tempArry.push(element2);
+									tempData.splice(index2, 1);
+								}
+							});
+						});
+						getBeiZhu(tempArry);
+					} else {
+						mui.toast(data.RspTxt);
+					}
+					wd.close();
+				});
+			}
+
+			/**
+			 * 获取备注
+			 * @param {Object} utidArray
+			 */
+			function getBeiZhu(utidArray) {
+				var wd = events.showWaiting();
+				var strUtid = '';
+				if(utidArray.length == 1) {
+					strUtid = utidArray[0].utid
+				} else {
+					var tempUtidArray = [];
+					mui.each(utidArray, function(index, element) {
+						tempUtidArray.push(element.utid);
+					});
+					strUtid = tempUtidArray.join(',');
+				}
+				//获取备注
+				//35.个人获取对某人或一群人的备注
+				//所需参数
+				var comData = {
+					vvl: strUtid //被备注用户ID,utid或utid串
+				};
+				postDataPro_PostUmk(comData, wd, function(data) {
+					//console.log('35_postDataPro_PostUmk_个人获取对某人或一群人的备注.90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						var tempData = utidArray;
+						mui.each(data.RspData, function(index, element) {
+							mui.each(tempData, function(index2, element2) {
+								if(element.butid == element2.utid) {
+									var uData = element;
+									if(element2.dataType == '3') { //学生
+										stu_unick.value = uData.bunick;
+									} else if(element2.dataType == '0') { //家长
+										document.getElementById("par_ugname_" + uData.butid).value = uData.bunick;
+									} else if(element2.dataType == '2') { //教师
+										tea_unick.value = uData.bunick;
+									} else {
+										//console.log('备注:设置类型出错');
+									}
+									tempData.splice(index2, 1);
+								}
+							});
+						});
+					}
+					wd.close();
+				});
+			}
+
+			/**
+			 * 修改学生资料名称
+			 * @param {Object} stuName
+			 */
+			function changeStuName(stuName) {
+				if(mainData.stuimg == null) {
+					mainData.stuimg = '';
+				}
+				var wd = events.showWaiting();
+				//23.通过用户资料ID或关联ID更改各类型资料
+				//所需参数
+				var comData = {
+					vtp: 'stu', //更新资料类型,stu:学生,tec:老师,gen:家长关系
+					stuid: mainData.stuid, //资料ID,更新学生老师必填,关系留0
+					stuname: stuName, //资料名称
+					stuimg: mainData.stuimg, //资料头像,学生必填,其他留0
+					job: '', //职位,老师必填,其他留空
+					title: '', //职称,老师必填,其他留空
+					expsch: '', //教龄,老师必填,其他留空
+					sub: '', //科目,老师必填,其他留空
+					ustuid: '', //关联ID,更新与家长关系必填,其他留空
+					urel: '', //关系,更新与家长关系必填,其他留空
+				};
+				var gid = mainData.gid;
+				var stuid = mainData.stuid;
+				postDataPro_PostReStu(comData, wd, function(data) {
+					//console.log('90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						mui.toast('修改学生姓名 ' + stuName + ' 成功');
+						//console.log('修改学生姓名 ' + stuName + ' 成功');
+						events.fireToPageNone('qun_manage_a.html', 'changeName', {
+							vtp: 'stu', //更新资料类型,stu:学生,tec:老师,gen:家长关系
+							gid: gid, //群id
+							stuid: stuid, //资料ID,更新学生老师必填,关系留0
+							stuname: stuName, //资料名称
+						});
+						postNum--;
+						if(postNum == 0) {
+							mui.back();
+						}
+						mainData.stuname = stuName;
+					} else {
+						mui.toast('修改学生姓名 ' + stuName + ' 失败: ' + data.RspTxt);
+						document.getElementById("finish").style.color = 'white';
+						change = true;
+					}
+					wd.close();
+				});
+			}
+
+			/**
+			 * 更新与家长关系
+			 * @param {Object} ustuid 关联ID
+			 * @param {Object} urel 关系
+			 */
+			function changeParUrel(ustuid, urel) {
+				var wd = events.showWaiting();
+				//23.通过用户资料ID或关联ID更改各类型资料
+				//所需参数
+				var comData = {
+					vtp: 'gen', //更新资料类型,stu:学生,tec:老师,gen:家长关系
+					stuid: '0', //资料ID,更新学生老师必填,关系留0
+					stuname: '0', //资料名称
+					stuimg: '0', //资料头像,学生必填,其他留0
+					job: '', //职位,老师必填,其他留空
+					title: '', //职称,老师必填,其他留空
+					expsch: '', //教龄,老师必填,其他留空
+					sub: '', //科目,老师必填,其他留空
+					ustuid: ustuid, //关联ID,更新与家长关系必填,其他留空
+					urel: urel, //关系,更新与家长关系必填,其他留空
+				};
+				postDataPro_PostReStu(comData, wd, function(data) {
+					//console.log('90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						mui.toast('更新与家长关系 ' + urel + ' 成功');
+						////console.log('更新与家长关系 ' + urel + ' 成功');
+						postNum--;
+						if(postNum == 0) {
+							mui.back();
+						}
+
+						mui.each(parData, function(index, element) {
+							////console.log('更新与家长关系 ' + JSON.stringify(element));
+							if(element.ustuid == ustuid) {
+								element.urel = urel;
+							}
+						});
+					} else {
+						mui.toast('更新与家长关系 ' + urel + ' 失败: ' + data.RspTxt);
+						document.getElementById("finish").style.color = 'white';
+						change = true;
+					}
+					wd.close();
+				});
+			}
+
+			/**
+			 * 修改老师资料
+			 */
+			function changeTea() {
+				var wd = events.showWaiting();
+				//23.通过用户资料ID或关联ID更改各类型资料
+				//所需参数
+				var comData = {
+					vtp: 'tec', //更新资料类型,stu:学生,tec:老师,gen:家长关系
+					stuid: mainData.stuid, //资料ID,更新学生老师必填,关系留0
+					stuname: tea_name.value, //资料名称
+					stuimg: '0', //资料头像,学生必填,其他留0
+					job: tea_job.value, //职位,老师必填,其他留空
+					title: tea_title.value, //职称,老师必填,其他留空
+					expsch: tea_expsch.value, //教龄,老师必填,其他留空
+					sub: tea_sub.value, //科目,老师必填,其他留空
+					ustuid: '', //关联ID,更新与家长关系必填,其他留空
+					urel: '', //关系,更新与家长关系必填,其他留空
+				};
+				var gid = mainData.gid;
+				var stuid = mainData.stuid;
+				postDataPro_PostReStu(comData, wd, function(data) {
+					//console.log('90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						mui.toast('修改老师资料成功');
+						//console.log('修改老师资料成功');
+						events.fireToPageNone('qun_manage_a.html', 'changeName', {
+							vtp: 'tec', //更新资料类型,stu:学生,tec:老师,gen:家长关系
+							gid: gid, //群id
+							stuid: stuid, //资料ID,更新学生老师必填,关系留0
+							stuname: tea_name.value, //资料名称
+						});
+						mui.back();
+					} else {
+						mui.toast(data.RspTxt);
+						document.getElementById("finish").style.color = 'white';
+						change = true;
+					}
+					wd.close();
+				});
+			}
+		</script>
+	</body>
+
+</html>

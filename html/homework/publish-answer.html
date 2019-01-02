@@ -1,0 +1,80 @@
+<!--上传答案||作业界面-->
+<!--@anthor an-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<!--mui样式表-->
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<!--通用样式-->
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<!--alibaba字库-->
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<link href="../../css/utils/preview.css" rel="stylesheet" />
+		<!--本页样式表-->
+		<link href="../../css/homework/publish-answer.css" rel="stylesheet" />
+
+	</head>
+
+	<body>
+		<!--标题栏-->
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title">上传答案||作业</h1>
+			<a id="checkResult" class="mui-icon iconfont icon-jixiaofenshuchaxun mui-pull-right display-none"></a>
+			<a id="post-imgs" class="mui-icon mui-pull-right post-icon">上传</a>
+			<!--<a id="getAnswer" class="mui-icon iconfont icon-xiangji mui-pull-right"></a>-->
+		</header>
+		<div class="mui-content">
+
+			<div class="receive-container">
+				<div class="mui-input-row display-none teachers-container">
+					<label>接收人:</label>
+					<select id="receive-teachers" class="receive-teachers">
+					</select>
+
+				</div>
+				<!--科目选项-->
+				<div class="mui-input-row display-none subjects-container">
+					<label>科目:</label>
+					<select id="publish-subjects" class="publish-subjects">
+
+					</select>
+				</div>
+			</div>
+			<!--表单-->
+			<div id="pictures" class="img-container temWork-teaHint"></div>
+			<div class="pAnswer-picContainer">
+				<img id="getAnswer" src="../../image/homework/xiangji.png" class="pAnswer-pic" />
+			</div>
+
+		</div>
+		<script src="../../js/mui.min.js "></script>
+		<!--公共事件-->
+		<script src="../../js/utils/events.js "></script>
+		<!--相机-->
+		<script src="../../js/utils/camera.js "></script>
+		<!--下载-->
+		<script src="../../js/utils/load.js "></script>
+		<script src="../../js/utils/files.js"></script>
+		<!--图片预览-->
+		<script src="../../js/mui.zoom.js "></script>
+		<!--图片预览-->
+		<script src="../../js/mui.previewimage.js "></script>
+		<script src="../../js/libs/CryptoJS/rollups/tripledes.js"></script>
+		<script src="../../js/libs/CryptoJS/components/mode-ecb-min.js"></script>
+		<script src="../../js/utils/compress.js"></script>
+	
+		<script src="../../js/qiniu/qiniu.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js "></script>
+		<script src="../../js/utils/cryption.js"></script>
+		<script src="../../js/utils/CloudFileUtil.js"></script>
+		<script src="../../js/publicHomeworkProtocol.js"></script> 
+		<script src="../../js/homework/publish-answer.js"></script>
+	</body>
+
+</html>

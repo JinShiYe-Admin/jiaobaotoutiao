@@ -1,0 +1,74 @@
+<!--老师作业评论界面-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<link href="../../css/utils/preview.css" rel="stylesheet" />
+		<link href="../../css/homework/homework-commit.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">作业评论</h1>
+		</header>
+
+		<div id="work-comment"  class="mui-content" v-if="workInfo">
+			<!--这里放置真实显示的DOM内容-->
+			<!--作业详情区-->
+			<h6 class="comment-item">完成的作业</h6>
+			<div class="homework-container">
+				<div class='student-info'>
+					<img id="stu-head" class="stuInfo-img" src="" />
+					<div class='stuInfo-words'>
+						<h5 id='stu-name' class="stu-name"></h5>
+						<p id='submit-time' class="submit-time"></p>
+					</div>
+				</div>
+				<div id="homework-info" class="homework-info">
+					<p class="answer-info"></p>
+					<div id="answer-imgs" class="answer-imgs"></div>
+				</div>
+			</div>
+
+			<!--评论区-->
+			<div class="comment-container">
+				<h6 class="comment-item">作业评语</h6>
+				<div class="comment-holder display-none" >
+					<textarea id="comment-area" class='' rows="10"  placeholder="请输入评语，最多1000字"></textarea>
+					<button id="btn-comment" type="submit" class="mui-btn mui-btn-green btn-submit">提交评论</button>
+				</div>
+				<div class="commented-holder display-none">
+					<p id="commented-words" class="commented-words homework-info work-result"></p>
+					<div class="change-container">
+						<div class="change-holder"><span class="change-comment iconfont icon-write"></span></div>
+					</div>
+				</div>
+
+			</div>
+
+		</div>
+
+		<script src="../../js/mui.min.js"></script>
+		<!--图片预览js-->
+		<script src="../../js/mui.zoom.js "></script>
+		<!--图片预览JS-->
+		<script src="../../js/mui.previewimage.js "></script>
+		<!--公共事件方法-->
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/utils/vue.min.js"></script>
+		<!--接口-->
+		<script src="../../js/publicProtocol.js"></script>
+		<!--作业接口-->
+		<script src="../../js/publicHomeworkProtocol.js"></script>
+		<!--本页js文件-->
+		<script src="../../js/homework/homework-comment.js"></script>
+	</body>
+
+</html>

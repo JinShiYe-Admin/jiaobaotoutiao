@@ -1,0 +1,284 @@
+header {
+	text-align: center;
+}
+
+header .mui-icon-bars:before {
+	margin-left: 1rem;
+}
+
+
+/**
+ * 弹出菜单样式
+ */
+
+.mui-popover {
+	position: fixed;
+	top: 0.5rem;
+	right: 0.5rem;
+	z-index: 999;
+	width: 12rem;
+}
+
+
+/**
+ * 发布作业按钮
+ */
+
+.icon-tianjia {
+	position: fixed;
+	bottom: 2rem;
+	right: 2rem;
+	z-index: 666;
+	font-size: 5rem;
+	color: #1DB8F1;
+	border-radius: 50%;
+}
+
+.mui-segmented-control {
+	font-size: 14px;
+	border: 0px solid gray;
+	background-color: transparent;
+}
+
+.homework-header {
+	height: 6.2rem;
+}
+
+.header-words {
+	display: inline-block;
+	width: 70%;
+}
+
+.stuHead-words {
+	width: 50%;
+}
+
+.homework-bottom>p {
+	padding-left: 1rem;
+	display: inline-block;
+}
+
+.title {
+	border: solid thick white 2rem;
+}
+
+.switch-mine {
+	margin-top: 7px;
+	position: relative;
+	display: inline-block;
+	width: 150px;
+	height: 30px;
+	color: white;
+	-webkit-transition-timing-function: ease-in-out;
+	transition-timing-function: ease-in-out;
+	-webkit-transition-duration: .2s;
+	transition-duration: .2s;
+	-webkit-transition-property: background-color, border;
+	transition-property: background-color, border;
+	border: 1px solid #ddd;
+	border-radius: 20px;
+	/*background-color: #fff;*/
+	background-clip: padding-box
+}
+
+.switch-handle-mine {
+	position: absolute;
+	z-index: 1;
+	margin: -1px;
+	padding-top: 5px;
+	width: 80px;
+	height: 30px;
+	color: #13B7F6;
+	-webkit-transition: .2s ease-in-out;
+	transition: .2s ease-in-out;
+	-webkit-transition-property: -webkit-transform, width, left;
+	transition-property: transform, width, left;
+	border-radius: 16px;
+	background-color: #fff;
+	background-clip: padding-box;
+}
+
+.switch-mine:before {
+	font-size: 12px;
+	position: absolute;
+	top: 3px;
+	right: 10px;
+	content: '学生作业';
+	text-transform: uppercase;
+	/*color: #999*/
+}
+
+.switch-handle-mine:before {
+	content: '我发布的';
+	font-size: 12px;
+}
+
+.switch-mine.mui-active .switch-handle-mine:before {
+	font-size: 12px;
+	content: '学生作业';
+	/*color: #fff*/
+}
+
+.switch-mine.mui-active:before {
+	right: auto;
+	left: 10px;
+	content: '我发布的';
+	/*color: #fff*/
+}
+
+.switch-mine input[type=checkbox] {
+	display: none
+}
+
+.answerResult-pic {
+	padding: 1%;
+	width: 20%;
+	max-height: 100px;
+}
+
+.temporary-more {
+	float: right;
+	padding-left: 10%;
+	padding-top: 2rem;
+	font-size: 4rem;
+	color: darkgray;
+	max-width: 18%;
+}
+
+
+/*作业标题*/
+
+.header-title {
+	color: #323232;
+	font-size: 1.6rem;
+	line-height: 1.7rem;
+}
+
+
+/*作业内容*/
+
+.header-content {
+	color: #808080;
+	font-size: 1.4rem;
+}
+
+.publisher-container {
+	color: #B7B7B7;
+}
+
+
+/*额外信息*/
+
+.homework-bottom>p {
+	color: #B7B7B7;
+	font-size: 1.2rem;
+}
+
+
+/*.subject-icon{
+	vertical-align: middle;
+}*/
+
+.mui-table-view-divider {
+	background-color: #f8f9fb;
+	color: #777777;
+}
+
+.mui-slider-indicator:last-of-type {
+	height: 4rem;
+	background-color: #ffffff;
+}
+
+.stuHomework-header {
+	height: 6.5rem;
+}
+
+.answerResult-pic {
+	height: 6rem;
+}
+
+.answerResult-bottom>span {
+	display: inline-block;
+	padding-right: 2rem;
+}
+
+.stuHomework-header>.subject-icon {
+	/*padding-top: 2rem;*/
+	margin-top: 1.5rem;
+}
+
+
+.mui-pull-top-tips {
+	position: absolute;
+	top: -20px;
+	left: 50%;
+	margin-left: -20px;
+	width: 40px;
+	height: 40px;
+	border-radius: 100%;
+	z-index: 999;
+}
+
+.mui-bar~.mui-pull-top-tips {
+	top: 24px;
+}
+
+.mui-pull-top-wrapper {
+	width: 42px;
+	height: 42px;
+	display: block;
+	text-align: center;
+	background-color: #efeff4;
+	border: 1px solid #ddd;
+	border-radius: 25px;
+	background-clip: padding-box;
+	box-shadow: 0 4px 10px #bbb;
+	overflow: hidden;
+}
+
+.mui-pull-top-tips.mui-transitioning {
+	-webkit-transition-duration: 200ms;
+	transition-duration: 200ms;
+}
+
+.mui-pull-top-tips .mui-pull-loading {
+	margin: 0;
+}
+
+.mui-pull-top-wrapper .mui-icon,
+.mui-pull-top-wrapper .mui-spinner {
+	margin-top: 7px;
+}
+
+.mui-pull-bottom-tips {
+	text-align: center;
+	background-color: #efeff4;
+	font-size: 15px;
+	line-height: 40px;
+	color: #777;
+}
+
+.mui-pull-top-canvas {
+	overflow: hidden;
+	background-color: #fafafa;
+	border-radius: 40px;
+	box-shadow: 0 4px 10px #bbb;
+	width: 40px;
+	height: 40px;
+	margin: 0 auto;
+}
+
+.mui-pull-top-canvas canvas {
+	width: 40px;
+}
+
+
+
+.mui-scroll-wrapper.mui-fullscreen:last-of-type {
+	top: 85px;
+	height: auto;
+}
+.mui-scroll-wrapper.mui-slider-indicator{
+	z-index: 0;
+	height: 40px;
+}

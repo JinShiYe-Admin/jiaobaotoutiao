@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/mui.css" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<script type="text/javascript" src="../../js/mui.min.js"></script>
+		<!--公用事件js文件-->
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script src="../../js/publicMicroClass.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+			.input-content {
+				width: 100%;
+				height: 20rem;
+				background-color: white;
+				border-color: #E4E4E4;
+			}
+			/**
+ * 输入内容样式
+ */
+
+			textarea {
+				border-radius: 5px 5px 0 0;
+				border-color: transparent;
+				width: 100%;
+				height: 20rem;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav common-background-bar ">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left common-color-white"></a>
+			<h1 class="mui-title common-color-white common-font-family-Regular">回复</h1>
+			<a id="publish" class="mui-pull-right">确定</a>
+		</header>
+		<div class="mui-content mo-background-color">
+			<div class="input-content">
+				<textarea id='content' class="mui-input-clear" placeholder="回复，最多200字:" style="height: 200px;"></textarea>
+			</div>
+		</div>
+	</body>
+	<script>
+		mui.plusReady(function() {
+			var tempModel = plus.webview.currentWebview().data;//传值过来的课程model
+			//console.log("addReply "+JSON.stringify(tempModel));
+			if (tempModel.replyId > 0) {
+				document.getElementById("content").placeholder = '@'+tempModel.replyNick+'，最多200字:';
+			}else{
+				document.getElementById("content").placeholder = '回复，最多200字:';
+			}
+			var leaveContent = document.getElementById('content');
+			events.addTap('publish', function() {
+				var tempText = leaveContent.value;
+				if(!tempText || tempText == ''||events.isNull(tempText)) {
+					mui.toast('请输入回复内容');
+					return;
+				} else if(tempText.length > 200) {
+					mui.toast('不能超过200字');
+					return;
+				}
+				var comData = {
+					secId: tempModel.secId, //小节ID
+					upperId: tempModel.upperId, //上级评论ID，第一个评论传0，其他的传最上层的ID
+					userId: tempModel.userId, //评论用户ID
+					commentContent: leaveContent.value, //评论内容，
+					replyId: tempModel.replyId //回复用户ID，新增评论的话传0，回复评论传用户ID
+				};
+				// 等待的对话框
+				var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+				//7.新增某小节课程的评论
+				postDataMCPro_addSecComment(comData, wd, function(data) {
+					wd.close();
+					//console.log('7.新增某小节课程的评论:' + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						comData.TabId = data.RspData.Result;
+						comData.arrayIndex = tempModel.arrayIndex;
+						events.fireToPageNone(tempModel.webId,tempModel.winId,comData);
+						mui.toast('成功')
+						leaveContent.value = '';
+						mui.back();
+					} else {
+						mui.toast(data.RspTxt);
+					}
+				})
+			})
+
+		})
+	</script>
+
+</html>

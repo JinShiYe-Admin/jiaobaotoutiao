@@ -1,0 +1,136 @@
+<!--申请入群界面-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/mine/apply-byCode.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">申请加入群</h1>
+		</header>
+		<div class="mui-content">
+			<div class="group-info">
+				<img id="group-img" class="group-img" src="../../image/utils/default_personalimage.png" />
+				<h6 id="group-name" class="group-name">001</h6>
+				<p id="group-info" class="group-info"></p>
+			</div>
+			<div class="chooseRole-container">
+				<p class="choose-hint">请选择您的身份：</p>
+				<div class="chose-container">
+					<div class="div-chose ">
+						<input id="check-parents" name="checkbox1" type="radio" value="0">
+						<label>家长</label>
+					</div>
+					<div class="div-chose">
+						<input id="check-tea" name="checkbox1" type="radio" value="2">
+						<label>老师</label>
+					</div>
+					<div class="div-chose">
+						<input id="check-stu" name="checkbox1" type="radio" value="3">
+						<label>学生</label>
+					</div>
+				</div>
+				<textarea id="extra-input" class="extra-input" cols="2" maxlength="20" placeholder="请输入您的验证信息,最多20字"></textarea>
+				<button id="apply-group" class="mui-btn mui-btn-primary btn-sure">申请入群</button>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript">
+			var choseRole; //选择的角色
+			var groupInfo; //群组信息
+			mui.init({
+				beforeback: function() {
+					plus.webview.currentWebview().opener().close();
+					return true;
+				}
+			})
+			mui.plusReady(function() {
+				groupInfo = plus.webview.currentWebview().data;
+				//console.log("获取的数据：" + JSON.stringify(groupInfo))
+				setData()
+				setListener();
+			})
+			var setData = function() {
+				document.getElementById("group-img").src = updateHeadImg(groupInfo.gimg, 2);
+				//console.log("获取的头像：" + updateHeadImg(groupInfo.gimg, 2));
+				document.getElementById("group-name").innerText = groupInfo.gname;
+				document.getElementById("group-info").innerText = groupInfo.gnote;
+			}
+			var setListener = function() {
+				mui(".chose-container").on("change", "input", function() {
+					if(this.checked) {
+						choseRole = parseInt(this.value);
+					}
+				})
+				document.getElementById("apply-group").addEventListener("tap", function() {
+					//console.log("choseRole:" + choseRole)
+					if(!(choseRole > -1)) {
+						mui.toast("请选择身份！")
+						return;
+					}
+					if(events.limitInput(getExtraInfo(), 20)) {
+						mui.toast("已超出字数限制，请删除多余字符！");
+						return;
+					}
+					var isMaster=false;
+					events.getUserInGroup(groupInfo.gid, function(data) {
+						//console.log("本人在群里的身份：" + JSON.stringify(data));
+						if(data.RspCode == 0) {
+							for(var i in data.RspData) {
+								if(data.RspData[i].mstype == 1) {
+									isMaster = true;
+									break;
+								}
+							}
+							if(isMaster && (choseRole == 2 || choseRole == 3)) {
+								mui.toast("违反身份规则，无法申请！")
+							} else {
+								applyGroup();
+							}
+						} else {
+							applyGroup();
+						}
+					});
+				});
+			}
+			var applyGroup = function() {
+				var wd = events.showWaiting();
+				postDataPro_PostJoinGuser({
+					gid: groupInfo.gid,
+					beinvnick: myStorage.getItem(storageKeyName.PERSONALINFO).unick,
+					mstype: choseRole,
+					urel: getExtraInfo()
+				}, wd, function(data) {
+					groupRoles = [];
+					wd.close();
+					//console.log('申请入群获取的数据：' + JSON.stringify(data));
+					if(data.RspCode == '0000') {
+						mui.toast('申请成功！');
+						events.fireToPageNone('/html/mine/approval-apply.html', 'applied');
+						mui.back();
+					} else {
+						mui.toast("申请失败:" + data.RspTxt)
+					}
+					mui('.mui-popover').popover('toggle');
+				})
+			}
+			var getExtraInfo = function() {
+				if(document.getElementById('extra-input').value) {
+					return jQuery.trim(document.getElementById('extra-input').value.replace(/\/n/g, ""));
+				}
+				return "";
+			}
+		</script>
+	</body>
+
+</html>

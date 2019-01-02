@@ -1,0 +1,53 @@
+<!--申请入群界面-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<!--<link href="../../css/mine/apply-byCode.css" rel="stylesheet" />-->
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">扫描结果</h1>
+		</header>
+		<div class="mui-content mui-fullscreen">
+			<div class="group-info" style="width: 100%; text-align: center;">
+				<div class="dated-code" style="width: 50%;margin-left: 25%;margin-top: 50%; min-height: 100px;display: none;" >
+					<span  class="iconfont icon-jinggao-copy" style="color: red;font-size: 100px;line-height: 50px;"></span>
+				</div>
+				<h5 id="group-info" style="word-wrap: break-word;">二维码已过期</h5>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript">
+			var groupInfo; //群组信息
+			mui.init({
+				beforeback:function(){
+					plus.webview.currentWebview().opener().close();
+					return true;
+				}
+			})
+			mui.plusReady(function() {
+				groupInfo = plus.webview.currentWebview().data;
+				//console.log("获取的数据："+JSON.stringify(groupInfo));
+				if (groupInfo.flag==0) {//不识别的二维码
+					document.querySelector(".dated-code").style.display="none";
+					document.getElementById("group-info").innerText = groupInfo.result;
+				}else{//二维码已过期
+					document.querySelector(".dated-code").style.display="block";
+					document.getElementById("group-info").innerText="二维码已过期";
+				}
+			});
+		</script>
+	</body>
+
+</html>

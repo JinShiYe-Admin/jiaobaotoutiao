@@ -1,0 +1,181 @@
+/*头像样式*/
+
+.head-img,
+.head-portrait {
+	width: 4rem;
+	height: 4rem;
+	border-radius: 50%;
+	/*max-width: 20%;*/
+}
+
+.head-img {
+	max-width: 15%;
+}
+
+.mui-scroll-wrapper {
+	padding-top: 44px;
+}
+
+
+/**
+ * 中间信息宽度
+ */
+
+.info-container {
+	max-width: 60%;
+	padding: .5rem 0 0 .5rem;
+}
+
+.person-info {
+	line-height: 120%;
+}
+
+.attentioned-btn,
+.attention-btn {
+	max-width: 25%;
+	height: 32px;
+	float: right;
+	margin-top: 1.1rem;
+	color: #fff;
+	border: 1px solid #1db8F1;
+	/*background-color: #1db8F1;*/
+}
+
+
+/*需关注button*/
+
+.attention-btn {
+	color: #fff;
+	border: 1px solid #1db8F1;
+}
+
+
+/*已关注的显示*/
+
+.attentioned-btn {
+	color: #E4E4E4;
+	border: 1px solid #E4E4E4;
+}
+
+
+/*.mui-table-view-cell:last-of-type{
+	padding-right: .5rem;
+}*/
+
+.li-container {
+	height: 6rem;
+	/*text-align: center;*/
+}
+
+
+/*外边框+关注内buttton字体颜色*/
+
+.mui-btn-outlined.attention-btn {
+	color: #1db8F1;
+}
+
+
+/*点击后的颜色*/
+
+.attention-btn:enabled:active {
+	color: white;
+	border: 1px solid #1db8F1;
+	background-color: #1db8F1;
+}
+
+.mui-btn-outlined {
+	/*min-width: 20%;*/
+	width: 70px;
+}
+
+.mui-bar~.mui-content .mui-fullscreen {
+	top: 44px;
+	height: auto;
+}
+
+.mui-pull-top-tips {
+	position: absolute;
+	top: -20px;
+	left: 50%;
+	margin-left: -25px;
+	width: 40px;
+	height: 40px;
+	border-radius: 100%;
+	z-index: 1;
+}
+
+.mui-bar~.mui-pull-top-tips {
+	top: 24px;
+}
+
+.mui-pull-top-wrapper {
+	width: 42px;
+	height: 42px;
+	display: block;
+	text-align: center;
+	background-color: #efeff4;
+	border: 1px solid #ddd;
+	border-radius: 25px;
+	background-clip: padding-box;
+	box-shadow: 0 4px 10px #bbb;
+	overflow: hidden;
+}
+
+.mui-pull-top-tips.mui-transitioning {
+	-webkit-transition-duration: 200ms;
+	transition-duration: 200ms;
+}
+
+.mui-pull-top-tips .mui-pull-loading {
+	/*-webkit-backface-visibility: hidden;
+				-webkit-transition-duration: 400ms;
+				transition-duration: 400ms;*/
+	margin: 0;
+}
+
+.mui-pull-top-wrapper .mui-icon,
+.mui-pull-top-wrapper .mui-spinner {
+	margin-top: 7px;
+}
+
+.mui-pull-top-wrapper .mui-icon.mui-reverse {
+	/*-webkit-transform: rotate(180deg) translateZ(0);*/
+}
+
+.mui-pull-bottom-tips {
+	text-align: center;
+	background-color: #efeff4;
+	font-size: 15px;
+	line-height: 40px;
+	color: #777;
+}
+
+.mui-pull-top-canvas {
+	overflow: hidden;
+	background-color: #fafafa;
+	border-radius: 40px;
+	box-shadow: 0 4px 10px #bbb;
+	width: 40px;
+	height: 40px;
+	margin: 0 auto;
+}
+
+.mui-pull-top-canvas canvas {
+	width: 40px;
+}
+
+.person-name {
+	color: #323232;
+	font-size: 15px;
+}
+
+.intro-info {
+	color: #808080;
+	font-size: 13px;
+}
+
+.noOneDisplay {
+	background: url(../../image/mine/invite_none_0.png) no-repeat;
+	background-size: 50%;
+	background-position: center;
+}

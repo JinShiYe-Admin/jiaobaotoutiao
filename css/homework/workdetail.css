@@ -1,0 +1,59 @@
+			.btn-alert{
+				float: right;
+				width:50px;
+				height:30px;
+				padding:1px 0 0 1px;
+				font-size:12px;
+				margin-top:-7px;
+				color:#00a5df;
+				border-color:#e4e4e4
+			}
+			.btn-alerted{
+				float: right;
+				width:50px;
+				height:30px;
+				padding:1px 0 0 1px;
+				font-size:12px;
+				margin-top:-7px;
+				color:gray;
+				border-color:transparent
+			}
+			/*.mui-table-view:before,
+			.mui-table-view:after,
+			.mui-table-view-cell:after {
+				height: 0px;
+				/*去掉横线
+		}*/
+
+			.ellipsis-show {
+				/*内容*/
+				display: -webkit-box;
+				overflow: hidden;
+				white-space: normal !important;
+				text-overflow: ellipsis;
+				word-wrap: break-word;
+				-webkit-line-clamp: inherit;
+				-webkit-box-orient: vertical;
+			}
+
+			#showAll {
+				display: none;
+				color: #D7D7D7;
+				margin-top: 10px;
+			}
+
+			.homework-img {
+				padding: 0 3px;
+			}
+
+			.dynamic-personal-image {
+				/*个人头像圆形*/
+				border-radius: 50%;
+				width: 40px;
+				height: 40px;
+			}
+
+			#finished-list .mui-media-body {
+				/*已完成头像文字垂直居中*/
+				line-height: 50px;
+			}

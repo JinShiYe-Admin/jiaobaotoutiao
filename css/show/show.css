@@ -1,0 +1,202 @@
+
+
+.btn-attention {
+	text-align: center;
+	width: 50px;
+	height: 25px;
+	border: 0;
+	padding: 0;
+	color: white;
+	background-color: #1db8F1;
+}
+
+.btn-attentioned {
+	text-align: center;
+	width: 50px;
+	height: 25px;
+	border: 0;
+	padding: 0;
+	color: white;
+	background-color: #b7b7b7;
+}
+
+.ellipsis-show {
+	/*内容*/
+	display: -webkit-box;
+	overflow: hidden;
+	white-space: normal !important;
+	text-overflow: ellipsis;
+	word-wrap: break-word;
+	-webkit-line-clamp: inherit;
+	-webkit-box-orient: vertical;
+}
+
+body,
+.mui-content {
+	background: white;
+	word-wrap: break-word;
+}
+.mui-scroll-wrapper,
+.mui-pull-bottom-wrapper {
+	/*底部加载更多区域*/
+	background-color: white;
+}
+
+.mui-table-view-cell:active {
+	background-color: #FFFFFF;
+}
+.mui-table-view-cell.mui-active {
+	background-color: white
+}
+
+.mui-table-view {
+	background: #f2f3f5;
+	/*背景色透明*/
+}
+
+.mui-table-view-cell {
+	background: white;
+	/*cell 背景设为白色*/
+	padding: 0;
+	/*内边距为0*/
+	margin-bottom: 8px;
+}
+
+.mui-table-view:before,
+.mui-table-view:after,
+.mui-table-view-cell:after {
+	height: 0px;
+	/*去掉横线*/
+}
+
+.mui-table-view-cell {
+	background-color: #fff;
+	/*margin-top: 1rem;*/
+}
+
+.mui-row-padding-8px {
+	padding: 8px;
+	/*内边距为8px*/
+	padding: 12px;
+}
+
+.dynamic-personal-image {
+	/*个人头像圆形*/
+	border-radius: 50%;
+	width: 40px;
+	height: 40px;
+}
+
+.dynamic-image-div {
+	/*内容中图片之间的内边距*/
+	padding: 1px;
+}
+
+.dynamic-image {
+	/*内容的图片占全部空间*/
+	width: 100%;
+	height: 100%;
+}
+
+.dynamic-icon,
+.dynamic-icon-praise,
+.dynamic-icon-comment,
+.dynamic-icon-forward {
+	/*点赞，评论，分享的图标*/
+	height: 30px;
+	width: 30px;
+	margin-left: 25px;
+}
+
+.dynamic-icon-Level {
+	/*等级图标*/
+	height: 20px;
+	width: 20px;
+	margin-left: 10px;
+}
+
+.dynamic-icon-praise-small {
+	/*点赞列表的小图标*/
+	height: 15px;
+	width: 15px !important;
+	margin-right: 5px;
+	margin-top: 3px;
+}
+
+.dynamic-margin-top-10px {
+	margin-top: 10px;
+}
+
+.dynamic-padding-left-10px {
+	padding-left: 10px;
+}
+
+.dynamic-line {
+	/*点赞列表上面的横线*/
+	height: 1px;
+	width: 100%;
+	background: #e4e4e4;
+}
+
+.dynamic-contenttext {
+	/*动态内容*/
+	/*font-family: '微软雅黑 Regular', '微软雅黑';*/
+	/*字体样式*/
+}
+
+.dynamic-praise-name,
+.dynamic-comment-name {
+	/*点赞者和评论者的名字*/
+	color: #1277C7;
+	font-size: 14px;
+}
+
+.replyComment {
+	padding-top: 5px;
+}
+
+.dynamic-comment-btn {
+	/*底部的评论按钮*/
+	width: 100%;
+	margin-top: 10px;
+	border-width: 1px;
+	border-color: #e4e4e4;
+}
+
+.dynamic-image-more {
+	/*更多图片*/
+	position: absolute;
+	width: 99%;
+	height: 99%;
+	font-size: 40px;
+	color: white;
+	text-align: center;
+	background-color: rgba(0, 0, 0, 0.3);
+}
+
+.mui-popover {
+	position: fixed;
+	height: 45px;
+	width: 60px;
+}
+
+.showAll {
+	display: none;
+	color: #D7D7D7;
+	margin-top: 10px;
+}
+
+.record-imge {
+	width: 100%;
+}
+
+.record-picture {
+	overflow: hidden;
+	position: relative;
+	float: left;
+	text-align: center;
+}
+
+.mui-icon-list {
+	margin-top: 2px;
+}

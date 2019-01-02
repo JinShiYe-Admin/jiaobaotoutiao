@@ -1,0 +1,85 @@
+<!--审核界面-->
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/check/check-news.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">审核新闻</h1>
+			<a id="choose-area" class="mui-pull-right choose-area" value="0" style="padding-top: 0;">全国<span class="mui-icon mui-icon-arrowdown"></span></a>
+		</header>
+		<div class="mui-content">
+			<div id="slider" class="mui-slider mui-fullscreen">
+				<div id="sliderSegmentedControl" class="mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+					
+						<a class="mui-control-item mui-active" href="#news-all" value="-1">
+							全部
+						</a>
+						<a class="mui-control-item" href="#news-uncheck" value="0">
+							待审核
+						</a>
+						<a class="mui-control-item" href="#news-passed" value="1">
+							已显示
+						</a>
+						<a class="mui-control-item" href="#news-unpass" value="2">
+							已屏蔽
+						</a>
+				</div>
+				<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-3"></div>
+				<div class="mui-slider-group">
+					<div id="news-all" class="mui-slider-item mui-control-content mui-active">
+						<div  class="news-all mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<ul id="all-list" class="mui-table-view">
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div id="news-uncheck" class="mui-slider-item mui-control-content">
+						<div class="news-uncheck mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<ul id="uncheck-list" class="mui-table-view">
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div id="news-passed" class="mui-slider-item mui-control-content">
+						<div class="news-passed mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<ul id="passed-list" class="mui-table-view">
+
+								</ul>
+							</div>
+						</div>
+					</div>
+					<div id="news-unpass" class="mui-slider-item mui-control-content">
+						<div class="news-unpass mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<ul id="refused-list" class="mui-table-view">
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script src="../../js/libs/jquery.lazyload.min.js"></script>
+		<script src="../../js/check/check-news.js"></script>
+	</body>
+
+</html>

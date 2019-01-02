@@ -1,0 +1,275 @@
+<!--我的界面-->
+<!--@anthor an-->
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/home/index-menu.css" />
+		<link rel="stylesheet" href="../../css/iconfont/iconfont.css" />
+	</head>
+
+	<body>
+		<div class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<div id="title" class="title">
+					<img id="uimg" style="height: 60px;width: 60px;" src="../../image/utils/default_personalimage.png" class="head-portrait" /><br />
+					<h4 id="uname">暂无昵称</h4>
+					<p id="utext" style="word-wrap: break-word;">暂无签名</p>
+				</div>
+				<!--各项-->
+				<ul class="mui-table-view mui-table-view-chevron">
+					<li class="mui-table-view-cell" position='0'>
+						<a class="mui-navigate-right" open-type="common">
+							<p><img src="../../image/mine/group-manage.png" class="mine-icon"></img> 群管理</p>
+						</a>
+					</li>
+					<li class="mui-table-view-cell" position='1'>
+						<a class="mui-navigate-right" open-type="common">
+							<p><img src="../../image/mine/data.png" class="mine-icon"></span> 人员资料</p>
+						</a>
+					</li>
+					<li class="mui-table-view-cell" position='3'>
+						<a class="" open-type="common">
+							<p><img src="../../image/mine/new-message.png" style="margin-right: 5px;" class="mine-icon"></span>新消息</p>
+							<span id="news-amount" class="mui-badge mui-badge-red">0</span>
+						</a>
+					</li>
+					<!--<li class="mui-table-view-cell" position='2'>
+						<a class="mui-navigate-right" open-type="common">
+							<img src='../../image/mine/apply-group.png' class="mine-icon"></img> 申请加入群
+						</a>
+					</li>-->
+					<li class="mui-table-view-divider"></li>
+
+					<li class="mui-table-view-cell" position='4'>
+						<a class="mui-navigate-right">
+							<p><img src="../../image/mine/my-space.png" class="mine-icon"></img> 我的空间</p>
+						</a>
+					</li>
+					<li id="check-news" class="mui-table-view-cell" position='8' style="display: none;">
+						<a class="mui-navigate-right">
+							<p><img src="../../image/mine/news-check.png" class="mine-icon"></img> 新闻审核</p>
+						</a>
+					</li>
+					<li class="mui-table-view-cell" position='5'>
+						<a class="mui-navigate-right">
+							<p><img src="../../image/mine/my-points.png" class="mine-icon"></img> 积分</p>
+						</a>
+					</li>
+
+					<li class="mui-table-view-divider"></li>
+					<li class="mui-table-view-cell" position='6'>
+						<a class="mui-navigate-right">
+							<p><img src="../../image/mine/setting.png" class="mine-icon"></img> 设置</p>
+						</a>
+					</li>
+					<li class="mui-table-view-cell" position='7'>
+						<a class="mui-navigate-right">
+							<p><img src="../../image/mine/about.png" class="mine-icon"></img> 关于</p>
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" charset="utf-8">
+			mui.init({
+				keyEventBind: {
+					backbutton: false, //android返回键不可用
+					menubutton: false //android系统按钮不可用
+				}
+			});
+			mui('.mui-scroll-wrapper').scroll({
+				indicators: false //是否显示滚动条
+			});
+			//获得侧滑主窗口webview对象
+			var main = null;
+			var info = null;
+			var interval;
+			mui.plusReady(function() {
+				var curPage = plus.webview.currentWebview();
+				main = curPage.opener();
+				//当前页面加载显示的监听
+				curPage.addEventListener("show", function(e) {
+					console.log("$$$$$$$$mine.html的show事件$$$$$$$$$");
+					mui('.mui-scroll-wrapper').scroll().scrollTo(0, 0, 100); //100毫秒滚动到顶
+					interval=setInterval(getNewsAmount,10000);
+				})
+				curPage.addEventListener('hide', function() {
+					console.log("$$$$$$$$mine.html的hide事件$$$$$$$$$");
+					clearInterval(interval);
+				})
+				//展示个人信息
+				getInfo();
+				//				events.jumpPage(document.getElementById('title'),'mine/account-info.html');
+				//点击title跳转到账号信息界面
+				events.addTap('title', function() {
+					//打开账户信息新页面
+					events.openNewWindow('/html/mine/account-info.html');
+					closeMenu();
+				})
+				//侧滑菜单各项点击事件
+				mui('.mui-table-view').on('tap', '.mui-table-view-cell', function() {
+					this.disabled = true;
+					jQuery(this).css("pointerEvents", "none");
+					var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid; //用户id
+					//console.log('click position:' + this.getAttribute('position'))
+					//console.log("系统名称：" + plus.os.name);
+
+					var targetWebUrl = "";
+					var data = {};
+					switch(parseInt(this.getAttribute('position'))) {
+						case 0: //群管理
+							targetWebUrl = '/html/mine/qun_manage_a.html';
+							data = {
+								type: '0' //0群管理,1人员资料
+							}
+							break;
+						case 1: //人员资料
+							targetWebUrl = '/html/mine/qun_manage_a.html';
+							data = {
+								type: '1' //0群管理,1人员资料
+							}
+							break;
+							//申请加入群
+						case 2:
+							targetWebUrl = '/html/mine/apply-record.html';
+							break;
+							//新消息
+						case 3:
+							targetWebUrl = '/html/mine/approval-apply.html';
+							break;
+							//我的空间
+						case 4:
+							targetWebUrl = '/html/quan/zone_main.html';
+							data = personalUTID;
+							break;
+							//积分
+						case 5:
+							mui.toast('积分功能暂未开放！');
+							this.disabled = false;
+							jQuery(this).css("pointerEvents", "all");
+							break;
+							//设置
+						case 6:
+							targetWebUrl = '/html/mine/setting.html';
+							break;
+							//关于
+						case 7:
+							targetWebUrl = '/html/mine/about.html';
+							break;
+						case 8: //新闻审核
+							targetWebUrl = '/html/check/check-news.html';
+							break;
+						default:
+							break;
+					}
+					if(targetWebUrl) {
+						events.singleWebviewInPeriod(this, targetWebUrl, data);
+					}
+					switch(parseInt(this.getAttribute('position'))) {
+						case 0:
+						case 1:
+						case 2:
+						case 3:
+						case 4:
+						case 6:
+						case 7:
+						case 8:
+							closeMenu();
+							break;
+						default:
+							break;
+					}
+
+				});
+			})
+			//个人信息改变
+			window.addEventListener('infoChanged', function() {
+				//console.log("我的界面获取信息修改infoChanged");
+				getInfo();
+			})
+			//新消息数量改变
+			window.addEventListener('newsChanged', function() {
+				getNewsAmount();
+			})
+			/**
+			 * 获取个人信息
+			 */
+			function getInfo() {
+				info = myStorage.getItem(storageKeyName.PERSONALINFO);
+				//console.log('我的界面获取的个人信息：' + JSON.stringify(info))
+				if(info.uimg) {
+					//					var myDate = new Date();
+					document.getElementById('uimg').src = info.uimg;
+				} else {
+					document.getElementById('uimg').src = '../../image/utils/default_personalimage.png';
+				}
+
+				document.getElementById('uname').innerText = info.unick ? info.unick : "暂无昵称";
+				if(info.utxt) {
+					document.getElementById('utext').innerText = info.utxt;
+				} else {
+					document.getElementById('utext').innerText = "暂无签名";
+				}
+				if(parseInt(info.issys)) {
+					//				if(1){
+					document.querySelector('#check-news').style.display = "block";
+				} else {
+					document.querySelector('#check-news').style.display = "none";
+				}
+				getNewsAmount();
+			}
+			/**
+			 * 获取新消息数量
+			 */
+			var getNewsAmount = function() {
+				postDataPro_PostGrInvC({}, null, function(data) {
+					console.log('$$$$$$$$$$$$我的界面获取的新消息数目：', data);
+					var num = document.getElementById('news-amount');
+					if(data.RspCode == '0000') {
+						num.style.display = 'inline';
+						num.innerText = setAmount(data.RspData);
+					} else {
+						num.style.display = 'none';
+						num.innerText = '0';
+					}
+				});
+			}
+			//放置数量
+			var setAmount = function(data) {
+				var amount = 0;
+				data.forEach(function(cell) {
+					amount += cell.pc;
+				})
+				return amount;
+			}
+			//关闭
+			function closeMenu() {
+				var longTime = 500;
+				if(plus.os.name == 'iOS') {
+					longTime = 250;
+				}
+				setTimeout(function() {
+					mui.fire(main, "menu:close");
+				}, longTime)
+			}
+			//优化显示出来的侧滑菜单，只需监听该菜单的左滑事件，然后将其关闭即可；在菜单上右滑，不做任何操作；
+			window.addEventListener("swipeleft", closeMenu);
+			//android菜单按钮
+			mui.menu = closeMenu;
+			//android系统返回键
+			mui.back = closeMenu;
+		</script>
+	</body>
+
+</html>

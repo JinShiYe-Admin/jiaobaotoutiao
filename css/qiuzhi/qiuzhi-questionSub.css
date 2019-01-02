@@ -1,0 +1,17 @@
+.reply-container{
+	position: absolute;
+	bottom: 0;
+	height: 50px;
+	width: 100%;
+}
+.input-text{
+	display: inline-block;
+	max-width: 78%;
+}
+.btn-commit{
+	display: inline-block;
+	width: 20%;
+	vertical-align: middle;
+	background-color: #1296db;
+}
+

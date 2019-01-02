@@ -1,0 +1,662 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="author" content="莫尚霖,email:444811716@qq.com" />
+		<meta name="description" content="邀请进群" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<style>
+			body,
+			.mui-content {
+				background-color: white;
+			}
+
+			.mui-bar .mui-title {
+				right: 0px;
+				height: 100%;
+			}
+
+			.mui-input-row {
+				/*搜索区域*/
+				height: 100%;
+			}
+
+			.mui-input-row .mui-input-clear~.mui-icon-clear {
+				/*删除按钮*/
+				color: #e4e4e4;
+				right: 15% !important;
+				top: 13px !important;
+			}
+
+			.mui-input-row label {
+				/*搜索按钮*/
+				float: right;
+				padding: 8px 0px;
+				margin-top: 6px;
+				text-align: center;
+				width: 15%;
+				color: white;
+				font-size: 16px;
+			}
+
+			.mui-input-row label~input {
+				/*输入框*/
+				float: left;
+				width: 85%;
+				background-color: white;
+				padding: 0px 1rem !important;
+				color: #323232;
+				border-radius: 29px;
+				height: 29px;
+				margin-top: 8px;
+				font-size: 15px;
+			}
+
+			input::-webkit-input-placeholder {
+				color: #B7B7B7;
+				font-size: 14px;
+				/* WebKit browsers */
+			}
+
+			input:-moz-placeholder {
+				color: #B7B7B7;
+				font-size: 14px;
+				/* Mozilla Firefox 4 to 18 */
+			}
+
+			input::-moz-placeholder {
+				color: #B7B7B7;
+				font-size: 14px;
+				/* Mozilla Firefox 19+ */
+			}
+
+			input:-ms-input-placeholder {
+				color: #B7B7B7;
+				font-size: 14px;
+				/* Internet Explorer 10+ */
+			}
+
+			#nouser {
+				/*无此用户*/
+				position: absolute;
+				text-align: center;
+				color: #808080;
+				z-index: 1;
+				width: 100%;
+				background: white;
+				display: none;
+			}
+
+			#user {
+				/*搜索结果区域*/
+				z-index: 2;
+				color: #808080;
+				display: none;
+				margin-bottom: 1px;
+			}
+
+			.mui-table-view:before,
+			.mui-table-view:after {
+				height: 0px;
+			}
+
+			#user .mui-table-view-cell:last-child:after {
+				height: 1px;
+			}
+
+			#user.mui-table-view {
+				background-color: #f2f3f5;
+			}
+
+			#user .mui-table-view-cell {
+				background-color: white;
+			}
+
+			#user .mui-table-view-cell.mui-active {
+				background-color: #eee;
+			}
+
+			#unick {
+				/*搜索结果昵称*/
+				color: #323232;
+			}
+
+			#user_img {
+				/*用户头像*/
+				width: 40px;
+				height: 40px;
+				border-radius: 50%;
+			}
+
+			#qun_name {
+				/*群名*/
+				max-width: 80%;
+				width: auto;
+				float: left;
+			}
+
+			#data_sw {
+				display: none;
+			}
+
+			#data_sw img {
+				/*资料头像*/
+				border-radius: 50%;
+				height: 30px;
+				width: 30px;
+			}
+
+			.data-item {
+				/*资料*/
+				text-align: center;
+				box-shadow: 1px 1px 1px rgba(228, 228, 228, 0.5);
+				border: 1px solid rgba(228, 228, 228, 0.5);
+				border-radius: 5px;
+				padding: 8px 5px;
+			}
+
+			.data-item-click {
+				/*资料点击效果*/
+				border: 1px solid rgba(29, 184, 241, 0.5);
+			}
+
+			.mui-col-xs-3 {
+				/*资料*/
+				padding: 10px 10px;
+			}
+
+			#commit {
+				/*底部按钮*/
+				width: 95%;
+				left: 2.5%;
+				padding: 6px 12px 7px;
+			}
+
+			#commit_div {
+				/*底部按钮区域*/
+				width: 100%;
+				background-color: white;
+				border-top: 1px solid rgba(228, 228, 228, 0.4);
+				padding-top: 10px;
+				display: none;
+			}
+
+			.mui-btn-blue {
+				background-color: #1DB8F1;
+				border: 1px solid #1DB8F1;
+			}
+
+			.mui-btn-blue:active {
+				background-color: #e4e4e4 !important;
+				border: 1px solid #e4e4e4 !important;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">
+			<div id="inputArea" class="mui-input-row">
+				<label id="label_search">搜索</label>
+				<input id="input_search" type="text" class="mui-input-clear" maxlength="20" placeholder="请输入账号或手机号">
+			</div>
+		</h1>
+		</header>
+		<div class="mui-content">
+			<div id="nouser">
+				<img id="nouser_img" src="../../image/mine/invite_none_0.png" style="width: 40%;margin-top: 20%;" />
+				<div id="nouser_text"></div>
+			</div>
+			<ul id="user" class="mui-table-view">
+				<li id="user_li" class="mui-table-view-cell mui-media">
+					<img id="user_img" class="mui-media-object mui-pull-left" src="../../image/utils/default_personalimage.png">
+					<div class="mui-media-body">
+						<div id="unick" class="mui-ellipsis">&nbsp;</div>
+						<div style="float: left;">[</div>
+						<div id="qun_name" class="mui-ellipsis"></div>
+						<div style="display: inline;">]</div>
+						<div id="qun_type" style="display: inline;"></div>
+					</div>
+				</li>
+				<li id="data_li" class="mui-table-view-cell" style="background-color: white;padding : 4px 0px;">
+					<div style="border-left: 3px solid #00a5e0;padding-left: 12px;line-height: 35px;">
+						请选择现有成员的资料
+					</div>
+				</li>
+			</ul>
+			<div id="data_sw" class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<ul class="mui-table-view">
+						<div id="row_data" class="mui-row">
+						</div>
+					</ul>
+				</div>
+			</div>
+			<div id="commit_div">
+				<button id="commit" type="button" class="mui-btn mui-btn-blue mui-btn-block">确认</button>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script type="text/javascript">
+			var screenOption = {
+				height: localStorage.getItem('resolutionHeight') - localStorage.getItem('getStatusbarHeight'), //屏幕高度-状态栏高度
+				width: localStorage.getItem('resolutionWidth') //屏幕宽度
+			}; //屏幕参数
+			var main; //获取当前窗体对象
+			var mainData; //接收传入参数值
+			var type; //记录显示的成员类型
+			var userData = null; //当前搜索的成员
+			var allData = []; //记录查询的资料
+			var clickId = ''; //记录被点击的元素id
+
+			mui.init();
+			mui.plusReady(function() {
+				initData(); //初始化数据
+				initListener(); //初始化监听
+				events.blurBack();
+			});
+
+			/**
+			 * 初始化滚动
+			 */
+			function initScroll() {
+				mui(".mui-scroll-wrapper").scroll({
+					scrollY: true, //是否竖向滚动
+					scrollX: false, //是否横向滚动
+					indicators: true, //是否显示滚动条
+					deceleration: 0.0006, //阻尼系数,系数越小滑动越灵敏
+					bounce: true, //是否启用回弹
+				});
+			}
+
+			/**
+			 * 初始化数据
+			 */
+			function initData() {
+				main = plus.webview.currentWebview(); //获取当前窗体对象
+				mainData = main.data; //接收传入参数值
+				//var data = {
+				//gid: show, //群ID
+				//gname: item.gname, //群名
+				//mstype: type, //被邀请成为的类型
+				//vtp: item.mstype //邀请人的类型（用户管理角色,0家长,1管理员,2老师,3学生）
+				//}
+				//console.log('邀请群成员获得的数据:' + JSON.stringify(mainData));
+
+				switch(mainData.mstype) { //被邀请成为类型（0家长,2老师,3学生）
+					case 'student':
+					case 3:
+					case '3':
+						mainData.typestr = '学生';
+						mainData.type = '3';
+						mainData.mstype = 'student';
+						break;
+					case 'teacher':
+					case 2:
+					case '2':
+						mainData.typestr = '老师';
+						mainData.type = '2';
+						mainData.mstype = 'teacher';
+						break;
+					case 'parents':
+					case 0:
+					case '0':
+						mainData.typestr = '家长';
+						mainData.mstype = 'parents';
+						mainData.type = '0';
+						break;
+					default:
+						//console.log('邀请群成员设置成员类型出错');
+						break;
+				}
+
+				document.getElementById("qun_name").innerText = mainData.gname;
+				document.getElementById("qun_type").innerText = '[' + mainData.typestr + ']';
+			}
+
+			/**
+			 * 初始化监听
+			 */
+			function initListener() {
+
+				events.blurBack();
+
+				//搜索
+				document.getElementById("label_search").addEventListener('tap', function() {
+					searchUser();
+				});
+
+				//查看搜索结果
+				document.getElementById('user_li').addEventListener('tap', function() {
+					events.openNewWindowWithData('qun_manage_invite_info.html', {
+						userData: userData //用户信息
+					});
+				});
+
+				//点击资料
+				mui('#row_data').on('tap', '.mui-table-view-cell', function() {
+					document.activeElement.blur(); //隐藏键盘
+					var self = this;
+					//console.log(self.id + ' ' + clickId);
+					if(clickId == '') { //第一次点击资料
+						self.className = 'mui-table-view-cell data-item data-item-click';
+						clickId = self.id;
+					} else if(clickId == self.id) { //点击同一个资料
+						self.className = 'mui-table-view-cell data-item';
+						clickId = '';
+					} else {
+						document.getElementById(clickId).className = 'mui-table-view-cell data-item';
+						self.className = 'mui-table-view-cell data-item data-item-click';
+						clickId = self.id;
+					}
+				});
+
+				//确认邀请
+				document.getElementById('commit').addEventListener('tap', function() {
+					//console.log('确认');
+					invite();
+				});
+
+				//资料区域开始滚动
+				document.getElementById('data_sw').addEventListener('scrollstart', function() {
+					document.getElementById("input_search").blur();
+				});
+			}
+
+			/**
+			 * 显示无此用户或资料
+			 * @param {Object} key 1显示;0隐藏
+			 * @param {Object} type 0用户;1资料
+			 */
+			function showNoUser(key, type) {
+				var nouser = document.getElementById("nouser");
+				var nouser_text = document.getElementById("nouser_text");
+				var user = document.getElementById("user");
+				if(key == 1) {
+					nouser.style.display = 'block';
+				} else {
+					nouser.style.display = 'none';
+				}
+				if(type == 0) {
+					nouser.style.marginTop = '0px';
+					nouser_text.innerHTML = '无此用户，请重新输入~~~';
+				} else {
+					nouser.style.marginTop = user.offsetHeight / 2 + 'px';
+					nouser_text.innerHTML = '成员资料查询为空~~~'
+				}
+			}
+
+			/**
+			 * 显示搜索用户结果
+			 * @param {Object} key 1显示;0隐藏
+			 */
+			function showUser(key) {
+				var user = document.getElementById("user");
+				if(key == 1) {
+					user.style.display = 'block';
+					document.getElementById("user_img").src = updateHeadImg(userData.uimg, 2);
+					document.getElementById("unick").innerHTML = userData.unick;
+				} else {
+					user.style.display = 'none';
+					document.getElementById("user_img").src = updateHeadImg('', 2);
+					document.getElementById("unick").innerHTML = '';
+				}
+			}
+
+			/**
+			 * 显示资料
+			 * @param {Object} key 1显示;0隐藏
+			 */
+			function showDataSW(key) {
+				var data_sw = document.getElementById("data_sw");
+				if(key == 1) {
+					var user = document.getElementById("user");
+					var commit_div = document.getElementById("commit_div");
+					data_sw.style.display = 'block';
+					data_sw.style.top = (user.offsetHeight + user.offsetTop) + 'px';
+					data_sw.style.height = screenOption.height - data_sw.offsetTop - commit_div.offsetHeight - 11 + 'px';
+					initScroll();
+				} else {
+					data_sw.style.display = 'none';
+				}
+			}
+
+			/**
+			 * 显示确认按钮
+			 * @param {Object} key 1显示;0隐藏
+			 */
+			function showCommit(key) {
+				var commit_div = document.getElementById("commit_div");
+				if(key == 1) {
+					var user = document.getElementById("user");
+					commit_div.style.display = 'block';
+					commit_div.style.marginTop = screenOption.height - user.offsetHeight - 106 + 'px';
+				} else {
+					commit_div.style.display = 'none';
+				}
+			}
+
+			/**
+			 * 显示资料
+			 */
+			function showData() {
+				for(var i = 0; i < allData.length; i++) {
+					////console.log('allData[' + i + '] ' + JSON.stringify(allData[i]));
+					var element = document.createElement('div');
+					element.className = 'mui-col-xs-3 mui-col-sm-3';
+					element.innerHTML = '<li id="li_' + allData[i].stuid + '" class="mui-table-view-cell data-item">\
+									<img src="' + updateHeadImg(allData[i].stuimg, 2) + '" />\
+									<p id="p_' + allData[i].stuid + '" class="mui-ellipsis"></p></li>';
+					document.getElementById("row_data").appendChild(element);
+					document.getElementById("p_" + allData[i].stuid).innerText = allData[i].stuname;
+				}
+			}
+
+			/**
+			 * 通过用户账号和手机号搜索用户
+			 */
+			function searchUser() {
+				showNoUser(0, 0); //隐藏无此用户
+				showUser(0); //清除上次搜索用户结果
+				showCommit(0); //隐藏确认按钮
+				showDataSW(0); //隐藏资料区域
+				document.getElementById("row_data").innerHTML = ''; //清空资料
+				clickId = ''; //清空资料元素id
+				document.activeElement.blur(); //隐藏键盘
+
+				var input_search = document.getElementById("input_search"); //搜索输入框
+				//console.log('input_search.value ' + input_search.value);
+				var uid = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).uid; //账号电话
+				var uname = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).uname; //账号
+				if(input_search.value.replace(/(^\s*)|(\s*$)/g, "") == "") {
+					mui.toast('搜索不能为空');
+				} else if((mainData.type == '3' || mainData.type == '2') && (input_search.value == uid || input_search.value == uname)) {
+					if(mainData.type == '3') {
+						//不允许邀请自己成为学生
+						mui.toast('不能邀请自己成为学生');
+					} else {
+						//不允许邀请自己成为老师
+						mui.toast('不能邀请自己成为老师');
+					}
+				} else if(input_search.value.length > 20) {
+					mui.toast('搜索最多20字');
+				} else {
+					var wd = events.showWaiting();
+					var vtp = 'mb';
+					//var phoneReg = /^1[34578]\d{9}$/; //手机号
+					//var emailReg = /^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/; //邮箱
+					//if(!phoneReg.test(input_search.value)) {
+					//	vtp = 'nm';
+					//}
+					//else if(emailReg.test(input_search.value)) {
+					//	vtp = 'em';
+					//}
+					var numReg=/^[0-9]*$/;
+					if(!numReg.test(input_search.value)) {
+						vtp = 'nm';//不是纯数字
+					}
+					//11.通过用户账号和手机号搜索用户
+					//需要参数
+					var comData2 = {
+						vvl: input_search.value, //查询的值
+						vtp: vtp //获取类型,nm(用户名),mb(手机号)
+					};
+					postDataPro_PostUList(comData2, wd, function(data) {
+						//console.log('11.RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+						if(data.RspCode == 0) {
+							for(var i = 0; i < data.RspData.length; i++) {
+								//console.log('搜索结果 ' + JSON.stringify(data.RspData[i]));
+							}
+							userData = data.RspData[0];
+							showUser(1); //显示搜索用户结果
+							getDataInfo(); //查询资料
+						} else if(data.RspCode == 9999 || data.RspCode == 9) {
+							userData = null;
+							showNoUser(1, 0); //显示无此用户
+							mui.toast('该用户不存在');
+						} else {
+							userData = null;
+							mui.toast(data.RspTxt);
+							//console.log('### ERROR ### 搜索 ###' + data.RspTxt);
+						}
+						wd.close();
+					});
+				}
+			}
+
+			/**
+			 * 获取群成员资料
+			 */
+			function getDataInfo() {
+				var wd = events.showWaiting();
+				var vtp = ''; //获取类型
+				var vvl1 = ''; //类型
+				var tempData = []; //记录有名称的资料
+				switch(mainData.mstype) { //被邀请成为类型（0家长,2老师,3学生）
+					case 'student':
+						vvl1 = '3';
+						vtp = '1';
+						break;
+					case 'teacher':
+						vvl1 = '2';
+						vtp = '1';
+						break;
+					case 'parents':
+						vvl1 = '3';
+						vtp = '0';
+						break;
+					default:
+						//console.log('邀请群成员设置成员类型出错');
+						break;
+				}
+				//16.通过群ID获取群对象资料
+				//所需参数
+				var comData2 = {
+					vtp: vtp, //获取类型,0普通资料获取,1邀请排除
+					top: '-1', //选择条数,-1为全部
+					vvl: mainData.gid, //群ID,查询的值
+					vvl1: vvl1 //类型,0家长,1管理员,2老师,3学生,-1全部
+				};
+				postDataPro_PostGUInf(comData2, wd, function(data) {
+					//console.log('16.90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						for(var i = 0; i < data.RspData.length; i++) {
+							if(data.RspData[i].stuname != '') {
+								tempData[tempData.length] = data.RspData[i];
+							}
+						}
+					} else {
+						if(data.RspCode != 9) {
+							mui.toast(data.RspTxt);
+							//console.log('### ERROR ### 获取群对象资料 ###' + data.RspTxt);
+						}
+					}
+
+					if(data.RspCode != 404) {
+						showCommit(1);
+						if(tempData.length == 0) {
+							//查询为空
+							showNoUser(1, 1);
+							mui.toast('成员资料 查询记录为空');
+						} else {
+							showDataSW(1);
+						}
+						allData = tempData;
+						showData();
+					}
+					wd.close();
+				});
+			}
+
+			/**
+			 * 发送邀请
+			 */
+			function invite() {
+				var wd = events.showWaiting();
+				//console.log('发送邀请 用户信息 ' + JSON.stringify(userData));
+				//console.log('发送邀请 资料元素ID ' + clickId);
+				//判断与资料关系
+				var urel = ''; //与资料关系
+				var stuid = clickId.replace('li_', ''); //资料id
+				var chooseInfo = '0';
+				if(stuid != '') { //选择关联资料
+					if(mainData.mstype == 'parents') { //被邀请人类型为家长
+						urel = '爸爸'; //与资料关系
+					}
+					chooseInfo = stuid;
+				}
+				//console.log('与资料关系：' + urel);
+				//判断邀请类型
+				var vtp = ''; //邀请类型
+				if(mainData.vtp == 1 || mainData.vtp == 2) { //邀请人为老师都设为0
+					vtp = '0';
+				} else {
+					vtp = '2';
+				}
+				//console.log('邀请人类型 ' + mainData.vtp + ' 邀请类型 ' + vtp);
+				//12.邀请用户入群
+				//需要参数
+				var comData = {
+					gid: mainData.gid, //群ID
+					beinvutid: userData.utid, //被邀请人ID
+					beinvnick: userData.unick, //被邀请人昵称
+					mstype: mainData.type, //被邀请人类型,0家长,2老师,3学生
+					stat: '0', //入群状态,0待审,1同意
+					lnkinfid: chooseInfo, //关联资料ID,无资料关联填写0
+					urel: urel, //与资料关系,一般申请加入家长的时候填写,如爸爸,妈妈,其他类型留空
+					vtp: vtp //邀请类型,0老师邀请家长,1个人申请入群,2群员邀请群员
+				};
+				//console.log('comData:' + JSON.stringify(comData));
+
+				postDataPro_PostInvGuser(comData, wd, function(data) {
+					wd.close();
+					//console.log('90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						mui.toast('已发送邀请');
+					} else if(data.RspCode == 9) {
+						if(data.RspTxt == '已有相同记录') {
+							mui.toast('已发送邀请成为 ' + mainData.typestr);
+						} else if(data.RspTxt == '违反身份互斥规则') {
+							if(mainData.typestr == '家长' || mainData.typestr == '老师') {
+								mui.toast(data.RspTxt + ' 已发送邀请成为 学生');
+							} else if(mainData.typestr == '学生') {
+								mui.toast(data.RspTxt + ' 已发送邀请成为 家长或老师');
+							}
+						}
+					} else {
+						mui.toast('邀请失败 ' + data.RspTxt);
+						//console.log('### ERROR ### 邀请用户入群 ###' + data.RspTxt);
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

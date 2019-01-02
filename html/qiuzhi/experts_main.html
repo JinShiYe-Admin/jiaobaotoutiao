@@ -1,0 +1,644 @@
+<!--
+	作者：444811716@qq.com
+	时间：2017-02-23
+	描述：专家列表
+-->
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/iconfont/iconfont.css" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/utils/pullToRefresh.css" />
+		<style>
+			body,
+			.mui-content {
+				background-color: white;
+			}
+			
+			.mui-slider .mui-segmented-control.mui-segmented-control-inverted .mui-control-item {
+				color: #222222;
+			}
+			
+			.mui-slider .mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active {
+				border-bottom: 2px solid #1db8f5;
+				color: #00A5E0;
+			}
+			
+			.mui-scroll-wrapper {
+				background-color: white;
+			}
+			
+			.mui-segmented-control.mui-scroll-wrapper {
+				height: 40px;
+			}
+			
+			.mui-slider-indicator.mui-segmented-control {
+				background-color: #F5F5F5;
+			}
+			
+			.more-navigation {
+				position: absolute;
+				height: 40px;
+				right: 0;
+				top: 0;
+				text-align: center;
+				padding: 5px 10px;
+				border: solid thin #000000 2px;
+				box-shadow: -5px 0px 5px -3px #d2d2d2;
+				z-index: 2;
+				background-color: #F5F5F5;
+			}
+			
+			.more-navigation p {
+				line-height: 50%;
+				color: #222222;
+			}
+			
+			.more-navigation a {
+				color: #222222;
+			}
+			
+			.mui-slider .mui-segmented-control.mui-segmented-control-inverted~.mui-slider-group .mui-slider-item {
+				border-top: none;
+				border-bottom: none;
+			}
+			
+			.mui-table-view-cell:before,
+			.mui-table-view-cell:after {
+				left: 0px;
+			}
+			
+			.mui-slider .mui-slider-group .mui-slider-item .mui-table-view-cell:after {
+				height: 1px;
+			}
+			
+			.mui-pull-bottom-wrapper {
+				/*底部加载更多区域*/
+				background-color: white;
+			}
+			
+			.mui-table-view-cell {
+				line-height: 25px;
+			}
+			
+			.mui-slider .mui-slider-group .mui-slider-item img {
+				height: 40px;
+				width: 40px;
+				max-height: 40px;
+				max-width: 40px;
+				min-height: 40px;
+				min-width: 40px;
+			}
+			
+			.mui-media-object.expert-headimg {
+				/*专家头像*/
+				border-radius: 50% !important;
+				margin-top: 11px;
+				margin-bottom: 13px;
+			}
+			
+			.expert-info {
+				/*专家信息*/
+				margin-top: 10px;
+				font-size: 15px;
+			}
+			
+			.expert-name {
+				/*专家姓名*/
+				width: 35%;
+				color: #323232;
+				margin-right: 10px;
+			}
+			
+			.mui-media-object.expert-level {
+				/*专家等级*/
+				display: none;
+				/*height: 20px !important;
+				width: 20px !important;*/
+			}
+			
+			.mui-btn {
+				background-color: #1DB8F1 !important;
+			}
+			
+			.expert-answer {
+				/*专家回答数*/
+				color: #B7B7B7;
+			}
+			
+			.expert-answernum {
+				/*专家回答数*/
+				color: red;
+			}
+			
+			.expert-ask,
+			.expert-invite,
+			.expert-invited {
+				margin-top: 16px;
+				color: white;
+			}
+			
+			.expert-ask,
+			.expert-invite {
+				/*提问按钮*/
+				/*邀请按钮*/
+				background-color: #1DB8F1;
+				border: 1px solid #1DB8F1;
+				padding-top: 3px;
+				padding-bottom: 3px;
+			}
+			
+			.expert-invited {
+				/*已被邀请按钮*/
+				background-color: #d4d4d4 !important;
+				border: 1px solid #d4d4d4 !important;
+				padding-top: 3px;
+				padding-bottom: 3px;
+			}
+			
+			.expert-usernote {
+				/*专家简介*/
+				line-height: 16px;
+				font-size: 13px;
+				color: #808080;
+				margin-right: 20px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title">专家列表</h1>
+		</header>
+		<div class="mui-content" id="content">
+			<!--<div id="slider" class="mui-slider mui-fullscreen">
+				<div id="sliderSegmentedControl" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+					<div id="topList" class="mui-scroll">
+					</div>
+				</div>
+				<div class="more-navigation">
+					<a class="iconfont icon-qita11"></a>
+					<p>导航</p>
+				</div>
+				<div id="sliderGroup" class="mui-slider-group">
+					<div class="mui-slider-item mui-control-content mui-active" id="bot_0">
+						<div id="bot_sw_0" class="mui-scroll-wrapper">
+							<div id="bot_sc_0" class="mui-scroll">
+								<ul id="bot_ul_0" class="mui-table-view">
+									<li id="experts_0_1" class="mui-table-view-cell mui-media">
+										<div class="mui-media-body mui-pull-right">
+											<button id="expert_btn_0_1" type="button" class="mui-btn expert-ask">提问</button> </div> <img class="mui-media-object mui-pull-left expert-headimg" src="http://oigr7qsvz.bkt.clouddn.com/headimge2.png?1488177190317">
+										<div class="mui-media-body expert-info">
+											<div id="expert_name_0_1" class="expert-name  mui-pull-left mui-ellipsis">冰糖馨儿</div> <img class="mui-media-object expert-level" src="../../image/qiuzhi/expert_level.png">
+											<font class="expert-answer">回答数 :</font>
+											<font class="expert-answernum">338</font>
+											<div id="expert_usernote_0_1" class="mui-ellipsis expert-usernote">
+												你好啊你好啊你好啊你好啊你好啊你好啊 你好啊你好啊你好啊你好啊你好啊你好啊 你好啊你好啊你好啊你好啊你好啊你好啊 你好啊你好啊你好啊你好啊你好啊你好啊
+											</div>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>-->
+		</div>
+	</body>
+	<script src="../../js/mui.min.js"></script>
+	<script type="text/javascript" src="../../js/mui.pullToRefresh.js"></script>
+	<script type="text/javascript" src="../../js/mui.pullToRefresh.material.js"></script>
+	<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+	<script type="text/javascript" src="../../js/utils/events.js"></script>
+	<script type="text/javascript" src="../../js/publicQiuzhiProtocol.js"></script>
+	<script type="text/javascript">
+		//启用双击监听
+		mui.init({
+			gestureConfig: {
+				doubletap: true,
+			}
+		});
+
+		var mainData; //接收页面传入参数值
+		var pullToRefresh = []; //存储下拉上拉的控件
+		var sliderId = ''; //记录选择的话题
+		var askId = '0'; //记录问题的id
+		mui.plusReady(function() {
+			var main = plus.webview.currentWebview(); //获取当前窗体对象
+			mainData = main.data; //接收页面传入参数值
+			askId = mainData.askID;
+			//console.log('experts_main.html:' + JSON.stringify(mainData));
+
+			document.getElementById("content").innerHTML = '\
+				<div id="slider" class="mui-slider mui-fullscreen"  style="top: ' + (localStorage.getItem('StatusHeightNo') * 1 + 45) + 'px' + ';">\
+					<div id="sliderSegmentedControl" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">\
+						<div id="topList" class="mui-scroll">\
+						</div>\
+					</div>\
+					<div id="sliderGroup" class="mui-slider-group">\
+					</div>\
+				</div>';
+			//顶部增加话题和底部列表的框架
+			addChannels(mainData.channelInfo, mainData.allChannels, function() {
+
+				mui('#slider').slider();
+				//创建下拉上拉刷新控件
+				pullRefresh();
+				//获取专家
+				getExpertsArray(mainData.channelInfo.TabId, 1);
+			});
+
+			//滑动底部列表
+			document.querySelector('.mui-slider').addEventListener('slide', function() {
+				//console.log('slide ' + event.detail.slideNumber);
+				mui('.mui-control-item').each(function(index, element) {
+					if(index == event.detail.slideNumber) {
+						document.getElementById(sliderId).className = 'mui-control-item';
+						element.className = 'mui-control-item mui-active';
+						sliderId = element.id;
+					}
+				});
+				var id = 'bot_' + sliderId.replace('top_', '');
+				var element = document.getElementById(id);
+				var info = JSON.parse(element.getAttribute('data-info'));
+				var page = JSON.parse(element.getAttribute('data-page'));
+				//console.log('slide ' + JSON.stringify(info));
+				//console.log('slide ' + JSON.stringify(page));
+				if(!page) {
+					getExpertsArray(info.TabId, 1);
+				}
+			});
+
+			//点击提问
+			mui('#sliderGroup').on('tap', '.expert-ask', function() {
+				var item=this;
+				//判断是否是游客身份登录
+				if(events.judgeLoginMode(item)) {
+					return;
+				}
+				var element = this.parentNode.parentNode;
+				//专家的信息
+				var expert = JSON.parse(element.getAttribute('data-info'));
+				//当前话题
+				var id = 'bot_' + sliderId.replace('top_', '');
+				var element2 = document.getElementById(id);
+				var channelInfo = JSON.parse(element2.getAttribute('data-info'));
+				//所有话题
+				var allChannels = mainData.allChannels;
+				//console.log('expert ' + JSON.stringify(expert));
+				//console.log('channelInfo ' + JSON.stringify(channelInfo));
+				//console.log('allChannels ' + JSON.stringify(allChannels));
+				//传递的数据
+				var transportData = {
+					expert: expert,
+					curChannel: channelInfo,
+					allChannels: allChannels
+				}
+				//console.log('transportData ' + JSON.stringify(transportData));
+				events.singleWebviewInPeriod(item,'qiuzhi-newQ.html', transportData)
+			});
+
+			//点击邀请
+			mui('#sliderGroup').on('tap', '.expert-invite', function() {
+				var item=this;
+				//判断是否是游客身份登录
+				if(events.judgeLoginMode(item)) {
+					return;
+				}
+				var element = this.parentNode.parentNode;
+				//专家的信息
+				var expert = JSON.parse(element.getAttribute('data-info'));
+				//当前话题
+				var id = 'bot_' + sliderId.replace('top_', '');
+				var element2 = document.getElementById(id);
+				var channelInfo = JSON.parse(element2.getAttribute('data-info'));
+				//所有话题
+				var allChannels = mainData.allChannels;
+				//console.log('expert ' + JSON.stringify(expert));
+				//console.log('channelInfo ' + JSON.stringify(channelInfo));
+				//console.log('allChannels ' + JSON.stringify(allChannels));
+				var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid; //当前登录账号utid
+
+				//34.邀请某人回答
+				//所需参数
+				var comData = {
+					inviteMan: personalUTID, //邀请人ID
+					askId: askId, //问题ID
+					expertId: expert.UserId //专家ID
+				};
+				// 等待的对话框
+				var wd = events.showWaiting();
+				//34.邀请某人回答
+				postDataQZPro_addInvite(comData, wd, function(data) {
+					item.disabled=false;
+					jQuery(item).css("pointerEvents","all");
+					//console.log('34.邀请某人回答:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						if(data.RspData.Result == 1) {
+							//调整界面中该专家的所有邀请按钮
+							var tempExpert = expert.ExpertChannels;
+							tempExpert.unshift(0);
+							//console.log(JSON.stringify(tempExpert));
+							for(var i = 0; i < tempExpert.length; i++) {
+								var btn = document.getElementById("expert_btn_" + tempExpert[i] + '_' + expert.TabId);
+								if(btn) {
+									btn.className = 'mui-btn expert-invited';
+								}
+							}
+							mui.toast('邀请成功');
+						} else {
+							mui.toast('邀请失败成功');
+						}
+					} else {
+						mui.toast(data.RspTxt);
+					}
+					setTimeout(function() {
+						wd.close();
+					}, 500);
+				});
+			});
+
+			//双击标题返回列表顶部
+			document.getElementById('title').addEventListener('doubletap', function() {
+				var id = 'bot_sw_' + sliderId.replace('top_', '');
+				var scrollTop = mui('#' + id).scroll(); //话题列表区域
+				scrollTop.scrollTo(0, 0, 100);
+			});
+		});
+
+		/**
+		 * 顶部增加话题和底部列表的框架
+		 * @param {Object} channelInfo 当前话题
+		 * @param {Object} allChannels 所有的话题
+		 * @param {Object} callBack 完成的回调
+		 */
+		function addChannels(channelInfo, allChannels, callBack) {
+			var fragmentTop = document.createDocumentFragment();
+			var fragmentBot = document.createDocumentFragment();
+			for(var i = 0; i < allChannels.length; i++) {
+				//顶部话题
+				var elementTop = document.createElement('a');
+				//底部列表
+				var elementBot = document.createElement('div');
+				////console.log('channelInfo ' + JSON.stringify(channelInfo));
+				////console.log('allChannels[' + i + '] ' + JSON.stringify(allChannels[i]));
+				if(channelInfo.TabId == allChannels[i].TabId) {
+					//选择的话题
+					sliderId = 'top_' + allChannels[i].TabId;
+					elementTop.className = 'mui-control-item mui-active';
+					elementBot.className = 'mui-slider-item mui-control-content mui-active';
+				} else {
+					elementTop.className = 'mui-control-item';
+					elementBot.className = 'mui-slider-item mui-control-content';
+				}
+				//顶部话题
+				elementTop.id = 'top_' + allChannels[i].TabId;
+				elementTop.href = '#bot_' + allChannels[i].TabId;
+				elementTop.innerText = allChannels[i].ChannelName;
+				//底部列表
+				elementBot.id = 'bot_' + allChannels[i].TabId;
+				elementBot.setAttribute('data-info', JSON.stringify(allChannels[i]));
+				elementBot.innerHTML = '<div id="bot_sw_' + allChannels[i].TabId + '" class="mui-scroll-wrapper">\
+											<div id="bot_sc_' + allChannels[i].TabId + '" class="mui-scroll">\
+												<ul id="bot_ul_' + allChannels[i].TabId + '" class="mui-table-view">\
+												</ul>\
+											</div>\
+										</div>';
+				fragmentTop.appendChild(elementTop);
+				fragmentBot.appendChild(elementBot);
+			}
+			document.getElementById("topList").appendChild(fragmentTop);
+			document.getElementById("sliderGroup").appendChild(fragmentBot);
+
+			callBack();
+		}
+
+		/**
+		 * 循环初始化所有下拉刷新，上拉加载。
+		 */
+		function pullRefresh() {
+			//阻尼系数
+			var deceleration = mui.os.ios ? 0.003 : 0.0009;
+			mui('.mui-scroll-wrapper').scroll({
+				bounce: false,
+				indicators: true, //是否显示滚动条
+				deceleration: deceleration
+			});
+			var pullRefresh = [];
+			//循环初始化所有下拉刷新，上拉加载。
+			mui.each(document.querySelectorAll('.mui-slider-group .mui-scroll'), function(index, pullRefreshEl) {
+				var refresh = mui(pullRefreshEl).pullToRefresh({
+					down: {
+						callback: function() {
+							var self = this;
+							var id = pullRefreshEl.parentNode.parentNode.id;
+							var element = document.getElementById(id);
+							var info = JSON.parse(element.getAttribute('data-info'));
+							var page = JSON.parse(element.getAttribute('data-page'));
+							//console.log('down ' + JSON.stringify(info));
+							//console.log('down ' + JSON.stringify(page));
+							//获取数据
+							getExpertsArray(info.TabId, 1);
+							setTimeout(function() {
+								//结束下拉刷新
+								self.endPullDownToRefresh();
+							}, 1000);
+						}
+					},
+					up: {
+						contentinit: '',
+						callback: function() {
+							var self = this;
+							var id = pullRefreshEl.parentNode.parentNode.id;
+							var element = document.getElementById(id);
+							var info = JSON.parse(element.getAttribute('data-info'));
+							var page = JSON.parse(element.getAttribute('data-page'));
+							//console.log('up ' + JSON.stringify(info));
+							//console.log('up ' + JSON.stringify(page));
+							if(page) {
+								getExpertsArray(info.TabId, page.pageIndex + 1);
+								setTimeout(function() {
+									self.endPullUpToRefresh();
+								}, 1000);
+							} else {
+								self.endPullUpToRefresh();
+							}
+						}
+					}
+				});
+				pullToRefresh.push({
+					id: pullRefreshEl.id,
+					refresh: refresh,
+				});
+			});
+		}
+
+		/**
+		 * 增加专家
+		 * @param {Object} channelId 话题Id
+		 * @param {Object} data 数据
+		 */
+		function addExperts(channelId, data) {
+			for(var i = 0; i < data.length; i++) {
+				////console.log("addExperts " + JSON.stringify(data[i]));
+
+				//提问或邀请按钮
+				var btnClass = '';
+				var btnStr = '';
+				if(askId == '0') {
+					btnClass = 'expert-ask';
+					btnStr = '提问';
+				} else {
+					btnStr = '邀请';
+					if(data[i].IsInvited == 0) { //没有被邀请
+						btnClass = 'expert-invite';
+					} else {
+						btnClass = 'expert-invited';
+					}
+				}
+				//回答数处理
+				if(data[i].AnswerNum > 999) {
+					data[i].AnswerNum = '999+';
+				}
+				var element = document.createElement('li');
+				element.id = 'experts_' + channelId + '_' + data[i].TabId; //问答用户表ID
+				element.className = 'mui-table-view-cell mui-media';
+				element.setAttribute('data-info', JSON.stringify(data[i]));
+				element.innerHTML = '<div class="mui-media-body mui-pull-right">\
+										<button id="expert_btn_' + channelId + '_' + data[i].TabId + '" type="button" class="mui-btn ' + btnClass + '">' + btnStr + '</button>\
+									</div>\
+									<img class="mui-media-object mui-pull-left expert-headimg" src="' + updateHeadImg(data[i].uimg, 2) + '">\
+									<div class="mui-media-body expert-info">\
+										<div id="expert_name_' + channelId + '_' + data[i].TabId + '" class="expert-name  mui-pull-left mui-ellipsis"></div>\
+										<img class="mui-media-object expert-level" src="../../image/qiuzhi/expert_level.png" />\
+										<font class="expert-answer">回答数 :</font>\
+										<font class="expert-answernum">' + data[i].AnswerNum + '</font>\
+										<div id="expert_usernote_' + channelId + '_' + data[i].TabId + '" class="mui-ellipsis expert-usernote"></div>\
+									</div>';
+				document.getElementById("bot_ul_" + channelId).appendChild(element);
+				document.getElementById("expert_name_" + channelId + '_' + data[i].TabId).innerText = data[i].unick;
+				document.getElementById("expert_usernote_" + channelId + '_' + data[i].TabId).innerText = data[i].UserNote;
+			}
+		}
+
+		/**
+		 * 获取符合条件的专家信息
+		 * @param {Object} channelId 当前话题ID
+		 * @param {Object} pageIndex 当前页数
+		 */
+		function getExpertsArray(channelId, pageIndex) {
+			//需要加密的数据
+			var comData = {
+				askId: parseInt(askId), //问题ID，传入0，则不包括问题参数
+				userIds: '[0]', //用户编号列表,Array,传入0，获取所有专家
+				channelId: channelId.toString(), //话题ID,传入0，获取所有话题数据
+				pageIndex: pageIndex, //当前页数
+				pageSize: '10' //每页记录数,传入0，获取总记录数
+			};
+			// 等待的对话框
+			var wd = events.showWaiting();
+			//2.获取符合条件的专家信息
+			postDataQZPro_getExpertsByCondition(comData, wd, function(data) {
+				//console.log('2.获取符合条件的专家信息:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+
+				//记录页数
+				var page = {
+					pageIndex: pageIndex, //当前页数
+					totalPage: 0 //总页数
+				};
+				if(data.RspCode == 0) {
+					page.totalPage = data.RspData.totalPages;
+				}
+				document.getElementById("bot_" + channelId).setAttribute('data-page', JSON.stringify(page))
+				if(pageIndex == 1) { //获取的第一页的内容
+					//清空对应的界面
+					document.getElementById("bot_ul_" + channelId).innerHTML = '';
+				}
+
+				if(data.RspCode == 0) {
+					//添加人员信息
+					//回调中的临时数据
+					var tempRspData = data.RspData.Data;
+					//获取当前回调的个人信息，主要是头像、昵称
+					var tempArray = [];
+					//先遍历回调数组，获取
+					for(var item in tempRspData) {
+						//当前循环的model
+						var tempModel0 = tempRspData[item];
+						//将当前model中id塞到数组
+						tempArray.push(tempModel0.UserId);
+					}
+					//给数组去重
+					tempArray = arrayDupRemoval(tempArray);
+					//发送获取用户资料申请
+					var tempData = {
+						vvl: tempArray.join(), //用户id，查询的值,p传个人ID,g传ID串
+						vtp: 'g' //查询类型,p(个人)g(id串)
+					}
+					//console.log('tempData:' + JSON.stringify(tempData));
+					// 等待的对话框
+					var wd2 = events.showWaiting();
+					//21.通过用户ID获取用户资料
+					postDataPro_PostUinf(tempData, wd2, function(data1) {
+						//console.log('21.获取个人资料success:RspCode:' + data1.RspCode + ',RspData:' + JSON.stringify(data1.RspData) + ',RspTxt:' + data1.RspTxt);
+						if(data1.RspCode == 0) {
+							//循环当前的个人信息返回值数组
+							for(var i in data1.RspData) {
+								//当前model
+								var tempModel = data1.RspData[i];
+								//更新头像
+								tempModel.uimg = updateHeadImg(tempModel.uimg, 2);
+								//循环回调数组
+								for(var item in tempRspData) {
+									//当前循环的model
+									var tempModel0 = tempRspData[item];
+									//对比id是否一致
+									if(tempModel0.UserId == tempModel.utid) {
+										//合并
+										tempModel0 = $.extend(tempModel0, tempModel);
+									}
+								}
+							}
+						}
+						//console.log('专家循环遍历后的值：' + JSON.stringify(tempRspData));
+						//刷新界面
+						addExperts(channelId, tempRspData);
+						wd2.close();
+					});
+				} else {
+					mui.toast(data.RspTxt);
+				}
+
+				//设置上拉下拉控件的状态
+				var tempRefresh;
+				for(var i = 0; i < pullToRefresh.length; i++) {
+					var id = pullToRefresh[i].id.replace('bot_sc_', '');
+					if(id == channelId) {
+						tempRefresh = pullToRefresh[i];
+					}
+				}
+				if(page.pageIndex >= page.totalPage) {
+					//没有下一页
+					tempRefresh.refresh.endPullUpToRefresh(true);
+				} else {
+					if(pageIndex == 1) {
+						//获取第一页的数据更新当前控件
+						tempRefresh.refresh.refresh(true);
+					}
+				}
+				setTimeout(function() {
+					wd.close();
+				}, 500);
+			});
+		};
+	</script>
+
+</html>

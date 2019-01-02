@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/homework/classes-select.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		    <h1 class="mui-title">班级选择</h1>
+		    <a id="btn-selected" class="mui-pull-right header-publish">确定</a>
+		</header>
+		<div class="mui-content">
+			<form  id="classes-container" class="mui-input-group">
+			     <div class="mui-input-row mui-checkbox ">
+			        <label>Checkbox</label>
+			        <input name="Checkbox" type="checkbox" checked>
+			    </div>
+			    <div class="mui-input-row mui-checkbox ">
+			        <label>Checkbox</label>
+			        <input name="Checkbox" type="checkbox" >
+			    </div>
+			    
+			</form>
+		   
+		    
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script type="text/javascript">
+			var classes;
+			mui.init()
+			mui.plusReady(function(){
+				window.addEventListener('postClasses',function(e){
+					//console.log('班级选择界面获取的班级数据：'+JSON.stringify(e.detail.data));
+					classes=e.detail.data;
+					setClasses(classes)
+				})
+				setSelectedListener();
+			})
+			var setClasses=function(classes){
+				var classesContainer=document.getElementById('classes-container');
+				events.clearChild(classesContainer);
+				classes.forEach(function(classInfo,i){
+					var div=document.createElement('div');
+					div.className='mui-input-row mui-checkbox';
+					div.innerHTML=createInner(classInfo);
+					
+					classesContainer.appendChild(div);
+					div.querySelector('input').classInfo=classInfo;
+				});
+			}
+			var createInner=function(classInfo){
+				if(classInfo.isSelected){
+					return ' <label>'+classInfo.gname+'</label>'+
+			        '<input name="Checkbox" type="checkbox" checked/>'	
+				}else{
+					return ' <label>'+classInfo.gname+'</label>'+
+			        '<input name="Checkbox" type="checkbox"/>'
+				}
+			}
+			var setSelectedListener=function(){
+				mui('.mui-input-group').on('change', 'input', function() {
+					var value = this.checked?true:false;
+					classes[classes.indexOf(this.classInfo)].isSelected=value;
+					this.classInfo.isSelected=value;
+				});
+				events.addTap('btn-selected',function(){
+					events.fireToPageNone('homework-publish.html','selectedClasses',classes);
+					mui.back();
+				})
+			}
+		</script>
+	</body>
+
+</html>

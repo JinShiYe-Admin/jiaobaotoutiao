@@ -1,0 +1,51 @@
+<!--
+	作者：444811716@qq.com
+	时间：2017-01-12
+	描述：求知首页
+-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>求知</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<link href="../../css/qiuzhi/qiuzhi.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+		    <a class="mui-icon img-icon"><img src="../../image/utils/default_personalimage.png" style="width: 30px;height: 30px;border-radius: 50%;"/></a>
+		    <h1 class="mui-title">求知</h1>
+		    <a id="expertSearch" class="mui-pull-right">搜索</a>
+		</header>
+		<div id="content" class="mui-content">
+			<!--频道导航栏-->
+			<div id="slider" class="mui-slider mui-fullscreen">
+				<div id="slider_sw" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted main-navigation">
+					<div id="subjects-container" class="mui-scroll">
+						<a class="mui-control-item mui-active" href="#defalut">1234</a>
+						<a class="mui-control-item" href="#defalut">123</a>
+					</div>
+				</div>
+				<!--配套设施-->
+				<div id="sliderGroup" class="mui-slider-group" style="height: 1px;">
+					<div id="defalut" class="mui-slider-item mui-control-content mui-active"></div>
+				</div>
+			</div>
+		</div>
+		
+		<script src="../../js/mui.min.js"></script>
+		<!--公共事件JS-->
+		<script src="../../js/utils/events.js"></script>
+		<!--接口js-->
+		<script src="../../js/publicProtocol.js"></script>
+		<!--qiuzhiJS-->
+		<script src="../../js/publicQiuzhiProtocol.js"></script>
+		<!--本页js-->
+		<script src="../../js/qiuzhi/qiuzhi-home.js"></script>
+	</body>
+</html>

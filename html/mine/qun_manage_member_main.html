@@ -1,0 +1,66 @@
+<!--
+	作者：444811716@qq.com
+	时间：2017-02-07
+	描述：群成员
+-->
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title"></h1>
+		</header>
+		<div class="mui-content"></div>
+	</body>
+	<script src="../../js/mui.min.js"></script>
+	<script type="text/javascript" src="../../js/utils/events.js"></script>
+	<script type="text/javascript">
+		//启用双击监听
+		mui.init({
+			gestureConfig: {
+				doubletap: true
+			}
+		});
+
+		var contentWebview = null;
+		document.querySelector('header').addEventListener('doubletap', function() {
+			if(contentWebview == null) {
+				contentWebview = plus.webview.currentWebview().children()[0];
+			}
+			contentWebview.evalJS("mui('#pullrefresh').pullRefresh().scrollTo(0,0,100)");
+		});
+
+		mui.plusReady(function() {
+			var wd = events.showWaiting();
+			//---获取数据并传递数据---start---
+			var main = plus.webview.currentWebview(); //获取当前窗体对象
+			var data = main.data; //接收A页面传入参数值
+			//console.log('qun_manage_member_main.html:' + JSON.stringify(data));
+
+			document.getElementById("title").innerText = data.gname + '群成员';
+
+			//创建子页面
+			events.createSubAppendMain(main, 'qun_manage_member_sub.html', data, function() {
+				setTimeout(function() {
+					wd.close();
+				}, 250);
+			});
+
+			//---获取数据并传递数据---end---
+		});
+	</script>
+
+</html>

@@ -1,0 +1,10 @@
+/**
+ * @anthor an
+ * @time 9.27
+ */
+/**圆形*/
+.circular-square{
+    border-radius:50%;
+    width: 45px;
+    height: 45px;
+}

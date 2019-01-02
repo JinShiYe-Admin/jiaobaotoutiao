@@ -1,0 +1,108 @@
+<!--发布作业界面-->
+<!--
+	@anthor an
+-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="HandheldFriendly" content="true" />
+		<meta name="MobileOptimized" content="320" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<!--共用样式-->
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<!--alibaba字库-->
+		<link rel="stylesheet" href="../../css/iconfont/iconfont.css" />
+		<link rel="stylesheet" href="../../css/quan/custom-textarea.css" />
+		<link rel="stylesheet" href="../../css/utils/preview.css" />
+		<!--本页面应用样式表-->
+		<link rel="stylesheet" href="../../css/homework/homework-publish.css" />
+	</head>
+
+	<body>
+		<!--标题栏-->
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">发布作业 </h1>
+			<!--发布作业按钮-->
+			<a id="submitBtn" class="mui-pull-right header-publish">提交</a>
+		</header>
+		<!--content-->
+		<div id="work-publish" v-show="classes.length>0" class="mui-content">
+
+			<!--表单-->
+			<form class="mui-input-group">
+				<div class="mui-input-row">
+					<label>科目</label>
+					<select id="subjects" class="select-subject">
+						<option>语文</option>
+					</select>
+				</div>
+				<div class="receive-container">
+					<label>接收人</label>
+					<div id="classes" class="receive-classes">
+					</div>
+					<a id="select-classes" class="select-classes mui-icon mui-icon-arrowright"></a>
+				</div>
+				<div class="input-erea">
+					<textarea id="publish-content" class="publish-content" maxlength="500" placeholder="输入你要布置的作业内容,最多500字！"></textarea>
+					<!--一期隐藏拍照、相机、录音功能-->
+					<div class="publish-extras">
+						<!--<a id="getRecord" class="mui-icon iconfont icon-yuyin"></a>-->
+						<a id="getImg" class="mui-icon iconfont icon-xiangji1"></a>
+						<a id="get_gallery" class="mui-icon iconfont icon-tuku"></a>
+						<a id="get_record" class="mui-icon iconfont icon-yuyin3"></a>
+						<a id="getVideo" class="mui-icon iconfont icon-shipin"></a>
+
+					</div>
+				</div>
+				<div class="online-container">
+					<p class="submit-label">需学生在线提交</p>
+					<div id="onlineSwitch" class="mui-switch mui-active mui-switch-green online-switch">
+						<div class="mui-switch-handle"></div>
+					</div>
+				</div>
+				<p class="extra-info"><span class="mui-icon mui-icon-info"></span>开启在线提交后，学生需提交文字反馈</p>
+				<div id="pictures" class="img-container imgs-extras"></div>
+			</form>
+		</div>
+		<script src="../../js/utils/vue.min.js"></script>
+		<script type="text/javascript">
+			var homworkPublish = new Vue({
+				el: '#work-publish',
+				data: {
+					classes: []
+				},
+				methods: {
+					resetData: function() {
+						this.classes = [];
+					}
+				}
+			})
+		</script>
+		<!--mui库-->
+		<script src="../../js/mui.min.js"></script>
+		<!--公共事件模块-->
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/qiniu/qiniu.js"></script>
+		<!--摄像头模块-->
+		<script src="../../js/utils/camera.js"></script>
+		<script type="text/javascript" src="../../js/utils/compress.js"></script>
+		<script src="../../js/utils/cryption.js"></script>
+		<script src="../../js/utils/CloudFileUtil.js"></script>
+		<!--<script src="../../js/common.js"></script>-->
+		<script src="../../js/mui.zoom.js"></script>
+		<script src="../../js/mui.previewimage.js"></script>
+		<!--录音模块-->
+		<!--	<script src="../../js/utils/audio.js"></script>-->
+		<!--协议-->
+		<script src="../../js/publicHomeworkProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/publicProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<!--共用参数-->
+		<script src="../../js/homework/homework-publish.js"></script>
+	</body>
+
+</html>

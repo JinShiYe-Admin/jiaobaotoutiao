@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>空间</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/icons-extra.css" />
+		<link rel="stylesheet" href="../../css/iconfont/iconfont.css" />
+		<link rel="stylesheet" href="../../css/show/show.css" />
+		<link href="../../css/utils/preview.css" rel="stylesheet" />
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/utils/native.js"></script>
+		<script type="text/javascript" src="../../js/mui.lazyload.js"></script>
+		<script type="text/javascript" src="../../js/mui.lazyload.img.js"></script>
+		<script src="../../js/mui.zoom.js"></script>
+		<script src="../../js/mui.previewimage.js"></script>
+		<script src="../../js/utils/video.js"></script>
+		<script type="text/javascript" src="../../js/quan/dynamiclistitem.js"></script>
+		<script type="text/javascript" src="../../js/utils/showvideoutil.js"></script>
+		<style type="text/css">
+			.commentCell.mui-table-view-cell {
+				background: white;
+				/*cell 背景设为白色*/
+				padding: 10px;
+				/*内边距为0*/
+				margin-bottom: 8px;
+			}
+			
+			.mui-table-view:before,
+			.mui-table-view:after,
+			.section-comment .mui-table-view-cell:after {
+				height: 0px;
+			}
+			
+			.section-comment .mui-table-view-cell.mui-active,
+			.section-shield .mui-table-view-cell.mui-active {
+				background-color: white;
+			}
+			
+			.mui-bar-tab button {
+				/*评论按钮*/
+				text-align: left;
+				padding: 6px 12px !important;
+				color: #B7B7B7;
+				margin: 6px 1.5% !important;
+				width: 96%;
+				top: 0 !important;
+				height: 36px;
+				font-size: 14px;
+			}
+			
+			.section-comment-info {
+				color: #B7B7B7;
+				font-size: 14px;
+			}
+			
+			.icon-zanzan1:before {
+				content: "\e691";
+			}
+			
+			.icon-zanzan1 {
+				font-size: 13px;
+				color: #dbdbdb;
+			}
+			
+			.section-comment-info,
+			.section-comment-reply-info,
+			.section-comment-reply-content {
+				display: inline;
+			}
+			
+			.section-comment-title {
+				/*评论栏标题*/
+				display: none;
+				margin-top: -10px;
+				background-color: #F2F2F2;
+				padding: 10px;
+				border-left: 3px solid #1DB8F1;
+				font-size: 15px;
+				color: #323232;
+				height: 40px;
+			}
+			
+			.section-comment-personal-headimage {
+				/*评论者头像*/
+				width: 40px;
+				height: 40px;
+				border-radius: 50%;
+				float: left;
+				margin-right: 10px;
+			}
+			
+			.section-comment .icon-zanzan1 {
+				/*评论点赞按钮*/
+				float: right;
+				line-height: 40px;
+				margin-left: 30px;
+			}
+			
+			.section-comment-personal-name {
+				/*评论者昵称*/
+				font-size: 15px;
+				color: #323232;
+				line-height: 40px;
+			}
+			
+			.section-comment-content {
+				/*评论的内容*/
+				margin: 11px 0;
+				color: #808080;
+				font-size: 14px;
+			}
+			
+			.section-comment-reply {
+				/*评论回复区域*/
+				font-size: 14px;
+				background-color: #F2F2F2;
+				padding: 5px;
+				margin-top: 11px;
+			}
+			
+			.section-comment-reply-name {
+				/*回复者的名称*/
+				display: inline;
+				color: #1DB8F1;
+				font-size: 14px;
+			}
+			
+			.section-comment-reply-all {
+				/*查看所有回复*/
+				color: #1DB8F1;
+				font-size: 14px;
+			}
+			
+			.section-comment-reply-content {
+				font-size: 14px;
+				color: #808080;
+			}
+			
+			.section-comment-zan,
+			.section-zan {
+				/*点赞*/
+				color: #1db8f1;
+			}
+			
+			.section-comment-notzan,
+			.section-notzan {
+				/*不点赞*/
+				color: #dbdbdb;
+			}
+			/*.mui-scroll-wrapper {
+				z-index: 1;
+				bottom: 50px;
+				top: 45px;
+			}*/
+			
+			/*#topPopover {
+				position: fixed;
+				top: 46px;
+				right: 6px;
+				width: 80px;
+			}
+			
+			#topPopover .mui-popover-arrow {
+				left: auto;
+				right: 6px;
+			}
+			
+			.mui-popover {
+				height: 30px;
+				width: 80;
+			}*/
+			
+			.mui-backdrop {
+				/*选择排序的遮罩*/
+				background-color: rgba(0, 0, 0, .05);
+			}
+			
+			.video-thumb {
+				/*视频缩略图*/
+				width: 50%;
+				visibility: hidden;
+			}
+
+			.video-play {
+				/*播放按钮*/
+				position: absolute;
+				visibility: hidden;
+			}
+				.mui-popover {
+				width: 100%;
+				height: 0px;
+				border-radius: initial;
+				background-color: transparent;
+				border: none;
+				box-shadow: none;
+			}
+
+			.mui-backdrop {
+				background-color: transparent;
+			}
+		</style>
+
+	</head>
+	<header class="mui-bar mui-bar-nav">
+		<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+		<h1 id="spaceDetail" class="mui-title">详情</h1>
+		<!--<a id="delete" class="mui-icon iconfont icon-moreandroid mui-pull-right" ></a>-->
+
+	</header>
+
+	<body>
+		<!--下拉刷新容器-->
+		<div class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<!--数据列表-->
+				<ul class="mui-table-view">
+
+				</ul>
+				<div id="section_comment_title" class="section-comment-title">
+					评论(0)
+				</div>
+				<ul id="section_comment_list" class="mui-table-view section-comment">
+				</ul>
+			</div>
+
+		</div>
+		<div id="videoPopover" class="mui-popover">
+			<video id="video" style="position: absolute;z-index: 999;" controls="controls" webkit-playsinline playsinline>
+				您的浏览器不支持 video 标签。
+			</video>
+		</div>
+		<!--<div id="topPopover" class="mui-popover">
+			<div class="mui-popover-arrow"></div>
+			<ul class="mui-table-view" style="height: 40px;background-color: white;">
+				<li id="pubDynamic" class="mui-table-view-cell mui-media ">
+					<div style="padding-left: 22px;padding-top: 10px;font-size: 18px;">删除</div>
+				</li>
+
+			</ul>
+		</div>-->
+
+	</body>
+
+	<script>
+		var isPersonal = 0
+		var sliderId = 'top_';
+		idFlag = '';
+		var datasource = {}; //此界面的数据
+		var preModel = {}; //上个界面传过来的数据
+		zonepArray = [];
+		var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid; //用户id
+		var personalunick = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).unick; //用户昵称
+		var publisherId;
+		mui.init({
+			gestureConfig: {
+				longtap: true
+			}
+		});
+		mui('.mui-scroll-wrapper').scroll();
+		var SCREEN_WIDTH;
+		mui.plusReady(function() {
+			SCREEN_WIDTH = plus.screen.resolutionWidth;
+			preModel = plus.webview.currentWebview().data
+			//初始化视频播放器
+			ShowVideoUtil.initVideo(document.getElementById("video"));
+			publisherId = preModel.PublisherId
+			//console.log('personalUTID=' + personalUTID + '-----' + 'publisherId=' + JSON.stringify(preModel))
+			//			if(personalUTID == 0 || personalUTID != publisherId) {
+			//				document.getElementById("delete").className = 'mui-hidden';
+			//
+			//			}
+			if(preModel.focusFlag == 1 && personalUTID == publisherId) {
+				var a = document.createElement("a");
+				a.className = 'mui-icon iconfont icon-moreandroid mui-pull-right'
+				a.id = 'delete'
+				var h1 = document.getElementsByTagName('h1')[0]
+				h1.parentElement.appendChild(a);
+			}
+			//点击评论区域
+			mui('.section-comment').on('tap', '.mui-table-view-cell', function(e) {
+				//console.log('mui-table-view-cell id ' + this.id + " e " + e.target.getAttribute("data-type"));
+				var self = this;
+				if(events.judgeLoginMode(self)) { //判断是否是游客身份登录
+					document.getElementById("audio").pause();
+					return;
+				}
+
+				var ids = this.id.split("_")
+				var type = e.target.getAttribute("data-type");
+				switch(type) {
+					case "view_cell":
+					{
+						//console.log(333333)
+					}
+					break;
+					case "zan":
+					case "notzan":
+						var comData = {
+							secId: sectionId, //小节ID
+							commentId: ids[1], //评论ID
+							userId: myStorage.getItem(storageKeyName.PERSONALINFO).utid, //点赞用户ID
+							status: 0 //点赞状态，0 取消点赞，1 点赞
+						};
+						if(type == "notzan") { //评论-点赞
+							comData.status = 1;
+						}
+						commontLikeOrNot(comData, e.target, ids[2]);
+						break;
+					case "comment_reply": //评论回复
+					case "comment_reply_cell": //评论回复
+					case "view_cell": //评论评论
+						var userId; //被评论者的utid
+						if(type == "view_cell") {
+							userId = this.getAttribute('data-UserId');
+						} else if(type == "comment_reply") {
+							userId = e.target.getAttribute("data-UserId");
+						} else if(type = "comment_reply_cell") {
+							userId = e.target.parentNode.getAttribute("data-UserId");
+						}
+
+						var comData = {
+							userId: myStorage.getItem(storageKeyName.PERSONALINFO).utid, //用户ID
+							upperId: ids[1], //上级评论ID
+							replyUserId: userId, //回复ID
+							userSpaceId: datasource.TabId, //用户空间ID
+							commentContent: 'nihao' //回复内容
+						};
+						if(comData.userId == comData.replyUserId) {
+							mui.toast('不能回复自己')
+							return;
+						}
+						events.openNewWindowWithData('../show/add-comment.html', {
+							tempIndex: '-1',
+							comData: comData
+						})
+						break;
+
+					default:
+						break;
+				}
+				self.disabled = false;
+				jQuery(self).css("pointerEvents", "all");
+			});
+			events.addTap('delete', function() {
+				var btnArray = [{
+					title: '删除',
+				}];
+				plus.nativeUI.actionSheet({
+					cancel: "取消",
+					buttons: btnArray
+				}, function(e) {
+					var flag = e.index;
+					switch(flag) {
+						case 0:
+							break;
+						case 1:
+							{
+								var btnArray = ['取消', '确定'];
+								mui.confirm('确定删除此条动态？', '提醒', btnArray, function(e) {
+									if(e.index == 1) {
+										var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+										var comData = {
+											userSpaceId: datasource.TabId //用户空间ID
+										};
+										postDataPro_delUserSpaceById(comData, wd, function(data) {
+											wd.close();
+											//console.log(JSON.stringify(data))
+											if(data.RspCode == 0) {
+												mui.toast('已删除');
+												mui.back()
+											} else {
+												mui.toast(data.RspTxt);
+											}
+										})
+									}
+								})
+							}
+							break;
+					}
+				})
+				return;
+
+			})
+			//点击popover里cell
+			mui('.mui-popover').on('tap', 'li', function(e) {
+				mui('#topPopover').popover('toggle')
+				var btnArray = [{
+					title: '删除',
+				}];
+				plus.nativeUI.actionSheet({
+					cancel: "取消",
+					buttons: btnArray
+				}, function(e) {
+					var flag = e.index;
+					switch(flag) {
+						case 0:
+							break;
+						case 1:
+							{
+								var btnArray = ['取消', '确定'];
+								mui.confirm('确定删除此条动态？', '提醒', btnArray, function(e) {
+									if(e.index == 1) {
+										var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+										var comData = {
+											userSpaceId: datasource.TabId //用户空间ID
+										};
+										postDataPro_delUserSpaceById(comData, wd, function(data) {
+											wd.close();
+											//console.log(JSON.stringify(data))
+											if(data.RspCode == 0) {
+												mui.toast('已删除');
+												mui.back()
+											} else {
+												mui.toast(data.RspTxt);
+											}
+										})
+									}
+								})
+							}
+							break;
+					}
+				})
+
+				return;
+
+			})
+			//console.log('上个界面传过来的值' + JSON.stringify(preModel));
+			mui.previewImage();
+
+			var comData = {
+				userId: personalUTID, //用户ID
+				userSpaceId: preModel.TabId, //发布用户ID
+				pageIndex: '1', //当前页数
+				pageSize: '1000' //每页记录数
+			};
+			requestData(comData);
+			window.addEventListener('refreshZonep', function(data) {
+				requestData(comData)
+			})
+			dynamiclistitem.addSomeEvent();
+
+		});
+		//请求数据
+		function requestData(comData) {
+
+			// 等待的对话框
+			var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+
+			//82.（用户空间）获取用户针对某条空间详情
+			postDataPro_getUserSpaceByUser(comData, wd, function(data) {
+				wd.close();
+				//console.log('获取用户针对某条空间详情_getUserSpaceByUser:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+				if(data.RspCode == 0) {
+					var tempRspData = data.RspData.Data;
+					var tempArray = [];
+					//当前循环的model
+					var tempModel0 = tempRspData;
+					//将当前model中id塞到数组
+					tempArray.push(tempModel0.PublisherId);
+					//合并数组,点赞的人
+					//					tempArray = tempArray.concat(tempModel0.LikeUsers);
+					for(var i in tempModel0.LikeUsers) {
+						tempArray = tempArray.concat(tempModel0.LikeUsers[i].userId);
+						//								tempModel0.LikeUsers = arrayDupRemoval(tempModel0.LikeUsers);
+					}
+					//					tempModel0.LikeUsers = arrayDupRemoval(tempModel0.LikeUsers);
+					//循环当前model中的回复数组
+					for(var item1 in tempModel0.Comments) {
+						//回复中的model
+						var tempModel1 = tempModel0.Comments[item1];
+						//将回复中的id塞到数组
+						tempArray.push(tempModel1.UserId);
+						tempArray.push(tempModel1.ReplyId);
+						//
+						for(var item2 in tempModel1.Replys) {
+							//回复中的model
+							var tempModel2 = tempModel1.Replys[item2];
+							//将回复中的id塞到数组
+							tempArray.push(tempModel2.UserId);
+							tempArray.push(tempModel2.ReplyId);
+						}
+					}
+
+					//给数组去重
+					tempArray = arrayDupRemoval(tempArray);
+					//发送获取用户资料申请
+					var tempData = {
+						vvl: tempArray.join(), //用户id，查询的值,p传个人ID,g传ID串
+						vtp: 'g' //查询类型,p(个人)g(id串)
+					}
+
+					//21.通过用户ID获取用户资料
+					postDataPro_PostUinf(tempData, wd, function(data1) {
+						wd.close();
+						//console.log('获取个人资料success:RspCode:' + data1.RspCode + ',RspData:' + JSON.stringify(data1.RspData) + ',RspTxt:' + data1.RspTxt);
+						if(data1.RspCode == 0) {
+							//循环当前的个人信息返回值数组
+							for(var i in data1.RspData) {
+								//当前model
+								var tempModel = data1.RspData[i];
+								//循环留言数组
+								//当前循环的model
+								var tempModel0 = tempRspData;
+								//遍历点赞的人
+								for(var item2 in tempModel0.LikeUsers) {
+									//										//console.log('item2;;;;;==' + tempModel.utid + ',' + tempModel0.LikeUsers[item2]);
+									if(tempModel.utid == tempModel0.LikeUsers[item2].userId) {
+										//												tempModel0.LikeUsers.splice(item2, 1, tempModel);
+										tempModel0.LikeUsers[item2] = $.extend(tempModel0.LikeUsers[item2], tempModel);
+									}
+								}
+								//对比id是否一致
+								if(tempModel0.PublisherId == tempModel.utid) {
+									//合并
+									tempModel0 = $.extend(tempModel0, tempModel);
+								}
+								//循环当前model中的回复数组
+								for(var item1 in tempModel0.Comments) {
+									//回复中的model
+									var tempModel1 = tempModel0.Comments[item1];
+									//对比id是否一致
+									if(tempModel.utid == tempModel1.UserId) {
+										//添加参数
+										tempModel1.UserIdName = tempModel.unick;
+										tempModel1.UserIdImg = tempModel.uimg
+									}
+									if(tempModel.utid == tempModel1.ReplyId) {
+										//添加参数
+										tempModel1.ReplyIdName = tempModel.unick;
+										tempModel1.ReplyIdImg = tempModel.uimg
+									}
+									//
+									for(var item2 in tempModel1.Replys) {
+										//回复中的model
+										var tempModel2 = tempModel1.Replys[item2];
+										//对比id是否一致
+										if(tempModel.utid == tempModel2.UserId) {
+											//添加参数
+											tempModel2.UserIdName = tempModel.unick;
+										}
+										if(tempModel.utid == tempModel2.ReplyId) {
+											//添加参数
+											tempModel2.ReplyIdName = tempModel.unick;
+										}
+									}
+								}
+
+							}
+							//console.log('循环遍历后的值：' + JSON.stringify(tempRspData));
+
+							PostUmk(tempArray.join(), tempRspData);
+							//							setSpaceDetail(datasource);
+
+						} else {
+							mui.toast(data.RspTxt);
+						}
+					});
+
+				} else {
+					document.getElementById("delete").className = 'mui-hidden';
+					mui.toast(data.RspTxt);
+				}
+			})
+		}
+
+		function PostUmk(upString, tempRspData) {
+			//所需参数
+			var postData = {
+				vvl: upString //被备注用户ID,utid或utid串
+			};
+			var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+			postDataPro_PostUmk(postData, wd, function(data) {
+				wd.close();
+				//console.log('获取多用户备注_PostUmk:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+				if(data.RspCode == 0) {
+					//console.log('tempRspData=' + JSON.stringify(tempRspData))
+					for(var j = 0; j < tempRspData.length; j++) {
+						for(var k = 0; k < data.RspData.length; k++) {
+							//console.log(tempRspData[j].utid + '-------' + data.RspData[k].butid)
+							if(tempRspData[j].utid == data.RspData[k].butid) {
+								tempRspData[j].ugname = data.RspData[k].bunick;
+								//console.log(JSON.stringify(tempRspData))
+							}
+						}
+
+					}
+
+				} else if(data.RspCode == 0009) {
+
+				}
+				datasource = tempRspData
+				zonepArray = [];
+				zonepArray.push(datasource);
+				setSpaceDetail(datasource);
+
+			})
+		}
+
+		function setSpaceDetail(data) {
+
+			var table = document.body.querySelector('.mui-table-view');
+			table.innerHTML = '';
+			if(preModel.focusFlag == 1) {
+				data.InShow = '0';
+			} else {
+				data.InShow = preModel.InShow;
+			}
+
+			if(preModel.focusFlag == 0) {
+				idFlag = '';
+				data.focusFlag = 0;
+				data.pageFlag = 0
+				data.cityCode = '';
+				data.idFlag = '';
+				sliderId = 'top_'
+
+			} else {
+				//console.log(6666666666)
+				idFlag = 'zx';
+				data.pageFlag = 1
+				data.focusFlag = 1;
+				data.cityCode = 0;
+				data.idFlag = 'zx';
+				sliderId = 'top_0'
+				if(personalUTID == 0) {
+					var userIDs = window.myStorage.getItem(window.storageKeyName.SHOWFOCUSEPERSEN);
+					//console.log(JSON.stringify(userIDs))
+					data.IsFocused = 0;
+					for(var item in userIDs) {
+						//console.log('item=' + item + '-----' + 'publisherId=' + publisherId)
+						if(userIDs[item] == publisherId) {
+							data.IsFocused = 1;
+							break;
+						}
+					}
+
+				}
+			}
+			//			data.IsFocused = 1;
+			data.id = 0;
+			data.id_name = data.cityCode + data.idFlag + data.id;
+			var tempModel = dynamiclistitem.addData(data);
+			dynamiclistitem.addItem(table, tempModel);
+
+		}
+
+		//设置个人空间动态为已读
+		function setUserSpaceReadByUser(upString) {
+
+			if(personalUTID == publisherId) {
+				var comData = {
+					userId: personalUTID, //用户ID
+					spaceTypes: '[4,5,6]'
+				}
+				var wd;
+				postDataPro_setCommentMsgReadByUser(comData, wd, function(data) {
+					//console.log('与我相关设置成已读success:RspCode:' + JSON.stringify(data));
+				})
+			}
+
+			var NoReadCnt = plus.webview.currentWebview().data.NoReadCnt //未读条数
+			//			if(NoReadCnt != 0) { //如果未读条数不为0，则设置空间状态为已读
+			var comData = {
+				userId: personalUTID, //用户ID
+				publisherIds: upString
+			};
+
+			var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+			postDataPro_setUserSpaceReadByUser(comData, wd, function(data) {
+				wd.close();
+				//console.log('设置空间状态为已读_setUserSpaceReadByUser' + JSON.stringify(data));
+				if(data.RspCode == 0) {
+					//获得主页面的webview
+					var main = plus.webview.getWebviewById('../quan/tab-zone.html');
+					//触发tab-zone页面的setRead事件
+					mui.fire(main, 'setRead', {
+						flag: 3
+					});
+
+				}
+
+			})
+		}
+
+		/**
+		 * 下拉刷新具体业务实现
+		 */
+		function pulldownRefresh() {
+			setTimeout(function() {
+				var comData = {
+					userId: preModel.PublisherId, //用户ID
+					userSpaceId: preModel.TabId, //发布用户ID
+					pageIndex: '1', //当前页数
+					pageSize: '100' //每页记录数
+				};
+				//请求数据
+				requestData(comData);
+				mui('#pullrefresh').pullRefresh().endPulldownToRefresh(); //refresh completed
+			}, 1500);
+		}
+
+		/**
+		 * 上拉加载具体业务实现
+		 */
+		function pullupRefresh() {}
+	</script>
+
+</html>

@@ -1,0 +1,130 @@
+/**
+ * 提交评论按钮样式
+ */
+
+html,
+body,
+.mui-content {
+	background-color: #F2F3F5;
+}
+
+.btn-submit {
+	/*position: absolute;*/
+	width: 95%;
+	margin-left: 2.5%;
+	height: 40px;
+	margin-bottom: 1rem;
+	background-color: #1DB8F1;
+	border-color: #1DB8F1;
+}
+
+.comment-area {
+	padding: 10px;
+	border-top: solid 1px #E4E4E4;
+	border-bottom: solid 1px #E4E4E4;
+}
+
+.homework-container {
+	background-color: white;
+	padding: 0 15px;
+	border-top: solid 1px #E4E4E4;
+	border-bottom: solid 1px #E4E4E4;
+}
+
+.comment-item {
+	background-color: #f2f3f5;
+	padding:10px 15px 10px;
+	color: #383838;
+	font-size: 1.3rem;
+	letter-spacing: 1px;
+	margin: 0;
+}
+
+.student-info {
+	display: flex;
+	display: -webkit-flex;
+	align-items: center;
+	padding: 0 0 2px;
+}
+/*.result-text {
+	min-height: 4rem;
+}*/
+
+.stuInfo-img {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+}
+
+.stuInfo-words {
+	padding:10px 5px 0;
+	width: 50%;
+	flex-grow: 1;
+}
+
+.answer-img {
+	padding: 0 2px;
+}
+
+.homework-info p{
+	letter-spacing: 1px;
+	color: #323232;
+	font-size: 1.6rem;
+}
+
+.stu-name {
+	font-size: 1.4rem;
+	color: #323232;
+}
+.submit-time{
+	color: #B7B7B7;
+}
+
+.the-line {
+	height: 1px;
+	background-color: #E4E4E4;
+	/*margin: 0 -15px;*/
+}
+/*.result-text {
+	padding: 10px 0;
+}*/
+/*.mui-scroll{
+	padding: 0 15px;
+}*/
+.work-result{
+	font-size: 14px;
+	color: #474747;
+}
+.change-container{
+	min-height: 40px;
+}
+.change-holder{
+	float: right;
+	width: 60px;
+	height: 30px;
+	color: #808080;
+	border: solid 1px #E4E4E4;
+	text-align: center;
+	border-radius: 15px;
+	padding-top: 5px;
+}
+.change-comment{
+	font-size: 20px;
+	color: #808080;
+}
+.commented-holder{
+	position: relative;
+	background-color: white;
+	padding: 10px 15px 0;
+	border-top: solid 1px #E4E4E4;
+	border-bottom: solid 1px #E4E4E4;
+}
+.commented-words{
+	font-size: 1.6rem;
+	color: #323232;
+	text-align: justify;
+}
+.answer-imgs{
+	line-height: 20px;
+}
+

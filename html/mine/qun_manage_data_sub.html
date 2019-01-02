@@ -1,0 +1,437 @@
+<!--
+	作者：444811716@qq.com
+	时间：2017-02-07
+	描述：群资料
+-->
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<style>
+			body,
+			.mui-content {
+				background-color: white;
+			}
+
+			.mui-table-view-cell:after {
+				left: 0px;
+			}
+
+			.mui-ellipsis {
+				width: 100%;
+				float: left;
+				line-height: 28px;
+				font-size: 16px;
+			}
+
+			.data-name {
+				width: 25%;
+			}
+
+			.data-type {
+				width: 20%;
+				margin-left: 5%;
+			}
+
+			.data-parent {
+				width: 45%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!--下拉刷新容器-->
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<!--数据列表-->
+				<ul id="teaList" class="mui-table-view">
+				</ul>
+				<ul id="stuList" class="mui-table-view">
+				</ul>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script>
+			mui.init({
+				pullRefresh: {
+					container: '#pullrefresh',
+					down: {
+						callback: pulldownRefresh
+					},
+				},
+				gestureConfig: {
+					longtap: true, //默认为false
+				}
+			});
+
+			var mainData; //webview的data
+			mui.plusReady(function() {
+				var main = plus.webview.currentWebview(); //获取当前窗体对象
+				mainData = main.data; //接收A页面传入参数值
+				//console.log('qun_manage_data_sub.html:' + JSON.stringify(mainData));
+				getAllData(mainData.gid); //获取所有的资料
+
+				//点击资料
+				mui('#pullrefresh').on('tap', '.mui-table-view-cell', function() {
+					//console.log(this.getAttribute('data-info'));
+					var passData = JSON.parse(this.getAttribute('data-info'));
+					passData.gname = mainData.gname; //群名称
+					switch(passData.mstype) { //0家长,1管理员,2老师,3学生
+						case 0:
+							passData.type = 'parents'; //资料类型
+							break;
+						case 1:
+							passData.type = 'teacher'; //资料类型
+							break;
+						case 2:
+							passData.type = 'teacher'; //资料类型
+							break;
+						case 3:
+							passData.type = 'student'; //资料类型
+							break;
+						default:
+							//console.log('资料类型选择出错3');
+							break;
+					}
+					passData.mstype = 1; //管理员
+					events.openNewWindowWithData('qun_data_details.html', passData);
+				});
+
+				//长按资料
+				mui('#pullrefresh').on('longtap', '.mui-table-view-cell', function() {
+					//console.log(this.getAttribute('data-info'));
+					var passData = JSON.parse(this.getAttribute('data-info'));
+
+					var btnArray = ['否', '是'];
+					var title = '';
+					if(passData.mstype == 1 || passData.mstype == 2) {
+						title = '您确定要删除吗？';
+					} else {
+						title = '您确定要删除吗？删除后记事将被清空哦';
+					}
+					mui.confirm(title, '删除资料', btnArray, function(e) {
+						if(e.index == 1) {
+							if(passData.mstype == 1 || passData.mstype == 2) {
+								//33.根据资料表ID删除资料
+								deleteData(passData.stuid, passData.stuid);
+							} else {
+								var wd = events.showWaiting();
+								//先删除家校圈的点到记事记录，再删除资料
+								//75.（点到记事）删除某学生点到记事
+								//所需参数
+								var comData = {
+									studentId: passData.stuid, //学生ID
+									classId: mainData.gid //班级ID
+								};
+								postDataPro_delNoteByStudent(comData, wd, function(data) {
+									//console.log('delNoteByStudent:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+									if(data.RspCode == 0) {
+										mui.toast('删除记事成功,正在删除资料...');
+										//33.根据资料表ID删除资料
+										deleteData(passData.stuid, passData.stuid);
+									} else {
+										mui.toast('删除记事失败：' + data.RspTxt);
+									}
+									wd.close();
+								});
+							}
+
+						} else {
+							//console.log('不删除资料');
+						}
+					});
+				});
+
+				//修改资料的姓名
+				window.addEventListener('changeName', function(e) {
+					var data = e.detail.data;
+					//console.log('changeName ' + JSON.stringify(data));
+					var element = document.getElementById(data.stuid);
+					document.getElementById("name_" + data.stuid).innerText = data.stuname;
+					var info = JSON.parse(element.getAttribute('data-info'));
+					info.stuname = data.stuname;
+					element.setAttribute('data-info', JSON.stringify(info));
+				});
+
+				//增加一项新的资料
+				window.addEventListener('addData', function(e) {
+					var data = e.detail.data;
+					//console.log('addData ' + JSON.stringify(data));
+					if(data.mstype == 2) {
+						addDataItem(data, '老师');
+					} else if(data.mstype == 3) {
+						addDataItem(data, '学生');
+					} else {
+						//console.log('资料类型异常');
+					}
+				});
+			});
+
+			/**
+			 * 下拉刷新具体业务实现
+			 */
+			function pulldownRefresh() {
+				setTimeout(function() {
+					getAllData(mainData.gid);
+				}, 1500);
+			}
+
+			/**
+			 * 界面生成一项资料
+			 * @param {Object} data
+			 * @param {Object} type
+			 */
+			function addDataItem(data, type) {
+				//console.log('addDataItem ' + JSON.stringify(data));
+				var element = document.createElement('li');
+				element.id = data.stuid;
+				element.setAttribute('data-info', JSON.stringify(data));
+				element.className = 'mui-table-view-cell';
+				element.innerHTML = '<a class="mui-navigate-right">\
+										<div id="name_' + data.stuid + '" class="mui-ellipsis data-name"></div>\
+										<div class="mui-ellipsis data-type">' + type + '</div>\
+										<div id="parent_' + data.stuid + '" class="mui-ellipsis data-parent"></div>\
+									</a>';
+				if(type == '老师') {
+					document.getElementById("teaList").appendChild(element);
+				} else {
+					document.getElementById("stuList").appendChild(element);
+				}
+				if(data.stuname == '') {
+					document.getElementById("name_" + data.stuid).innerHTML = '&nbsp;';
+				} else {
+					document.getElementById("name_" + data.stuid).innerText = data.stuname;
+				}
+			}
+
+			/**
+			 * 获取所有的资料
+			 * @param {Object} gid
+			 */
+			function getAllData(gid) {
+				var wd = events.showWaiting();
+				var stuList = []; //学生列表
+				var adminList = []; //管理员列表
+				var teaList = []; //老师列表
+				//16.通过群ID获取群对象资料
+				//需要参数
+				var getMemData = {
+					vtp: '0', //获取类型,0普通资料获取,1邀请排除(主老师用)
+					top: '-1', //选择条数,-1取全部
+					vvl: gid, //群ID，查询的值
+					vvl1: '-1', //类型,0家长,1管理员,2老师,3学生,-1全部
+				};
+				postDataPro_PostGUInf(getMemData, wd, function(data) {
+					document.getElementById("teaList").innerHTML = '';
+					document.getElementById("stuList").innerHTML = '';
+					mui('#pullrefresh').pullRefresh().endPulldownToRefresh(); //refresh completed
+					//console.log('16_PostGUInf_通过群ID获取群对象资料.90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						mui.each(data.RspData, function(index, element) {
+							////console.log('getAllData ' + JSON.stringify(element));
+							switch(element.mstype) {
+								case 1:
+									adminList.push(element);
+									break;
+								case 2:
+									teaList.push(element);
+									break;
+								case 3:
+									stuList.push(element);
+									break;
+								default:
+									//console.log('用户在群类型异常');
+									break;
+							}
+						});
+					} else if(data.RspCode == 9) {
+						mui.toast(data.RspTxt);
+					} else {
+						mui.toast(data.RspTxt);
+					}
+					var stuid = [];
+					mui.each(adminList, function(index, element) {
+						addDataItem(element, '老师');
+					});
+					mui.each(teaList, function(index, element) {
+						addDataItem(element, '老师');
+					});
+					mui.each(stuList, function(index, element) {
+						addDataItem(element, '学生');
+						stuid.push(element.stuid);
+					});
+
+					//获取学生关联的人员
+					var stuids = stuid.join(',');
+					if(stuids != '') {
+						getGuanLian(stuids);
+					}
+					wd.close();
+				});
+			}
+
+			/**
+			 * 通过资料ID获取关联的人员
+			 * @param {Object} stuids
+			 */
+			function getGuanLian(stuids, vtp) {
+				var wd = events.showWaiting();
+				var parList = []; //家长列表
+				//30.通过资料ID获取关联的人员
+				//所需参数
+				var comData2 = {
+					vvl: stuids, //群成员群ID，Stuid或ID串
+					vtp: 'ids' //资料ID类型,Id:单个ID,ids:ID串
+				};
+				postDataPro_PostStuU(comData2, wd, function(data) {
+					//console.log('30.通过资料ID获取关联的人员.postDataPro_PostStuU:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						mui.each(data.RspData, function(index, element) {
+							////console.log('getGuanLian ' + JSON.stringify(element));
+							if(element.umstype == 0) { //用户在群类型为家长
+								var same = false
+								mui.each(parList, function(index2, element2) {
+									if(element.stuid == element2.stuid) { //显示一个家长
+										same = true;
+										return false;
+									}
+								});
+								if(!same) {
+									parList.push({
+										utid: element.utid, //utid
+										stuid: element.stuid, //资料id
+										ugname: element.ugname //群昵称
+									});
+								}
+							}
+						});
+					} else {
+						mui.toast(data.RspTxt);
+					}
+
+					//获取家长的备注
+					//if(parList.length != 0) {
+					//	getBeiZhu(parList);
+					//}
+
+					//获取家长的手机号
+					if(parList.length != 0) {
+						getUid(parList);
+					}
+					wd.close();
+				});
+			}
+
+			/**
+			 * 获取备注
+			 * @param {Object} parList
+			 */
+			function getBeiZhu(parList) {
+				var wd = events.showWaiting();
+				var tempList = [];
+				mui.each(parList, function(index, element) {
+					tempList.push(element.utid);
+				});
+				var strUtid = tempList.join(',');
+
+				//获取备注
+				//35.个人获取对某人或一群人的备注
+				//所需参数
+				var comData = {
+					vvl: strUtid //被备注用户ID,utid或utid串
+				};
+				postDataPro_PostUmk(comData, wd, function(data) {
+					//console.log('35_postDataPro_PostUmk_个人获取对某人或一群人的备注.90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						mui.each(data.RspData, function(index, element) {
+							mui.each(parList, function(index2, element2) {
+								if(element.butid == element2.utid) {
+									element2.bunick = element.bunick;
+								}
+							});
+						});
+					} else {
+						if(data.RspCode != 9) {
+							mui.toast(data.RspTxt);
+						}
+					}
+					mui.each(parList, function(index, element) {
+						if(element.bunick) {
+							document.getElementById("parent_" + element.stuid).innerText = '家长' + element.bunick;
+						} else {
+							document.getElementById("parent_" + element.stuid).innerText = '家长' + element.ugname;
+						}
+					});
+					wd.close();
+				});
+			}
+
+			/**
+			 * 根据资料表ID删除资料
+			 * @param {Object} stuid 资料id
+			 * @param {Object} id 元素id
+			 */
+			function deleteData(stuid, id) {
+				var wd = events.showWaiting();
+				//33.根据资料表ID删除资料
+				//所需参数
+				var comData2 = {
+					vvl: stuid, //资料ID，stuid
+				};
+
+				postDataPro_PostStuD(comData2, wd, function(data) {
+					//console.log('90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						mui.toast('删除资料成功');
+						document.getElementById(id).parentNode.removeChild(document.getElementById(id));
+					} else {
+						mui.toast('删除资料失败：' + data.RspTxt);
+					}
+					wd.close();
+				});
+			}
+
+			/**
+			 * 获取手机号
+			 * @param {Object} parList
+			 */
+			function getUid(parList) {
+				var wd = events.showWaiting();
+				var tempUtidArray = [];
+				mui.each(parList, function(index, element) {
+					tempUtidArray.push(element.utid);
+				});
+				var utidStr = tempUtidArray.join(',');
+				var comData = {
+					vvl: utidStr, //用户id，查询的值,p传个人ID,g传ID串
+					vtp: 'g' //查询类型,p(个人)g(id串)
+				};
+				postDataPro_PostUinf(comData, wd, function(data) {
+					//console.log('21.通过用户ID获取用户资料postDataPro_PostUinf:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						mui.each(data.RspData, function(index, element) {
+							mui.each(parList, function(index2, element2) {
+								if(element.utid == element2.utid) {
+									element2.uid = element.uid;
+									document.getElementById("parent_" + element2.stuid).innerText = '家长:' + element.uid;
+								}
+							});
+						});
+					} else {
+						mui.toast(data.RspTxt);
+					}
+					wd.close();
+				});
+			}
+		</script>
+	</body>
+
+</html>

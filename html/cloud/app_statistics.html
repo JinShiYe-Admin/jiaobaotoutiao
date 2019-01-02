@@ -1,0 +1,415 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>统计</title>
+		<meta name="author" content="莫尚霖,email:444811716@qq.com" />
+		<meta name="description" content="统计点到" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<style>
+			body,
+			.mui-content {
+				background-color: white;
+			}
+
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item {
+				border-right: 1px solid #b7b7b7;
+				line-height: initial;
+				margin-top: 11px;
+				font-size: 15px;
+			}
+			/*.mui-segmented-control.mui-segmented-control-inverted .mui-control-item:last-child {
+				border-right: none;
+			}*/
+
+			.mui-slider-indicator.mui-segmented-control {
+				border-left: 3px solid #00A5E0;
+			}
+
+			.mui-fullscreen .mui-segmented-control~.mui-slider-group {
+				margin: 10px 0px;
+			}
+
+			.mui-slider .mui-segmented-control.mui-segmented-control-inverted~.mui-slider-group .mui-slider-item {
+				border: none;
+				padding: 10px 0px;
+				text-align: center;
+			}
+
+			.mui-slider .mui-segmented-control.mui-segmented-control-inverted~.mui-slider-group .mui-slider-item .mui-scroll-wrapper {
+				margin-top: 43px;
+			}
+
+			table {
+				border: none;
+				width: 100%;
+				table-layout: fixed;
+			}
+
+			td,
+			th {
+				border: 1px solid #E4E4E4;
+				font-size: 15px;
+				padding: 5px !important;
+				width: 20%;
+			}
+
+			.not-zero-num {
+				color: #00A5E0;
+			}
+
+			.mui-table-view {
+				text-align: center;
+				margin: 0px 10px;
+			}
+
+			.table-td tr:first-child td {
+				border-top: none;
+			}
+
+			.mui-table-view-cell {
+				padding: 0px;
+			}
+
+			.mui-table-view-cell:after {
+				height: 0px;
+			}
+			/*.table-th {
+				visibility: hidden;
+			}*/
+
+			.line-defalut {
+				width: 100%;
+				height: 10px;
+				background: #efeff4;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">统计</h1>
+		</header>
+		<div id="content" class="mui-content">
+			<!--<div id="slider" class="mui-slider mui-fullscreen">
+				<div id="sliderSegmentedControl" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+					<div id="month_scroll" class="mui-scroll">
+						<a id="1_top" href="#1_bottom" class="mui-control-item mui-active">1月</a>
+					</div>
+				</div>
+				<div class="line-defalut"></div>
+				<div id="sliderGroup" class="mui-slider-group">
+					<div id="1_bottom" class="mui-slider-item mui-control-content mui-active">
+						<ul class="mui-table-view">
+							<table border="1px" cellpadding="5px" class="table-th">
+								<tr>
+									<th class="mui-ellipsis">姓名</th>
+									<th class="mui-ellipsis">旷课</th>
+									<th class="mui-ellipsis">请假</th>
+									<th class="mui-ellipsis">迟到</th>
+									<th class="mui-ellipsis">早退</th>
+								</tr>
+							</table>
+						</ul>
+						<div id="1_bottom_wrapper" class="mui-scroll-wrapper">
+							<div id="1_bottom_scroll" class="mui-scroll">
+								<ul id="1_bottom_ul" class="mui-table-view">
+									<li>
+										<table border="1px" cellpadding="5px" class="table-td">
+											<tr>
+												<td class="mui-ellipsis">一二三四五六七八九十</td>
+												<td class="mui-ellipsis mui-table-view-cell not-zero">99991</td>
+												<td class="mui-ellipsis mui-table-view-cell">0</td>
+												<td class="mui-ellipsis">0</td>
+												<td class="mui-ellipsis">0</td>
+											</tr>
+										</table>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>-->
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script type="text/javascript">
+			var main; //当前webview
+			var monthsArray = []; //记录最近12个月的月份
+			var studentIds; //记录当前所有的资料id
+			initMonths(); //初始化需要显示的最近12个月
+			mui.init();
+
+			mui.plusReady(function() {
+				initData();
+				showMonths();
+				initListener();
+				//获取数据
+				var month = monthsArray[monthsArray.length - 1];
+				requestData(month.id);
+			});
+
+			/**
+			 * 初始化需要显示的最近12个月
+			 */
+			function initMonths() {
+				//构造当前日期对象
+				var date = new Date();
+				//获取年份
+				var year = date.getFullYear();
+				//获取当前月份
+				var month = date.getMonth() + 1;
+				for(var i = 1; i < 13; i++) {
+					var i_year;
+					var i_month = i;
+					//var i_days;
+					if(i < 10) {
+						i_month = '0' + i;
+					}
+					if(i <= month) {
+						i_year = year;
+						//i_days = getDays(i_year, i_month);
+						monthsArray.push({
+							id: i_year + '' + i_month,
+							name: i + '月'
+						});
+					} else {
+						i_year = year - 1;
+						//i_days = getDays(i_year, i_month);
+						monthsArray.splice((i - month - 1), 0, {
+							id: i_year.toString() + '' + i_month.toString(),
+							name: i + '月'
+						});
+					}
+				}
+				//				for(var i = 0; i < monthsArray.length; i++) {
+				//					//console.log('monthsArray[' + i + '] ' + JSON.stringify(monthsArray[i]));
+				//				}
+			}
+
+			//			/**
+			//			 * 获取某年某月的天数
+			//			 * @param {Object} year 年
+			//			 * @param {Object} month 月
+			//			 */
+			//			function getDays(year, month) {
+			//				var days;
+			//				if(month == 2) {
+			//					if(year % 4 == 0 && year % 100 != 0 || year % 400 == 0) {
+			//						days = 29;
+			//					} else {
+			//						days = 28;
+			//					}
+			//				} else if(month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+			//					//月份为：1,3,5,7,8,10,12 时，为大月.则天数为31；
+			//					days = 31;
+			//				} else {
+			//					//其他月份，天数为：30.
+			//					days = 30;
+			//				}
+			//				return days;
+			//			}
+
+			/**
+			 * 顶部显示月份和初始化滑动控件界面
+			 */
+			function showMonths() {
+				//生成滑动控件
+				document.getElementById("content").innerHTML = '<div id="slider" class="mui-slider mui-fullscreen">\
+									<div id="sliderSegmentedControl" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">\
+										<div id="month_scroll" class="mui-scroll">\
+										</div>\
+									</div>\
+									<div class="line-defalut"></div>\
+									<div id="sliderGroup" class="mui-slider-group">\
+									</div>\
+								</div>';
+				//生成月份
+				var fragmentTop = document.createDocumentFragment();
+				var fragmentBottom = document.createDocumentFragment();
+				for(var i = 0; i < monthsArray.length; i++) {
+					//顶部月份
+					var elementTop = document.createElement('a');
+					//底部区域
+					var elementBottom = document.createElement('div');
+					if(i == monthsArray.length - 1) {
+						//选择的月份
+						elementTop.className = 'mui-control-item mui-active';
+						elementBottom.className = 'mui-slider-item mui-control-content mui-active';
+					} else {
+						elementTop.className = 'mui-control-item';
+						elementBottom.className = 'mui-slider-item mui-control-content';
+					}
+					//顶部月份
+					elementTop.id = monthsArray[i].id;
+					elementTop.href = '#' + monthsArray[i].id + '_bottom';
+					elementTop.innerText = monthsArray[i].name;
+					fragmentTop.appendChild(elementTop);
+					//底部区域
+					elementBottom.id = monthsArray[i].id + '_bottom';
+					elementBottom.innerHTML = '<ul class="mui-table-view">\
+							<table border="1px" cellpadding="5px" class="table-th">\
+								<tr>\
+									<th class="mui-ellipsis">姓名</th>\
+									<th class="mui-ellipsis">旷课</th>\
+									<th class="mui-ellipsis">请假</th>\
+									<th class="mui-ellipsis">迟到</th>\
+									<th class="mui-ellipsis">早退</th>\
+								</tr>\
+							</table>\
+						</ul>\
+						<div class="mui-scroll-wrapper">\
+							<div class="mui-scroll">\
+								<ul class="mui-table-view">\
+									<li>\
+										<table id="table_' + monthsArray[i].id + '" border="1px" cellpadding="5px" class="table-td">\
+										</table>\
+									</li>\
+								</ul>\
+							</div>\
+						</div>';
+					fragmentBottom.appendChild(elementBottom);
+				}
+				document.getElementById("month_scroll").appendChild(fragmentTop);
+				document.getElementById("sliderGroup").appendChild(fragmentBottom);
+				initScroll();
+			}
+
+			/**
+			 * 初始化数据
+			 */
+			function initData() {
+				main = plus.webview.currentWebview(); //获取当前窗体对象
+				//console.log(main.id + ' ' + JSON.stringify(main.data));
+				studentIds = arrayToStr(main.data.dataIdArray);
+			}
+
+			/**
+			 * 初始化监听
+			 */
+			function initListener() {
+				//滑动底部列表或者点击顶部月份
+				document.getElementById("slider").addEventListener('slide', function() {
+					//console.log('slide ' + event.detail.slideNumber);
+					var month = monthsArray[event.detail.slideNumber];
+					var element = document.getElementById(month.id);
+					var value = element.getAttribute('data-get');
+					//console.log(JSON.stringify(month) + ' ' + value);
+					if(!value) {
+						requestData(month.id);
+					}
+				});
+
+				//点击不是0的统计数据
+				mui('#sliderGroup').on('tap', '.mui-table-view-cell', function() {
+					var self = this;
+					var ids = self.id.split('_');
+					var checkType = ids[0];
+					var month = ids[1];
+					var stuid = ids[2];
+					//console.log('mui-table-view-cell ' + checkType + ' ' + month + ' ' + stuid);
+					//跳到统计详情
+					events.openNewWindowWithData('keeprecord_history_a.html', {
+						type: 'statistics', //显示的类型
+						gid: main.data.gid, //群id
+						statistics: {
+							checkType: checkType,
+							month: month,
+							//stuid: stuid
+						}, //
+						stu: main.data.qunDataInfos[stuid] //选择的学生
+						//dataIdArray: main.data.dataIdArray, //Key
+						//qunDataInfos: main.data.qunDataInfos, //群对象的资料
+					});
+				});
+			}
+
+			/**
+			 * 初始化滚动
+			 */
+			function initScroll() {
+				//初始化控件
+				mui('.mui-slider').slider();
+				//顶部滚动到最右侧
+				var ele = document.getElementById(monthsArray[monthsArray.length - 1].id);
+				var y = ele.offsetLeft + ele.offsetWidth + 3 - localStorage.getItem('resolutionWidth');
+				mui('.mui-segmented-control.mui-scroll-wrapper').scroll().scrollTo(-y, 0, 0);
+				var deceleration = mui.os.ios ? 0.003 : 0.0009;
+				mui(".mui-slider-group .mui-scroll-wrapper").scroll({
+					scrollY: true, //是否竖向滚动
+					scrollX: false, //是否横向滚动
+					indicators: true, //是否显示滚动条
+					deceleration: deceleration, //阻尼系数,系数越小滑动越灵敏
+					bounce: false, //是否启用回弹
+				});
+			}
+
+			/**
+			 * 请求数据
+			 */
+			function requestData(qryMonth) {
+				//93 获取班级统计月份的点到记事统计
+				var comData = {
+					classId: main.data.gid, //班级ID
+					studentIds: studentIds, //学生ID
+					qryMonth: qryMonth //查询月份
+				};
+				var wd = events.showWaiting();
+				postDataPro_getMonthStatisticForMonth(comData, wd, function(data) {
+					//console.log('93 getMonthStatisticForMonth ' + JSON.stringify(data));
+					document.getElementById(qryMonth).setAttribute('data-get', true); //已经发送了请求这个月的统计
+					if(data.RspCode == 0) {
+						if(data.RspData.Data.length != 0) {
+							showData(qryMonth, data.RspData.Data);
+						} else {
+							mui.toast('统计数据为空');
+						}
+					} else {
+						mui.toast(data.RspTxt);
+					}
+					wd.close();
+				});
+			}
+
+			/**
+			 * 显示数据
+			 */
+			function showData(month, data) {
+				////console.log('showData ' + month);
+				for(var i = 0; i < data.length; i++) {
+					////console.log(JSON.stringify(data[i]));
+					var id = month + '_' + data[i].StudentId;
+					var html_name = 'mui-ellipsis';
+					//有点到记事数据
+					if(data[i].Notes.length != 0) {
+						html_name = 'mui-ellipsis mui-table-view-cell not-zero-num';
+					}
+					var element = document.createElement('tr');
+					//1 正常2 旷课3 迟到4 早退5请假6 其他
+					element.innerHTML = '<td id="0_' + id + '" class="' + html_name + '"></td>\
+					<td id="2_' + id + '" class="mui-ellipsis">0</td>\
+					<td id="5_' + id + '" class="mui-ellipsis">0</td>\
+					<td id="3_' + id + '" class="mui-ellipsis">0</td>\
+					<td id="4_' + id + '" class="mui-ellipsis">0</td>';
+
+					document.getElementById("table_" + month).appendChild(element);
+					document.getElementById("0_" + id).innerText = main.data.qunDataInfos[data[i].StudentId].stuname;
+					for(var j = 0; j < data[i].Notes.length; j++) {
+						if(data[i].Notes[j].CheckNum) {
+							var td = document.getElementById(data[i].Notes[j].CheckType + '_' + id);
+							td.className = 'mui-ellipsis mui-table-view-cell not-zero-num';
+							td.innerText = data[i].Notes[j].CheckNum;
+						}
+					}
+				}
+			}
+		</script>
+	</body>
+
+</html>

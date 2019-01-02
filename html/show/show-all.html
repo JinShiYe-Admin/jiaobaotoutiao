@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/show/show-list.css" rel="stylesheet" />
+		<style>
+			.padding-top0 {
+				padding-top: 0;
+			}
+			
+			.padding-top20 {
+				padding-top: 20%;
+			}
+		</style>
+
+	</head>
+
+	<body style="background-color: white;">
+		<!--下拉刷新容器-->
+		<div id="show-all" class="mui-content mui-fullscreen mui-scroll-wrapper" v-bind:class="{'background-white':listData.length==0}">
+			<div class="mui-scroll">
+				<template v-if="listData.length==0">
+					<div class="" style="min-height:300px;text-align: center;" v-bind:class="[isRequired?'padding-top20':'padding-top0']">
+						<img v-if="isRequired" src="../../image/mine/invite_none_0.png" width="50%" height="auto">
+						<p style="margin: auto 0;padding: 10px;">
+							<span v-if="!isRequired" class="mui-spinner" style="vertical-align: center;height: 15px;width: 15px;margin-bottom: -4px;"></span> {{isRequired?'没有获取到展现内容~~':'数据加载中~~'}}
+						</p>
+					</div>
+				</template>
+				<!--数据列表-->
+				<template v-else-if="listData.length>0&&isRequired">
+					<div class="show-list">
+						<div v-for="cardData of listData" class="mui-table-view cityNews-container">
+							<li v-for="(item,index) of cardData" class="mui-table-view-cell news-container" v-on:tap="jumpToPage(item)">
+								<div class="img-container news-img" v-bind:data-original="getBackImg(item,index)" v-bind:style="{'background-image':'url('+'../../image/utils/default_load_2.gif'+')','background-position':'center','background-size':'cover','text-align':'center'}">
+									<img class="play-video" v-if="isVideo(item)" src="../../image/utils/playvideo.png" />
+								</div>
+								<div class="news-words">
+									<p class="news-title single-line">{{item.MsgTitle}}</p>
+									<div class="anthor-date">
+										<p class="news-anthor single-line">{{item.unick}}</p>
+										<p class="news-date">{{item.PublishDate}}</p>
+									</div>
+								</div>
+							</li>
+						</div>
+					</div>
+				</template>
+			</div>
+		</div>
+		<script src="../../js/utils/vue.min.js"></script>
+		<script src="../../js/show/show-all.js"></script>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js" type="text/javascript"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script src="../../js/libs/jquery.lazyload.min.js"></script>
+		<script src="../../js/show/show-list.js"></script>
+		<script type="text/javascript">
+			var showCity = {
+				pageFlag: 1, //全部
+				acode: 1,
+				aname: '全部',
+				aflag: 1, //0为根据省市编码获取数据，1为获取关注的人的列表
+				pageIndex: 1,
+				totalPage: 0
+			};
+			mui.init({
+				keyEventBind: {
+					backbutton: false //关闭back按键监听
+				},
+				pullRefresh: {
+					container: '#show-all',
+					down: {
+						style: 'circle',
+						offset: 0,
+						callback: pulldownRefresh
+					},
+					up: {
+						contentrefresh: '正在加载...',
+						callback: pullupRefresh
+					}
+				}
+			});
+
+			function pulldownRefresh() {
+				showCity.pageIndex = 1;
+				show_list.getShowList(showCity, function(showCity, data) {
+					console.log('获取的关注数据：', data);
+					showAll.addData(showCity.pageIndex, data);
+					showCity.pageIndex++;
+					mui('#show-all').pullRefresh().endPulldown();
+					mui('#show-all').pullRefresh().refresh(true);
+				}, function(err) {
+					mui.toast(err.RspTxt);
+					mui('#show-all').pullRefresh().endPulldown();
+					mui('#show-all').pullRefresh().refresh(true);
+				})
+			}
+
+			function pullupRefresh() {
+				if(showCity.pageIndex > showCity.totalPage) {
+					mui('#show-all').pullRefresh().endPullupToRefresh(true);
+					mui('#show-all').pullRefresh().disablePullupToRefresh();
+					return;
+				}
+				console.log("上拉加载更多")
+				show_list.getShowList(showCity, function(showCity, data) {
+					console.log('获取的关注数据：', data);
+					showAll.addData(showCity.pageIndex, data);
+					showCity.pageIndex++;
+					mui('#show-all').pullRefresh().endPullupToRefresh();
+				}, function(err) {
+					mui.toast(err.RspTxt);
+					mui('#show-all').pullRefresh().endPullupToRefresh();
+				})
+			}
+			mui.plusReady(function() {
+				show_list.getShowList(showCity, function(showCity, data) {
+					showAll.isRequired = true;
+					console.log('获取的关注数据：', data);
+					showAll.addData(showCity.pageIndex, data);
+					showCity.pageIndex++;
+				}, function(err) {
+					showAll.isRequired = true;
+					mui.toast(err.RspTxt);
+				})
+				setListener();
+			})
+
+			function setListener() {
+				window.addEventListener("detailReady", function() {
+					console.log("获取监听事件 detailReady");
+					showAll.detailReady = true;
+				});
+				window.addEventListener("infoChanged", function() {
+					showCity.pageIndex = 1;
+					show_list.getShowList(showCity, function(showCity, data) {
+						console.log('获取的关注数据：', data);
+						showAll.addData(showCity.pageIndex, data);
+						showCity.pageIndex++;
+					}, function(err) {
+						mui.toast(err.RspTxt);
+					})
+				})
+			}
+		</script>
+	</body>
+
+</html>

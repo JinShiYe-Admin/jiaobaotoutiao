@@ -1,0 +1,405 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<link href="../../css/qiuzhi/qiuzhi-questionSearch.css" rel="stylesheet" />
+		<style type="text/css">
+			.mui-table-view-cell p:last-child,
+			p:first-child {
+				-webkit-line-clamp: 3;
+				/*用来限制在一个块元素显示的文本的行数*/
+				display: -webkit-box;
+				/*必须结合的属性，将对象作为弹性伸缩盒子模型显示*/
+				-webkit-box-orient: vertical;
+				/*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式*/
+				overflow: hidden;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">
+				<div class="search-form">
+					<div class="mui-input-row  ">
+						<input id="search-keyWord" type="search" class="mui-input-clear" placeholder="请输入关键字搜索问题">
+						<input id="search-btn" type="submit" class="search-btn" value="搜索" />
+					</div>
+				</div>
+			</h1>
+		</header>
+		<div class="mui-content" style="z-index:0;">
+			<div class="mui-fullscreen" id="history_container">
+				<div>
+					<ul class="mui-table-view">
+						<!--<li class="mui-table-view-cell">
+							<a>
+								<span class="mui-icon mui-icon-search"></span> <span> Item 1</span><span class="mui-icon icon-del"></span>
+							</a>
+						</li>
+						<li class="mui-table-view-cell">
+							<a>
+								<span class="mui-icon mui-icon-search"></span> <span> Item 1</span><span class="mui-icon icon-del"></span>
+							</a>
+						</li>
+						<li class="mui-table-view-cell">
+							<a>
+								<span class="mui-icon mui-icon-search"></span> <span> Item 1</span><span class="mui-icon icon-del"></span>
+							</a>
+						</li>
+						<li class="mui-table-view-cell">
+							<span> 清空历史记录</span>
+						</li>-->
+					</ul>
+				</div>
+			</div>
+			<div class="mui-scroll-wrapper mui-fullscreen  mui-hidden" style="z-index:0;" id="list-container">
+				<div class="mui-scroll">
+					<ul class="mui-table-view">
+						<!--<li class="mui-table-view-cell">
+							<p>现在能为父母的健康做点什么？</p>
+							<p>摘要：先说说我家的情况，我爸爱抽烟，每天感觉能达到一包，我妈前几年腰间盘突出，现在好了，我家在农村，家里人收入可以约...</p>
+							<p>57赞·3评论·关注</p>
+						</li>
+						<li class="mui-table-view-cell">
+							<p>现在能为父母的健康做点什么？</p>
+							<p>摘要：先说说我家的情况，我爸爱抽烟，每天感觉能达到一包，我妈前几年腰间盘突出，现在好了，我家在农村，家里人收入可以约...</p>
+							<p>57赞·3评论·关注</p>
+						</li>
+						<li class="mui-table-view-cell">
+							<p>现在能为父母的健康做点什么？</p>
+							<p>摘要：先说说我家的情况，我爸爱抽烟，每天感觉能达到一包，我妈前几年腰间盘突出，现在好了，我家在农村，家里人收入可以约...</p>
+							<p>57赞·3评论·关注</p>
+						</li>-->
+					</ul>
+				</div>
+			</div>
+
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<!--<script src="../../js/utils/h5fresh.js"></script>-->
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/storageKeyName.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/publicQiuzhiProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/libs/myStorage/myStorage.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var pageIndex = 1; //请求数据页面
+			var totalPageCount; //总页码
+			var flagRef = 0; //是刷新0，还是加载更多1
+			var keyWord = "";
+			var answerArray = []; //搜索总数组
+			var Storage_History = "qiuzhi-Question-History";
+			mui.init();
+			mui.plusReady(function() {
+				document.getElementById("history_container").style.top = localStorage.getItem('StatusHeightNo') * 1 + 11 + 'px';
+				document.getElementById("list-container").style.top = localStorage.getItem('StatusHeightNo') * 1 + 10 + 'px';
+
+				Storage_History = Storage_History + "_" + window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid;
+				//注册列表项点击事件
+				mui('#list-container .mui-table-view').on('tap', 'li', function() {
+					//获取存储值
+					var index = this.id.replace('li', '');
+					var modelTemp = answerArray[index];
+					//console.log('dianji 标题' + JSON.stringify(modelTemp));
+					//跳转界面
+					events.openNewWindowWithData('qiuzhi-question.html', {
+						askID: modelTemp.TabId, //问题id
+						channelInfo: modelTemp, //当前话题，问题信息
+						allChannels: window.myStorage.getItem('allChannels') //全部话题
+					});
+				});
+
+				//注册点击搜索事件
+				//点击 将文本框内容存于变量 并执行下拉刷新所需逻辑
+				document.getElementById('search-btn').addEventListener('tap', searchQuestion);
+				var search_keyWord = document.getElementById('search-keyWord');
+				search_keyWord.addEventListener("focus", function() {
+					//加载搜索历史记录
+					LoadHistory();
+					//显示隐藏对应div
+					mui("#history_container")[0].classList.remove("mui-hidden");
+					mui("#list-container")[0].classList.add("mui-hidden");
+				});
+				search_keyWord.addEventListener("blur", function() {
+
+					mui("#history_container")[0].classList.add("mui-hidden");
+					mui("#list-container")[0].classList.remove("mui-hidden");
+				});
+				search_keyWord.addEventListener('search', searchQuestion);
+				//注册搜索历史的点击事件
+				//一个是应用搜索历史
+				mui('#history_container div ul').on('tap', '.mui-table-view-cell', function() {
+					//console.log(this.getElementsByTagName("span").length);
+					//获取设置关键字
+					if(this.getElementsByTagName("span").length > 1) {
+						var str_text = this.getElementsByTagName("span")[1].innerHTML;
+						mui("#search-keyWord")[0].value = str_text;
+						//执行搜索
+						searchQuestion();
+						//切换显示
+						mui("#history_container")[0].classList.add("mui-hidden");
+						mui("#list-container")[0].classList.remove("mui-hidden");
+					} else {
+						//执行清空历史记录
+						CleanHistory();
+						LoadHistory();
+					}
+				})
+				//一个是移除搜索历史
+				mui('#history_container div ul').on('tap', '.mui-table-view-cell .icon-del', function() {
+					//移除搜索历史
+					//console.log(this.previousSibling.innerHTML);
+					//重写显示
+					var str_text = this.previousSibling.innerHTML;
+					HistoryItemRemove(str_text);
+					LoadHistory();
+					return false;
+				})
+
+				//上拉下拉注册
+				mui("#list-container .mui-scroll").pullToRefresh({
+					down: {
+						callback: function() {
+							//清除节点
+							mui("#list-container div ul")[0].innerHTML = "";
+							var self = this;
+							//console.log("下拉刷新");
+							pageIndex = 1;
+							flagRef = 0;
+							//33.获取某个用户的评论列表
+							getAsksByCondition(keyWord);
+							self.endPullDownToRefresh();
+							//显示上拉显示更多
+							mui(".mui-pull-bottom-tips")[0].classList.remove("mui-hidden");
+						}
+					},
+					up: {
+						contentinit: '',
+						callback: function() {
+							var self = this;
+							//console.log("上拉加载更多");
+							flagRef = 1;
+							//console.log(totalPageCount);
+							if(pageIndex < totalPageCount) {
+								getAsksByCondition(keyWord);
+							} else {
+								mui.toast('没有更多了');
+								//隐藏上拉显示更多
+								mui(".mui-pull-bottom-tips")[0].classList.add("mui-hidden");
+							}
+							self.endPullUpToRefresh();
+						}
+					}
+				});
+
+				//初始化界面 隐藏搜索结果 显示搜索历史记录 加载历史记录
+				mui("#history_container")[0].classList.remove("mui-hidden");
+
+				mui("#list-container")[0].classList.add("mui-hidden");
+				//加载搜索历史
+				LoadHistory();
+
+			});
+			/**
+			 * 加载搜索历史记录
+			 */
+			function LoadHistory() {
+				var history_container = mui("#history_container div ul")[0];
+				history_container.innerHTML = "";
+				var list_History = window.myStorage.getItem(Storage_History);
+				mui.each(list_History, function(index, item) {
+					//显示节点
+					var li = document.createElement('li');
+					li.className = 'mui-table-view-cell';
+					//拼接显示
+					//				<li class="mui-table-view-cell">
+					//					<a class="mui-navigate-right">
+					//						<span class="mui-icon mui-icon-search"></span> <span> Item 1</span>
+					//					</a>
+					//				</li>
+					//li.innerHTML = "<p>" + record.CommentContent + "</p><div><p><img src='"+record.qChannelImg+"'>["+record.qChannel+"]"+record.AskTitle+"</p><p>"+record.AnswerContent+"</p></div><p>"+record.LikeNum+" 赞 · "+record.cCreatTime + " ·"+record.CommentId+" 关注</p>";
+					li.innerHTML = "<a><span class='mui-icon mui-icon-search'></span> <span>" + item.text + "</span><span class='mui-icon icon-del' ></span></a>";
+					history_container.insertBefore(li, history_container.firstChild);
+				});
+				if(list_History && list_History.length > 0) {
+					//					<li class="mui-table-view-cell">
+					//							<span> 清空历史记录</span>
+					//						</li>
+					var li = document.createElement('li');
+					li.className = 'mui-table-view-cell';
+					li.innerHTML = "<li class='mui-table-view-cell'><span> 清空历史记录</span></li>";
+					history_container.appendChild(li);
+				}
+			}
+			/**
+			 * 追加某搜索历史记录
+			 * @param {Object} _keyWord 搜索关键字
+			 */
+			function setHistory(_keyWord) {
+				//存储历史记录开始
+				var list_History = window.myStorage.getItem(Storage_History);
+				if(list_History) {
+
+				} else {
+					list_History = new Array();
+				}
+
+				var d = new Date();
+				//清除掉重复的 追加上新的
+				//var model_History={text=""};
+				var int_index = 0;
+				mui.each(list_History, function(index, item) {
+					if(item.text == _keyWord) {
+						//移除掉
+						list_History.splice(int_index, 1);
+					}
+					int_index++;
+				});
+				if(keyWord != "") //空值不记录
+				{
+					list_History.push({ text: keyWord });
+				}
+
+				window.myStorage.setItem(Storage_History, list_History);
+				//存储历史记录结束
+			}
+			/**
+			 * 在搜索历史中移除某关键字
+			 */
+			function HistoryItemRemove(_keyWord) {
+				var list_History = window.myStorage.getItem(Storage_History);
+				if(list_History) {
+
+				} else {
+					list_History = new Array();
+				}
+				var d = new Date();
+				var int_index = 0;
+				mui.each(list_History, function(index, item) {
+					if(item.text == _keyWord) {
+						//移除掉
+						list_History.splice(int_index, 1);
+					}
+					int_index++;
+				});
+				window.myStorage.setItem(Storage_History, list_History);
+			}
+			/*
+			 * 清除搜索历史
+			 */
+			function CleanHistory() {
+				//清除历史记录
+				var list_History = new Array();
+				window.myStorage.setItem(Storage_History, list_History);
+				//刷新历史记录显示
+
+			}
+			/**
+			 * 通过关键字搜索问题 并记录搜索历史
+			 */
+			function searchQuestion() {
+				keyWord = mui("#search-keyWord")[0].value;
+				//console.log(keyWord)
+				setHistory(keyWord);
+				mui("#list-container div ul")[0].innerHTML = "";
+				//console.log("搜索");
+				pageIndex = 1;
+				flagRef = 0;
+				//4.获取所有符合条件问题
+				getAsksByCondition(keyWord);
+				//显示上拉显示更多
+				mui(".mui-pull-bottom-tips")[0].classList.remove("mui-hidden");
+			}
+			//4.获取所有符合条件问题
+			function getAsksByCondition(askTitle) {
+				document.getElementById('search-keyWord').blur();
+				var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid; //当前登录账号utid
+				//需要加密的数据
+				var comData = {
+					userId: personalUTID,
+					askTitle: askTitle, //问题标题,用于查找，可输入部分标题
+					channelId: '0', //话题ID,传入0，获取所有话题数据
+					pageIndex: pageIndex, //当前页数
+					pageSize: '10' //每页记录数,传入0，获取总记录数
+				};
+				// 等待的对话框
+				var wd = events.showWaiting();
+				//4.获取所有符合条件问题
+				postDataQZPro_getAsksByCondition(comData, wd, function(data) {
+					wd.close();
+					//console.log('4.获取所有符合条件问题:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						//如果是旧数据，去掉里面的html标签
+						for (var i = 0; i < data.RspData.Data.length; i++) {
+							var temp = data.RspData.Data[i];
+							if (temp.AnswerSFlag ==1) {
+ 								temp.AnswerContent = events.deleteHtml(temp.AnswerContent);
+							}
+						}
+						totalPageCount = data.RspData.totalPage;
+						setQuestionRecord(data.RspData.Data);
+						pageIndex++;
+						if(flagRef == 0) { //刷新
+							answerArray = data.RspData.Data;
+						} else {
+							//加载更多
+							//合并数组
+							answerArray = answerArray.concat(data.RspData.Data);
+						}
+						if(pageIndex == 2 && data.RspData.Data.length == 0) {
+							mui.toast("未找到相关问题");
+							//隐藏上拉显示更多
+							mui(".mui-pull-bottom-tips")[0].classList.add("mui-hidden");
+						}
+					} else {
+						//console.log(data.RspTxt);
+						mui.toast(data.RspTxt);
+					}
+				});
+			};
+
+			/**
+			 * 放置问题记录数据
+			 * @param {Object} list 问题记录数据
+			 */
+			var setQuestionRecord = function(list) {
+				var listContainer = mui("#list-container div ul")[0];
+				for(var i in list) {
+					createList(listContainer, list[i], i);
+				}
+			}
+			/**
+			 * 拼接问题记录
+			 * @param {Object} listContainer
+			 * @param {Object} record
+			 */
+			var createList = function(listContainer, record, index) {
+				var li = document.createElement('li');
+				li.className = 'mui-table-view-cell';
+				li.id = 'li' + index;
+				//拼接显示
+
+				//				<li class="mui-table-view-cell">
+				//	<p>现在能为父母的健康做点什么？</p>
+				//	<p>摘要：先说说我家的情况，我爸爱抽烟，每天感觉能达到一包，我妈前几年腰间盘突出，现在好了，我家在农村，家里人收入可以约...</p>
+				//	<p>57赞·3评论·关注</p>
+				//</li>
+				//li.innerHTML = "<p>" + record.CommentContent + "</p><div><p><img src='"+record.qChannelImg+"'>["+record.qChannel+"]"+record.AskTitle+"</p><p>"+record.AnswerContent+"</p></div><p>"+record.LikeNum+" 赞 · "+record.cCreatTime + " ·"+record.CommentId+" 关注</p>";
+				li.innerHTML = "<p>" + record.AskTitle.replace(keyWord,"<span>"+keyWord+"</span>") + "</p><p class = 'triple-line'>" + record.AnswerContent + "</p><p>" + record.IsLikeNum + "赞·" + record.CommentNum + "评论</p>";
+				listContainer.appendChild(li);
+			}
+			
+		</script>
+	</body>
+
+</html>

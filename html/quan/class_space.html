@@ -1,0 +1,86 @@
+<!--班級空間界面-->
+<!--@anthor an-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<!--<link href="../../css/utils/common.css" rel="stylesheet" />-->
+		<!--图片预览css-->
+		<link href="../../css/utils/preview.css" rel="stylesheet" />
+		<!--泡泡css-->
+		<link href="../../css/utils/bubble.css" rel="stylesheet" />
+		<!--阿里图标库样式表-->
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<!--班级空间样式表-->
+		<link href="../../css/quan/class_space.css" rel="stylesheet" />
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title"></h1>
+			<a id="write" class="mui-icon iconfont icon-fabu-copy mui-pull-right"></a>
+			<a id="group" class="mui-icon iconfont icon-renren  mui-pull-right"></a>
+		</header>
+		<!--下拉刷新容器-->
+		<div id="refreshContainer" class="mui-content mui-fullscreen" style="z-index:0">
+			<div class="mui-scroll-wrapper">
+				<div class="mui-scroll vertical-scroll">
+					<!--数据列表-->
+					<ul id="classSpace_list" class="mui-table-view">
+					</ul>
+				</div>
+				<div class="noDataDisplay" style="background-color: white; width: 100%;min-height: 100%; text-align: center;display: none;" >
+					<img src="../../image/mine/invite_none_0.png" style="width: 50%; margin: 25% 0 15px;"/>
+					<p style="font-size: 1.2rem;">暂无班级动态~~</p>
+				</div>
+			</div>
+		</div>
+		<div id="videoPopover" class="mui-popover">
+			<video id="video" style="position: absolute;z-index: 999;" controls="controls">
+				您的浏览器不支持 video 标签。
+			</video>
+		</div>
+		<!--点赞图标点击后的弹出框-->
+		<div id="popover" class="mui-popover">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell">
+					<a id="zan" class="" href="#">
+						<p class="pop-p"><span id="pop-zan" class="mui-icon iconfont icon-dianzan1 isLike"></span>点赞</p>
+					</a>
+				</li>
+				<div class="divider-line"></div>
+				<li class="mui-table-view-cell">
+					<a id="check" class="" href="#">
+						<p class="pop-p"><span id="pop-look" class="mui-icon iconfont icon-liulan isNotLike"></span>查看</p>
+					</a>
+				</li>
+			</ul>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<!--公共事件js-->
+		<script src="../../js/utils/events.js"></script>
+		<!--接口js-->
+		<script src="../../js/publicProtocol.js"></script>
+		<script src="../../js/libs/jquery.lazyload.min.js"></script>
+		<!--图片预览js-->
+		<script src="../../js/mui.zoom.js"></script>
+		<script src="../../js/utils/all-preview.js"></script>
+		<!--<script src="../../js/utils/h5fresh.js"></script>-->
+		<script src="../../js/utils/video.js"></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<!--url跳转-->
+		<script src="../../js/utils/urlBrief.js"></script>
+		<script type="text/javascript" src="../../js/utils/showvideoutil.js"></script>
+		<!--班级空间js-->
+		<script src="../../js/quan/class_space.js"></script>
+		
+	</body>
+
+</html>

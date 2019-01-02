@@ -1,0 +1,44 @@
+/*---资料---start---*/
+
+.mui-table-view:before {
+	height: 0px;
+}
+
+.mui-ellipsis {
+	width: 100%;
+	float: left;
+	line-height: 28px;
+	font-size: 16px;
+}
+
+.mui-table-view-cell:after {
+	height: 1px;
+	left: 0px;
+}
+
+.data-name {
+	width: 25%;
+}
+
+.data-type {
+	width: 20%;
+	margin-left: 5%;
+}
+
+.data-parent {
+	width: 45%;
+}
+
+.data-name,
+.data-type,
+.data-parent {
+	font-size: 15px;
+	color: #474747;
+}
+
+.mui-navigate-right {
+	font-size: 23px;
+}
+
+
+/*---资料---end---*/

@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<link href="../../css/mine/edit-info.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title">标题</h1>
+			<a id="save" class="mui-pull-right">保存</a>
+		</header>
+		<div class="mui-content">
+			<div class="input-container">
+				<textarea id="input-content" class="remark-input" type="text" maxlength="20" style="height: 42px;min-height: 42px;" placeholder="请输入,最多20字!"></textarea>
+				<p class="input-left">20</p>
+			</div>
+			<div style="background-color: #00A5E0;height: 1px;margin-left: 2.5%;width: 95%;"></div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/storageKeyName.js"></script>
+		<script src="../../js/libs/myStorage/myStorage.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script src="../../js/utils/self-adaptive-input.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function() {
+				events.blurBack();
+				var pInfo = myStorage.getItem(storageKeyName.PERSONALINFO);
+				//console.log("要输入的个人信息：" + JSON.stringify(pInfo))
+				var curPage = plus.webview.currentWebview();
+				var title = document.getElementById('title');
+				var btn_save = document.getElementById('save');
+				var inText = document.getElementById('input-content')
+				setContents(curPage.data, title, inText, pInfo)
+				var save = document.getElementById('save');
+				save.addEventListener('tap', function() {
+					//console.log('save is clicked');
+					postInfo(curPage.data, inText, pInfo, curPage);
+				})
+			})
+			var postInfo = function(no, inText, pInfo, curpage) {
+				if(jQuery.trim(inText.value).length == 0) {
+					mui.toast('不能为空');
+					return;
+				}
+				var vtpKey = '';
+				switch(no) {
+					case 0:
+						vtpKey = 'unick';
+						if(events.limitInput(inText.value, 20)) {
+							return;
+						}
+						break;
+					case 1:
+						vtpKey = 'uemail';
+						break;
+					case 2:
+						vtpKey = 'utxt';
+						if(events.limitInput(inText.value, 30)) {
+							return;
+						}
+						break;
+					case 10:
+						vtpKey = 'uname';
+						if(events.limitInput(inText.value, 20)) {
+							return;
+						}
+						var reg=/^[a-zA-Z][a-zA-Z0-9]*$/
+						if(!reg.exec(inText.value)){
+							mui.toast("必须以字母开头，由数字和字母组成！")
+							return;
+						}
+						break;
+					default:
+						break;
+				}
+				//console.log(vtpKey)
+				var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+				postDataPro_PostReUinf({
+					vtp: vtpKey,
+					vvl: jQuery.trim(inText.value)
+				}, wd, function(data) {
+					wd.close()
+					//console.log(JSON.stringify(data))
+					if(data.RspCode == '0000') {
+						pInfo[vtpKey] = inText.value;
+						window.myStorage.setItem(storageKeyName.PERSONALINFO, pInfo)
+						//console.log('更改后信息:' + JSON.stringify(pInfo));
+						mui.fire(curpage.opener(), 'infoChanged');
+						events.fireToPageNone('mine.html', 'infoChanged');
+						events.fireToPageNone('class_space.html', 'infoChanged');
+						events.fireToPageNone('../cloud/cloud_home.html', 'infoChanged');
+						if(no == 0) {
+							events.fireToPageNone('../cloud/cloud_home.html', 'personChanged');
+						}
+						mui.back();
+					} else {
+						mui.toast(data.RspTxt);
+					}
+				})
+			}
+			var setBackHeight = function(length) {
+				document.querySelector(".input-container").style.height = "46px";
+				document.getElementById("input-content").style.height = "45px";
+				document.querySelector(".input-left").innerText = length - document.getElementById("input-content").value.length;
+				autoTextArea.change(document.querySelector(".input-container"), document.getElementById("input-content"), document.querySelector(".input-left"), length);
+			}
+			var setContents = function(no, title, inText, pInfo) {
+				//console.log(no)
+				switch(no) {
+					case 0:
+						jQuery('#input-content').prop("maxLength", "20");
+						if(pInfo.unick) {
+							title.innerText = '更改昵称'
+							inText.value = pInfo.unick;
+						} else {
+							title.innerText = '填写昵称'
+						}
+						inText.placeholder = '请输入昵称,最多20字'
+						autoTextArea.set(document.querySelector(".input-container"), document.getElementById("input-content"), document.querySelector(".input-left"), 20);
+						setBackHeight(20);
+						break;
+					case 1:
+						inText.style.maxlength = 100;
+						jQuery('#input-content').prop("maxLength", "100");
+						if(pInfo.uemail) {
+							title.innerText = '更改电子邮箱';
+							inText.value = pInfo.uemail;
+						} else {
+							title.innerText = '填写电子邮箱'
+						}
+						inText.placeholder = '请输入电子邮箱地址'
+						break;
+					case 2:
+						jQuery('#input-content').prop("maxLength", "30");
+						if(pInfo.utxt) {
+							title.innerText = '更改签名';
+							inText.value = pInfo.utxt;
+						} else {
+							title.innerText = '填写签名'
+						}
+						inText.placeholder = '请输入签名,最多30字'
+						autoTextArea.set(document.querySelector(".input-container"), document.getElementById("input-content"), document.querySelector(".input-left"), 30);
+						setBackHeight(30);
+						break;
+					case 10:
+						jQuery('#input-content').prop("maxLength", "20");
+						if(!pInfo.uname) {
+							title.innerText = '填写用户名';
+						}
+						inText.placeholder = '请填写用户名，只能填写一次，最多20字'
+						autoTextArea.set(document.querySelector(".input-container"), document.getElementById("input-content"), document.querySelector(".input-left"), 20);
+						setBackHeight(20);
+						break;
+					default:
+						break;
+				}
+			}
+		</script>
+	</body>
+
+</html>

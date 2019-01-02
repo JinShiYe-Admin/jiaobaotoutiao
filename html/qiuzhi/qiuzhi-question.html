@@ -1,0 +1,387 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/preview.css" />
+		<link href="../../css/qiuzhi/qiuzhi-questionSub.css" rel="stylesheet" />
+		<style>
+			.mui-pull {
+				font-weight: normal;
+			}
+			
+			.mui-table-view {
+				margin-top: 0px;
+				word-break: break-all;
+			}
+			
+			.mui-table-view-cell {
+				background: white;
+			}
+			
+			.mui-table-view:before,
+			.mui-table-view:after,
+			.mui-table-view-cell:after {
+				height: 0px;
+			}
+			
+			#question.mui-active {
+				/*点击问题区域的效果*/
+				background: white;
+			}
+			
+			#question {
+				/*问题区域*/
+				border-bottom: 1px solid #EEEEEE;
+				box-shadow: 0px 0px 5px #E3E3E3;
+			}
+			
+			#question_title {
+				text-align: justify;
+				color: #323232;
+				line-height: 20px;
+				font-size: 1.6rem;
+				letter-spacing: 1px;
+			}
+			
+			#question_images {
+				/*问题区域的图片*/
+				margin-top: 5px;
+				margin-bottom: 5px;
+				width: 100%;
+			}
+			
+			#guanzhu {
+				/*关注按钮*/
+				background: #1DB8F1;
+				border: 1px solid #1DB8F1;
+				height: 28px;
+				padding-top: 5px;
+				border-radius: 3px;
+			}
+			
+			#liulanshu,
+			#guanzhushu {
+				/*浏览数和关注数*/
+				line-height: 30px;
+				color: #b7b7b7;
+			}
+			
+			#guanzhushu {
+				/*关注数*/
+				margin-left: 10px;
+			}
+			
+			.mui-backdrop {
+				/*选择排序的遮罩*/
+				background-color: rgba(0, 0, 0, .05);
+			}
+			
+			.mui-popover .mui-popover-arrow:after {
+				/*popover的三角形箭头*/
+				background-color: white;
+				box-shadow: 0 0 5px rgba(0, 0, 0, .1);
+			}
+			
+			#answer_top {
+				background-color: #f2f2f2;
+			}
+			
+			#answershu {
+				color: #323232;
+			}
+			
+			#answer_bottom .mui-table-view-cell:first-child {
+				/*回答列表第一项*/
+				margin-top: 0px;
+			}
+			
+			#answer_bottom .mui-table-view-cell {
+				/*每一项回答列表*/
+				margin-top: 5px;
+				border-bottom: 1px solid #E4E4E4;
+			}
+			
+			#answer_bottom .mui-table-view-cell img {
+				/*回答者的头像*/
+				height: 40px;
+				width: 40px;
+				border-radius: 50%;
+			}
+			
+			#answer_bottom .mui-table-view-cell .mui-ellipsis {
+				/*回答者姓名*/
+				line-height: 40px;
+				font-size: 15px;
+				color: #323232;
+			}
+			
+			#answer_bottom .mui-table-view-cell .answer-info {
+				/*回答的赞，评论数，时间信息*/
+				margin-top: 13px;
+				color: #b7b7b7;
+				font-size: 13px;
+			}
+			
+			#ordertype {
+				color: #808080;
+			}
+			
+			#popover li {
+				color: #808080;
+			}
+			
+			.ellipsis-show {
+				/*提问内容*/
+				display: -webkit-box;
+				overflow: hidden;
+				white-space: normal !important;
+				text-overflow: ellipsis;
+				word-wrap: break-word;
+				-webkit-box-orient: vertical;
+				color: #808080;
+				font-size: 1.5rem;
+			}
+			
+			.ellipsis-3 {
+				/*回答内容*/
+				display: -webkit-box;
+				overflow: hidden;
+				white-space: normal !important;
+				text-overflow: ellipsis;
+				word-wrap: break-word;
+				-webkit-line-clamp: 3;
+				-webkit-box-orient: vertical;
+				margin-top: 13px;
+				color: #808080;
+			}
+			
+			#showAll {
+				/*显示全部，收起按钮*/
+				display: none;
+				color: #b7b7b7;
+				margin-top: 10px;
+			}
+			
+			.record-imge {
+				width: 100%;
+			}
+			
+			.record-picture {
+				overflow: hidden;
+				position: relative;
+				float: left;
+				text-align: center;
+			}
+			/*h1:last-of-type {
+				color: initial;
+			}*/
+			
+			.icon-xie {
+				color: #B7B7B7;
+				line-height: 32px;
+				padding: 0px !important;
+				margin-left: 10px;
+				margin-right: 10px;
+				font-size: 20px !important;
+			}
+			
+			.tab_div,
+			#tab_div {
+				line-height: 35px;
+				border: 1px solid #E4E4E4;
+				margin-left: 10px;
+				margin-right: 10px;
+				color: gray;
+				border-radius: 3px;
+			}
+			
+			.mui-bar.mui-bar-tab {
+				background: white;
+				box-shadow: 0px -1px 1px rgba(228, 228, 228, 0.7);
+				padding-top: 6px;
+			}
+			
+			#tab_font {
+				color: #b7b7b7;
+			}
+			
+			.mui-pull {
+				font-weight: normal;
+			}
+			
+			.answer-none {
+				/*无人回答*/
+				text-align: center;
+				background-color: white;
+				color: #808080;
+			}
+			
+			.answer-none img {
+				width: 50%;
+			}
+			
+			.mui-bar~.mui-content .mui-fullscreen {
+				top: 44px;
+				height: auto;
+			}
+			
+			.mui-pull-top-tips {
+				position: absolute;
+				top: -20px;
+				left: 50%;
+				margin-left: -20px;
+				width: 40px;
+				height: 40px;
+				border-radius: 100%;
+				z-index: 1;
+			}
+			
+			.mui-bar~.mui-pull-top-tips {
+				top: 24px;
+			}
+			
+			.mui-pull-top-wrapper {
+				width: 42px;
+				height: 42px;
+				display: block;
+				text-align: center;
+				background-color: #efeff4;
+				border: 1px solid #ddd;
+				border-radius: 25px;
+				background-clip: padding-box;
+				box-shadow: 0 4px 10px #bbb;
+				overflow: hidden;
+			}
+			
+			.mui-pull-top-tips.mui-transitioning {
+				-webkit-transition-duration: 200ms;
+				transition-duration: 200ms;
+			}
+			
+			.mui-pull-top-tips .mui-pull-loading {
+				/*-webkit-backface-visibility: hidden;
+				-webkit-transition-duration: 400ms;
+				transition-duration: 400ms;*/
+				margin: 0;
+			}
+			
+			.mui-pull-top-wrapper .mui-icon,
+			.mui-pull-top-wrapper .mui-spinner {
+				margin-top: 7px;
+			}
+			
+			.mui-pull-top-wrapper .mui-icon.mui-reverse {
+				/*-webkit-transform: rotate(180deg) translateZ(0);*/
+			}
+			
+			.mui-pull-bottom-tips {
+				text-align: center;
+				background-color: #efeff4;
+				font-size: 15px;
+				line-height: 40px;
+				color: #777;
+			}
+			
+			.mui-pull-top-canvas {
+				overflow: hidden;
+				background-color: #fafafa;
+				border-radius: 40px;
+				box-shadow: 0 4px 10px #bbb;
+				width: 40px;
+				height: 40px;
+				margin: 0 auto;
+			}
+			
+			.mui-pull-top-canvas canvas {
+				width: 40px;
+			}
+			
+			.mui-content.mui-fullscreen {
+				top: 45px;
+				height: auto;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">提问</h1>
+			<a id="manage-question" class="mui-icon iconfont icon-moreandroid mui-pull-right display-none" style="display: none;"></a>
+			<a class="mui-icon iconfont icon-adddata1 mui-pull-right" id="addExpert"></a>
+		</header>
+		<nav id="manage-container" class="mui-bar mui-bar-tab">
+			<div class="tab_div" style="border: 0;">
+				<font id="">
+					<p>自己的回答已屏蔽<span id="cancel-shield" class="mui-pull-right">取消</span></p>
+				</font>
+				<!--<font id="tab_font"><span class="mui-icon iconfont icon-xie mui-pull-left"></span>请输入问题的答案</font>-->
+			</div>
+		</nav>
+		<!--下拉刷新容器-->
+		<div id="refreshContainer" class="mui-content mui-fullscreen" style="z-index:0">
+			<div class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<!--数据列表-->
+					<ul class="mui-table-view">
+						<li id="question" class="mui-table-view-cell mui-media">
+							<div class="mui-media-body">
+								<h4 id="question_title"></h4>
+								<div id="question_images"></div>
+								<div id="question_content" class="ellipsis-show">
+								</div>
+								<div id="showAll">显示全部</div>
+							</div>
+							<div class="mui-media-body">
+								<span id="liulanshu" class="mui-icon iconfont icon-liulan"></span>
+								<span id="guanzhushu" class="mui-icon iconfont icon-31guanzhu1xuanzhong"></span>
+								<button id="guanzhu" type="button" class="mui-btn mui-btn-blue mui-pull-right" style="width: 55px;border: 0;padding: 0;">关注</button>
+							</div>
+						</li>
+						<div id="answer" style="background-color:#efeff4;">
+							<div id="answer_top" style="height: 40px;color: #9D9D9D;">
+								<div id="answershu" class="mui-pull-left" style="line-height: 40px;margin-left: 15px;"></div>
+								<a href="#popover" class="mui-pull-right" style="color: #9D9D9D;line-height: 40px;margin-right: 15px;">
+									<div id="ordertype" class="mui-pull-left">按质量排序</div>
+									<span class="mui-icon mui-icon-arrowdown" style="font-size: 16px;margin-left: 3px;"></span>
+								</a>
+							</div>
+							<div id="answer_bottom">
+							</div>
+						</div>
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div id="popover" class="mui-popover" style="width: 150px;">
+			<!--<div class="mui-popover-arrow"></div>-->
+			<ul class="mui-table-view" style="color: black;">
+				<li id="ordertype_2" class="mui-table-view-cell" value='2' data-value="按质量排序" style="height: 40px;">
+					按质量排序
+					<span id="ordertype_2_icon" class="mui-icon mui-icon-checkmarkempty mui-pull-right"></span>
+				</li>
+				<li id="ordertype_1" class="mui-table-view-cell" value='1' data-value="按时间排序" style="height: 40px;">
+					按时间排序
+					<span id="ordertype_1_icon" class="mui-icon mui-icon-checkmarkempty mui-pull-right" style="display: none;"></span>
+				</li>
+			</ul>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<!--<script src="../../js/utils/h5fresh.js"></script>-->
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script src="../../js/publicQiuzhiProtocol.js"></script>
+		<script type="text/javascript" src="../../js/mui.zoom.js"></script>
+		<script type="text/javascript" src="../../js/mui.previewimage.js"></script>
+		<script src="../../js/qiuzhi/qiuzhi-questionSub.js"></script>
+	</body>
+
+</html>

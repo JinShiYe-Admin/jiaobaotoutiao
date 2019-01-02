@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">扫描二维码</h1>
+		</header>
+
+		<div id="bcid" style="position: absolute;top: 44px;left: -10%;width: 120%;height: 100%;"></div>
+
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/publicProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils/events.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript">
+			mui.init({
+				swipeBack: true //启用右滑关闭功能
+			});
+			var scan = null; //扫描控件
+			var QRCodeModel = {
+				flag: '',
+				gid: '',
+				gname: '',
+				gimg: '',
+				gnote: ''
+			}; //扫描到的数据，组成model
+			mui.plusReady(function() {
+				setTimeout(startRecognize,500);
+				var barHeight=plus.navigator.getStatusbarHeight();
+				//console.log("状态栏高度："+barHeight);
+				document.getElementById("bcid").style.top=(45-barHeight)+'px';
+			});
+			// 条码识别成功事件
+			function onmarked(type, result) {
+				scan.cancel();
+				//console.log('扫描到的信息为:' + result);
+				var text = '未知: ';
+				switch(type) {
+					case plus.barcode.QR:
+						text = 'QR: '; // 二维码
+						break;
+					case plus.barcode.EAN13:
+						text = 'EAN13: ';
+						break;
+					case plus.barcode.EAN8:
+						text = 'EAN8: ';
+						break;
+				}
+				//将result用@分为数组，判断第一个是1的话，为申请加入群
+				var QRCodeArr = result.split('@');
+				if(QRCodeArr.length > 0) {
+					var temp = QRCodeArr[0];
+					//console.log('tempretemp=' + temp + ',' + JSON.stringify(QRCodeArr));
+
+					if(temp == 'jby1') { //1为申请加入群
+						var temp1 = QRCodeArr[1];
+						var temp2 = unescape(QRCodeArr[2]);
+						var temp3 = QRCodeArr[3];
+						var temp4 = unescape(QRCodeArr[4]);
+						var temp5 = unescape(QRCodeArr[5]);
+						QRCodeModel.flag = temp; //1代表申请加入群
+						QRCodeModel.gid = temp1; //班级id
+						QRCodeModel.gname = temp2; //班级名称
+						QRCodeModel.gimg = temp3; //班级头像
+						QRCodeModel.gnote = temp4; //班级说明
+						QRCodeModel.statrDate = temp5; //班级说明
+						//console.log('QRCodeModel=' + JSON.stringify(QRCodeModel));
+						//如果匹配格式，计算是否超时7天
+						var tempArr0 = temp5.split(','); //
+						var tempDate0 = Date.UTC(tempArr0[0], tempArr0[1], tempArr0[2], tempArr0[3], tempArr0[4]);
+						//当前时间
+						var tempArr1 = events.getNowFormatDate().split(','); //
+						var tempDate1 = Date.UTC(tempArr1[0], tempArr1[1], tempArr1[2], tempArr1[3], tempArr1[4]);
+						//计算时间间隔，天数
+						var datas = (tempDate1 - tempDate0) / (1000 * 60 * 60 * 24);
+						if(datas >= 7) {
+							var tempdata = {
+								flag: 1,
+								result: '二维码已过期'
+							}
+							events.openNewWindowWithData('../mine/apply-bycode1.html', result);
+						} else { //没超过7天
+							events.openNewWindowWithData('../mine/apply-bycode.html', QRCodeModel);
+						}
+					} else {
+						var tempdata = {
+							flag: 0,
+							result: result
+						}
+						events.openNewWindowWithData('../mine/apply-bycode1.html', tempdata);
+					}
+				}
+			}
+			// 创建扫描控件
+			function startRecognize() {
+				scan = new plus.barcode.Barcode('bcid');
+				scan.onmarked = onmarked;
+				scan.start(); //开始扫描
+			}
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,21 @@
+
+.mui-input-group .mui-input-row {
+	height: 60px; 
+}
+.mui-checkbox input[type=checkbox]{
+	top: 15px;
+}
+.mui-input-row:after{
+	height: 1px;
+	background-color: #E4E4E4;
+}
+.mui-input-row>label{
+	font-size: 1.7rem;
+	color: #323232;
+}
+.mui-checkbox input[type=checkbox]:checked:before{
+	color: #1db8f1;
+}
+.mui-input-row label {
+	padding: 21px 15px;
+}

@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<!--标准mui.css-->
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/utils/preview.css" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/homework/workdetail.css" />
+		<link rel="stylesheet" href="../../css/iconfont/iconfont.css" />
+
+		<link href="../../css/homework/subjects-icon.css" rel="stylesheet" />
+
+		<style type="text/css">
+			#content:before,
+			#content:after {
+				height: 0px;
+			}
+			
+			.mui-bar-tab~.mui-content {
+				padding-bottom: 60px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<nav id="alertBar" class="mui-bar mui-bar-tab" style="visibility: hidden;height: 60px;">
+			<hr style="margin-top: -1px; height:1px;border:none;border-top:1px solid #ededed;" />
+			<div align="center" style="margin-top: -5px;">
+				<button id="alertAll" type="button" class="mui-btn mui-btn-blue " style="border-radius: 2px;width: 95%;background-color: #00a5e0;border-color:#00a5e0 ;height: 40px;font-size:16px;letter-spacing: 1px;">一键提醒</button>
+			</div>
+		</nav>
+		<div id="work-detail-tea" class="mui-content mui-scroll-wrapper" style="background-color: white;">
+			<div class="mui-scroll" v-show="workDetail.length>0">
+				<ul id="content" class="mui-table-view">
+					<li class="mui-table-view-cell mui-media ">
+						<img>
+						<span id="img" class=" iconfont subject-icon" style="margin-left: -10px;"></span>
+						</img>
+						<div class="mui-media-body" style="margin-top: -18px;">
+							<h5 id="homeworkTitle" style="color: #404040;"></h5>
+							<p id="publishDate" class='mui-ellipsis' style="color: #B7B7B7;">发布时间：</p>
+						</div>
+						<div style="margin-top: 12px;">
+							<hr style="height:1px;border:none;border-top:1px solid #ededed;" />
+						</div>
+
+						<div id='content' class="mui-media-body">
+							<div id="homeWorkContent" class="ellipsis-show" style="font-size: 14px;color: #474747;">
+							</div>
+							<div id="showAll">显示全部</div>
+							<div id="brief-imgs" class="brief-imgs" style="margin-top: 5px;">
+							</div>
+						</div>
+
+						<div align="center" style="visibility: hidden;max-height: 100px;">
+							<button id="checkDetail" type="button" class=" " style="border-radius: 10px;width: 100px;margin-top:15px ;">查看详情<span class="mui-icon mui-icon-arrowdown"></span></button>
+						</div>
+
+					</li>
+				</ul>
+				<div style="margin-top: -10px;">
+					<hr style="height:1px;border:none;border-top:10px solid #f2f3f5;" />
+				</div>
+				<!--滑动组件-->
+				<div id="sliderSegmentedControl" class=" mui-segmented-control mui-segmented-control-inverted mui-segmented-control-primary">
+
+					<a id="item1" class="mui-control-item mui-active" href="#div-finished">
+						已完成(0)
+					</a>
+
+					<a id="item2" class="mui-control-item" href="#div-unfinish">
+						未完成(0)
+					</a>
+				</div>
+				<!--滑动内容-->
+				<div class="mui-slider-group">
+					<div id="div-finished" class="mui-slider-item mui-control-content mui-active">
+						<ul id="finished-list" class="mui-table-view">
+						</ul>
+					</div>
+					<div id="div-unfinish" class="mui-slider-item mui-control-content">
+						<ul id="unfinished-list" class="mui-table-view">
+
+						</ul>
+
+					</div>
+				</div>
+			</div>
+			<!--</div>-->
+
+		</div>
+		<!--加载选项按钮-->
+
+		<!--<script src="../../js/utils/vue.min.js"></script>
+		<script type="text/javascript">
+			var workDetailTea<br /> = new Vue({
+				el: "#work-detail-tea",
+				data: {
+					workDetail: []
+				},
+				methods: {
+					resetData: function() {
+						this.workdetail = [];
+					}
+				}
+			});
+		</script>-->
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/publicHomeworkProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/mui.zoom.js"></script>
+		<script src="../../js/mui.previewimage.js"></script>
+		<script src="../../js/homework/homework_detail.js"></script>
+		<script src="../../js/publicProtocol.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript">
+			mui.init({
+				beforeback: function() {
+					if(mui.getPreviewImage().isShown()) {
+						return true;
+					}
+					//					workDetailTea.resetData();
+					return true;
+				}
+			});
+			mui('.mui-scroll-wrapper').scroll();
+			var allAlertFlag = 0; //标志是否全部提醒
+			var homeworkDetailNodes = {
+				img: document.getElementById("img"), //作业类型图像
+				title: document.getElementById("homeworkTitle"), //作业类型标题
+				publishDate: document.getElementById("publishDate"), //发布日期
+				content: document.getElementById("homeWorkContent"), //作业内容
+				checkDetailBtn: document.getElementById("checkDetail"), //查看详情按钮
+				slider: document.getElementById("slider"),
+				segItem1: document.getElementById("item1"),
+				segItem2: document.getElementById("item2"),
+				finishedList: document.getElementById("finished-list"),
+				unfinishedList: document.getElementById("unfinished-list"),
+				alertBar: document.getElementById("alertBar"),
+				alertAllBtn: document.getElementById("alertAll")
+			}
+
+			//从主页传值到这个界面的model
+			var homeworkModel = {};
+			var personalUTID;
+			//作业详情model
+			var homeworkDetailModel;
+			//已完成学生列表
+			var uploadArray = [];
+			//未完成学生列表
+			var remainArray = [];
+			var commentIsReady = false;
+			mui.plusReady(function() {
+				window.addEventListener("commentIsReady", function() {
+					commentIsReady = true;
+				})
+				mui('.mui-segmented-control').on('tap', 'a', function() {
+					if(this.id == 'item1') {
+						//console.log('已完成');
+						homeworkDetailNodes.alertBar.style.visibility = 'hidden';
+					} else if(this.id == 'item2') {
+						//console.log('未完成');
+						if(remainArray.length == 0) {
+							homeworkDetailNodes.alertBar.style.visibility = 'hidden';
+						} else {
+							homeworkDetailNodes.alertBar.style.visibility = 'visible';
+						}
+
+					}
+				})
+				mui.previewImage();
+				resetData();
+				var data = plus.webview.currentWebview().data;
+				//console.log('作业主界面传送的值：' + JSON.stringify(data));
+				homeworkModel = data;
+				//获取作业详情
+				requestHomeworkDetail();
+				//3.	获取作业对应学生列表
+				requestHomeworkStuList();
+				//已完成
+				window.addEventListener('workCommented', function(e) {
+					requestHomeworkStuList();
+				})
+				events.preload('homework-comment.html', 200);
+				events.addTap('checkDetail', function() {
+					//console.log('点击查看详情')
+					homeworkDetailNodes.content.removeAttribute('max-height');
+					var arrowdown = homeworkDetailNodes.checkDetailBtn.getElementsByTagName('span')[0];
+					arrowdown.className = 'mui-icon mui-icon-arrowup'
+				})
+				events.addTap('alertAll', function() {
+					//console.log('一键提醒');
+					alertStu(homeworkDetailNodes.alertAllBtn);
+
+				})
+				window.addEventListener('workDetail', function(e) {
+					resetData();
+					//console.log('作业主界面传送的值：' + JSON.stringify(e.detail.data));
+					homeworkModel = e.detail.data;
+					//获取作业详情
+					requestHomeworkDetail();
+					//3.	获取作业对应学生列表
+					requestHomeworkStuList();
+				})
+				mui('.mui-table-view').on('tap', '.isCommented', function() {
+					events.showWaiting();
+					jumpWorkSubmit(this);
+				});
+				var showAll = document.getElementById("showAll");
+				showAll.addEventListener('tap', function() {
+					var str = this.innerText;
+					//console.log('showAll' + str);
+					if(str == '显示全部') {
+						showAll.innerText = '收起';
+						document.getElementById("homeWorkContent").style.webkitLineClamp = 'inherit';
+					} else if(str == '收起') {
+						showAll.innerText = '显示全部';
+						document.getElementById("homeWorkContent").style.webkitLineClamp = '8';
+						mui('.mui-scroll-wrapper').scroll().scrollTo(0, 0, 100);
+					}
+				});
+
+			});
+
+			function jumpWorkSubmit(item) {
+				if(commentIsReady) {
+					events.closeWaiting();
+					events.fireToPageWithData('homework-comment.html', 'workInfo', item.workInfo);
+				} else {
+					setTimeout(function() {
+						jumpWorkSubmit(item);
+					}, 500);
+				}
+			}
+
+			function resetData() {
+				allAlertFlag = 0;
+				personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid;
+				homeworkDetailNodes.unfinishedList.innerHTML = '';
+				//				var gallery = mui('#slider');
+				//				gallery.slider().gotoItem(0);
+				uploadArray = [];
+				remainArray = [];
+				homeworkDetailModel = {};
+				homeworkDetailNodes.alertAllBtn.innerHTML = '一键提醒'
+				homeworkDetailNodes.alertAllBtn.disabled = '';
+
+				//				homeworkDetailNodes.segItem1.className = 'mui-control-item mui-active';
+				//				homeworkDetailNodes.segItem2.className = 'mui-control-item';
+
+			};
+			//获取作业详情
+			function requestHomeworkDetail() {
+				//所需参数
+				var comData = {
+					teacherId: personalUTID, //教师Id
+					homeworkId: homeworkModel.HomeworkId //作业id；
+				};
+				// 等待的对话框
+				var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+				//2.获取教师发布作业详情；
+				postDataPro_GetHomework(comData, wd, function(data) {
+					wd.close();
+					//console.log('2.postDataPro_GetHomework:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						homeworkDetailModel = data.RspData;
+						//						if(homeworkDetailModel.SubmitOnline == true) {
+						//							homeworkDetailNodes.slider.className = 'mui-slider';
+						//						} else {
+						//							homeworkDetailNodes.slider.className = 'mui-slider mui-hidden';
+						//						}
+						//修改界面
+						refreshhomeworkDetail();
+						var height_0;
+						var height_1;
+						var contentElement = document.getElementById("homeWorkContent");
+						var showAll = document.getElementById("showAll");
+						contentElement.style.webkitLineClamp = '9';
+						height_0 = contentElement.offsetHeight;
+						contentElement.style.webkitLineClamp = '8';
+						height_1 = contentElement.offsetHeight;
+						//console.log(height_0 + '|' + height_1);
+						if(height_0 > height_1) {
+							//内容高度大于八行
+							showAll.style.display = 'inline';
+						} else {
+							showAll.style.display = 'none';
+						}
+
+					} else {
+						mui.toast(data.RspTxt);
+					}
+				});
+			}
+
+			//3.	获取作业对应学生列表
+			function requestHomeworkStuList() {
+				//所需参数
+				var comData = {
+					teacherId: personalUTID, //教师Id
+					classId: homeworkModel.classId, //班级群Id；
+					homeworkId: homeworkModel.HomeworkId //作业id；
+				};
+				// 等待的对话框
+				var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+				//3.	获取作业对应学生列表
+				postDataPro_GetStudentList(comData, wd, function(data) {
+					wd.close();
+					//console.log('3.postDataPro_GetStudentList:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						//赋值
+						remainArray = data.RspData.Remain.List;
+						uploadArray = data.RspData.Upload.List;
+						//将学生id，塞入数组，获取学生信息
+						for(var i in remainArray) {
+							var tempModel = remainArray[i];
+							tempModel.ClassId = data.RspData.ClassId;
+							tempModel.HomeworkId = data.RspData.HomeworkId;
+						}
+						for(var i in uploadArray) {
+							var tempModel = uploadArray[i];
+							tempModel.ClassId = data.RspData.ClassId;
+							tempModel.HomeworkId = data.RspData.HomeworkId;
+						}
+						//13.通过群ID获取群的正常用户
+						//所需参数
+						var tempData = {
+							top: '-1', //选择条数
+							vvl: homeworkModel.classId, //群ID，查询的值
+							vvl1: '-1' //群员类型，0家长,1管理员,2老师,3学生,-1取全部
+						};
+						//console.log('tempData:' + JSON.stringify(tempData));
+						//13.通过群ID获取群的正常用户
+						postDataPro_PostGusers(tempData, wd, function(data1) {
+							wd.close();
+							//console.log('13.postDataPro_PostGusers:RspCode:' + data1.RspCode + ',RspData:' + JSON.stringify(data1.RspData) + ',RspTxt:' + data1.RspTxt);
+							if(data1.RspCode == 0) {
+								//循环当前的个人信息返回值数组
+								for(var i in data1.RspData) {
+									//当前model
+									var tempModel = data1.RspData[i];
+									//更新头像
+									tempModel.uimg = updateHeadImg(tempModel.uimg, 2);
+									//循环未完成
+									for(var m in remainArray) {
+										var tempModel9 = remainArray[m];
+										if(tempModel9.StudentId == tempModel.utid) {
+											//合并
+											tempModel9 = $.extend(tempModel9, tempModel);
+										}
+									}
+									//console.log('remainArray=' + JSON.stringify(remainArray))
+
+									//已完成
+									for(var m in uploadArray) {
+										var tempModel9 = uploadArray[m];
+										if(tempModel9.StudentId == tempModel.utid) {
+											//合并
+											tempModel9 = $.extend(tempModel9, tempModel);
+										}
+
+									}
+								}
+							}
+							//console.log('未完成列表：' + JSON.stringify(remainArray));
+							//console.log('已完成列表：' + JSON.stringify(uploadArray));
+							//刷新界面
+							refreshStuList();
+						});
+
+					} else if(data.RspCode == 9) {
+
+					} else {
+						mui.toast(data.RspTxt);
+					}
+				});
+			}
+
+			function refreshhomeworkDetail() {
+				var className = 'iconfont subject-icon ' + getHomeworkIcon(homeworkModel.Subject);
+				homeworkDetailNodes.img.className = className;
+				homeworkDetailNodes.title.innerText = homeworkDetailModel.HomeworkTitle;
+				var dateArr = homeworkModel.Date.split(' ');
+				homeworkModel.Date = dateArr[0];
+				var unick = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).unick; //用户id
+				homeworkDetailNodes.publishDate.innerHTML = events.shortForString(unick, 12) + '&nbsp&nbsp&nbsp&nbsp<span>' + homeworkModel.Date + '</span>'
+
+				homeworkDetailNodes.content.innerHTML = homeworkDetailModel.Contents.replace(/ /g, '&nbsp;').replace(/\n/g, "<br/>");
+				document.getElementById('brief-imgs').innerHTML = getImgsInner(homeworkDetailModel.File);
+
+			}
+			var getImgsInner = function(imgs) {
+				var imgInner = '';
+				var win_height = document.getElementById('brief-imgs').offsetWidth;
+				var img_width = win_height / 3;
+				if(imgs && imgs.length > 0) {
+					for(var i in imgs) {
+						imgInner += '<img class="homework-img" style="width:' + img_width + 'px;height:' + img_width + 'px;" src="' + imgs[i].ThumbUrl +
+							'" data-preview-src="' + imgs[i].Url + '" data-preview-group="' + imgs[i].FileType + '"/>';
+					}
+				}
+				return imgInner;
+			}
+
+			function refreshStuList() {
+				//未完成
+				var remainNum = remainArray.length
+				//已完成
+				var uploadNum = uploadArray.length
+				homeworkDetailNodes.segItem1.innerHTML = '已完成(' + uploadNum + ')';
+				homeworkDetailNodes.segItem2.innerHTML = '未完成(' + remainNum + ')';
+				homeworkDetailNodes.finishedList.innerHTML = '';
+				homeworkDetailNodes.unfinishedList.innerHTML = '';
+				//创建已完成列表
+				for(var i = 0; i < uploadArray.length; i++) {
+					var IsCommented;
+					if(uploadArray[i].IsCommented == true) {
+						IsCommented = '已评';
+					} else {
+						IsCommented = '未评';
+					}
+					//console.log(IsCommented);
+					var headImg = updateHeadImg(uploadArray[i].uimg, 2)
+					var li = document.createElement('li');
+					li.workInfo = uploadArray[i];
+					li.workInfo.workType = 1;
+					mui.extend(li.workInfo, homeworkDetailModel)
+
+					if(uploadArray[i].ugnick) {
+						li.className = 'mui-table-view-cell mui-media isCommented'
+						li.style.height = '60px'
+						li.innerHTML = '<img  class="mui-media-object mui-pull-left dynamic-personal-image" style = "margin-top:0px;width:40px;height:40px;border-radius: 50%;" src="' + headImg + '" />' +
+							'<div class="mui-media-body" style = "margin-top:-5px;">' + events.shortForString(uploadArray[i].ugnick, 12) +
+							'<div class="mui-media-body mui-pull-right" ' +
+							'<p id="isCommented' + i + '" style="font-size: 13px;color:#808080">' + IsCommented + '<span class="mui-icon iconfont icon-fanhui2" style="color:#b7b7b7"></span></p></div>' +
+							'</div>'
+
+						homeworkDetailNodes.finishedList.appendChild(li);
+					} else {
+						li.className = 'mui-table-view-cell mui-media'
+						li.style.height = '60px'
+						li.innerHTML = '<img  class="mui-media-object mui-pull-left dynamic-personal-image" style = "margin-top:0px;width:40px;height:40px;border-radius: 50%;" src="' + headImg + '" />' +
+							'<div class="mui-media-body"  style = "margin-top:-5px;">' + '<span style="color:red">该用户已退群</span>' +
+							'<div class="mui-media-body mui-pull-right" ' +
+							'<p id="isCommented' + i + '" style="font-size: 13px;color:#808080"> </p></div>' +
+							'</div>'
+
+						homeworkDetailNodes.finishedList.appendChild(li);
+
+					}
+				}
+				//创建未完成列表
+				for(var i = 0; i < remainArray.length; i++) {
+
+					var disabled;
+					var btn_class;
+
+					if(remainArray[i].IsAlertChecked == true) {
+						alert = '已查阅';
+						disabled = 'disabled';
+						btn_class = "btn-alerted"
+						allAlertFlag++;
+					} else if(remainArray[i].IsAlerted == false) {
+						alert = '提醒';
+						btn_class = "btn-alert"
+						disabled = '';
+					} else {
+						alert = '已提醒';
+						disabled = 'disabled';
+						btn_class = "btn-alerted"
+						allAlertFlag++;
+					}
+					var headImg = updateHeadImg(remainArray[i].uimg, 2)
+					var li = document.createElement('li');
+					li.style.height = '60px'
+					li.className = 'mui-table-view-cell mui-media'
+					if(remainArray[i].ugnick) {
+						li.innerHTML = '<img  class="mui-media-object mui-pull-left dynamic-personal-image"  style = "margin-top:0px;width:40px;height:40px ;border-radius: 50%;" src="' + headImg + '" />' +
+							'<div class="mui-media-body">' +
+							'<div style = "padding-top:10px">' + events.shortForString(remainArray[i].ugnick, 12) + '<button id="alert' + i + '" class="' + btn_class + '" onclick="alertStu(this)"' + disabled + '>' +
+							alert +
+							'</button>' + '</div>' +
+							'</div>';
+						homeworkDetailNodes.unfinishedList.appendChild(li);
+					} else {
+						li.innerHTML = '<img  class="mui-media-object mui-pull-left dynamic-personal-image"  style = "width:40px;height:40px ;border-radius: 50%;" src="' + headImg + '" />' +
+							'<div class="mui-media-body">' +
+							'<div style = "padding-top:10px">' + '<span style="color:red">该用户已退群</span>' + '<button id="alert' + i + '" class="mui-hidden ' + btn_class + '" onclick="alertStu(this)"' + disabled + '>' +
+							alert +
+							'</button>' + '</div>' +
+							'</div>';
+						homeworkDetailNodes.unfinishedList.appendChild(li);
+					}
+
+				}
+				//				workDetailTea.workDetail = uploadArray.length > 0 ? uploadArray : remainArray;
+				if(allAlertFlag == remainArray.length) {
+					homeworkDetailNodes.alertAllBtn.disabled = 'disabled';
+				}
+			}
+
+			function alertStu(alertBtn) {
+				//console.log(alertBtn.id);
+				var userIds;
+				var userIdArr = [];
+				if(alertBtn.id == 'alertAll') {
+					for(var i = 0; i < remainArray.length; i++) {
+						var alertButton = document.getElementById("alert" + i);
+						if(alertButton.hasAttribute('disabled')) {
+							continue;
+						}
+						if(remainArray[i].utid) {
+							var userId = remainArray[i].utid + '|' + remainArray[i].utid;
+							userIdArr.push(userId);
+						}
+					}
+					userIds = userIdArr.toString();
+				} else {
+					var index = alertBtn.id.replace('alert', '');
+					userIds = remainArray[index].utid + '|' + remainArray[index].utid;
+				}
+				//console.log('userIds===' + userIds);
+				//所需参数
+				var comData = {
+					teacherId: personalUTID, //教师Id
+					userIds: userIds,
+					homeworkId: homeworkModel.HomeworkId //作业id；
+				};
+				// 等待的对话框
+				var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+				//2.获取教师发布作业详情；
+				postDataPro_HomeworkAlert(comData, wd, function(data) {
+					wd.close();
+					//console.log('10.postDataPro_HomeworkAlert:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						if(alertBtn.id == 'alertAll') {
+							homeworkDetailNodes.alertAllBtn.innerHTML = '一键提醒'
+							alertBtn.setAttribute('disabled', 'disabled');
+
+							allAlertFlag = remainArray.length;
+						} else {
+							alertBtn.innerHTML = '已提醒'
+							alertBtn.className = 'btn-alerted'
+							alertBtn.setAttribute('disabled', 'disabled');
+
+							allAlertFlag++;
+						}
+						if(allAlertFlag == remainArray.length) {
+							homeworkDetailNodes.alertAllBtn.disabled = 'disabled';
+
+							for(var i = 0; i < remainArray.length; i++) {
+								var alertButton = document.getElementById("alert" + i);
+								alertButton.className = 'btn-alerted'
+								alertButton.disabled = 'disabled';
+								alertButton.innerHTML = '已提醒';
+
+							}
+						}
+
+					} else {
+						mui.toast(data.RspTxt);
+					}
+				});
+
+			}
+			var getHomeworkIcon = function(subject) {
+				var subjectIcon = '';
+				switch(subject) {
+					case '语文':
+						subjectIcon = 'icon-yuwen';
+						break;
+					case '数学':
+						subjectIcon = 'icon-shuxue';
+						break;
+					case '英语':
+						subjectIcon = 'icon-yingyu';
+						break;
+					case '政治':
+						subjectIcon = 'icon-zhengzhi';
+						break;
+					case '历史':
+						subjectIcon = 'icon-lishi';
+						break;
+					case '地理':
+						subjectIcon = 'icon-dili';
+						break;
+					case '物理':
+						subjectIcon = 'icon-wuli';
+						break;
+					case '化学':
+						subjectIcon = 'icon-huaxue';
+						break;
+					case '生物':
+						subjectIcon = 'icon-shengwu';
+						break;
+					default:
+						subjectIcon = 'icon-qita';
+						break;
+				}
+				return subjectIcon;
+			}
+		</script>
+
+	</body>
+
+</html>

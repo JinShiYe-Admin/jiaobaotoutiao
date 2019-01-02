@@ -1,0 +1,114 @@
+<!--求知回答界面-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/preview.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<!--求知回答详情子页面-->
+		<link href="../../css/qiuzhi/qiuzhi-answerDetailSub.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">回答</h1>
+			<a class="mui-icon iconfont icon-moreandroid mui-pull-right display-none"></a>
+		</header>
+		<nav id="answer-comment" class="mui-bar mui-bar-tab answer-comment" style="background: white;box-shadow: none;padding-top: 6px;">
+
+			<div style="line-height: 34px;border: 1px solid #D9D9D9;margin-left: 10px;margin-right: 10px;padding-left: 14px;color:#B7B7B7;border-radius: 3px;">
+				<span class="mui-icon iconfont icon-xie mui-pull-left" style="color: #B7B7B7;line-height: 34px;padding: 0px;margin-right: 10px;font-size: 24px;"></span>
+				<font id="tab_font">请输入答案评论</font>
+			</div>
+		</nav>
+		<div id="refreshContainer" class="mui-content mui-fullscreen" style="z-index:0">
+			<div class="mui-scroll-wrapper">
+
+				<div class="mui-scroll">
+					<!--数据列表-->
+					<div id="question-container" class="question-container">
+						<h5 id="question-title" class="question-title"></h5>
+					</div>
+					<!--作者信息-->
+					<div id="anthor-container" class="anthor-container">
+						<img id="anthor-portrait" class="img-portrait display-inlineBlock" />
+						<div class="export-info">
+							<h5 id="anthor-name" class="anthor-name single-line"></h5>
+							<p id="anthor-info" class="anthor-intro single-line"></p>
+						</div>
+						<button id="btn-focus" type="button" class="mui-btn mui-pull-right btn-attention" style="width: 55px;height: 28px;">关注</button>
+					</div>
+					<!--问题控件-->
+					<div class="questionContent-container">
+						<div id="question-content" class="question-content"></div>
+						<div id="answer-imgs" class="answer-imgs">
+							<!--<div style="background-image:url(http://qn-kfpb.jiaobaowang.net/qiuzhi/Knowledge/thumb/1493886361110.png?imageMogr2/gravity/Center/crop/!720x324);background-position:center;background-size:contain;width:330px;height:148.5px;text-align:center;">
+							<img style="width: 22.5%; margin:11.25% 0;" class="answer-video" retry="0" src="../../image/utils/playvideo.png"/>
+						</div>-->
+						</div>
+						<div class="">
+							<p id="answer-time" class="display-inlineBlock answer-time"><span id="answer-zanNo" class="zan-num">100</span>赞·5小时前</p>
+							<p id="support-answer" class="support-container display-inlineBlock mui-pull-right"><span id="answer-zan" class="mui-icon iconfont icon-support"></span> </p>
+						</div>
+					</div>
+					<!--评论数和排序选项-->
+					<div class="comments-info">
+						<p id="comments-no" class="comment-no mui-pull-left"></p>
+						<a href="#popover" id="order-selector" class="order-selector display-inlineBlock">
+							倒序排列<span class="mui-icon mui-icon-arrowdown"></span></a>
+					</div>
+					<!--评论列表-->
+					<ul id="list-container" class="mui-table-view">
+					</ul>
+					<div class="answer-noComment display-none" style="width: 100%;min-height: 200px;text-align: center;background-color: white;padding: 20px 0;display: none;">
+						<img src="../../image/qiuzhi/qiuzhi_noanswer.png" style="max-width: 50%; height: auto;" />
+						<p>暂无评论，快来评论吧~~</p>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="popover" class="mui-popover">
+			<ul class="mui-table-view mui-table-view-radio">
+				<li id="reverse-order" value="2" class="mui-table-view-cell mui-selected">
+					<a class="mui-navigate-right">倒序排列</a>
+				</li>
+				<li id="sequence-order" value="1" class="mui-table-view-cell">
+					<a class="mui-navigate-right">顺序排列</a>
+				</li>
+			</ul>
+		</div>
+		<div id="popover-2" class="mui-popover">
+			<ul class="mui-table-view">
+				<li id="change-pop" value="0" class="mui-table-view-cell ">
+					<a class="mui-navigate-right">修改</a>
+				</li>
+				<li id="del-pop" value="1" class="mui-table-view-cell">
+					<a class="mui-navigate-right">删除</a>
+				</li>
+			</ul>
+		</div>
+		<!--mui.js-->
+		<script src="../../js/mui.min.js"></script>
+		<!--公共方法js-->
+		<script src="../../js/utils/events.js"></script>
+		<!--预览js-->
+		<script src="../../js/mui.zoom.js"></script>
+		<script src="../../js/mui.previewimage.js"></script>
+		<!--接口js-->
+		<!--video-->
+		<script src="../../js/utils/video.js"></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<script src="../../js/publicProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/publicQiuzhiProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<!--求知回答详情js 本页js-->
+		<script src="../../js/qiuzhi/qiuzhi-answerDetailSub.js"></script>
+	</body>
+
+</html>

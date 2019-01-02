@@ -1,0 +1,121 @@
+.mui-scroll-wrapper {
+	padding-top: 44px;
+}
+
+.mui-table-view-cell {
+	border-bottom: #EFEFEF solid 1px;
+	padding: 1rem;
+}
+.mui-table-view-cell div {
+	min-height: 5rem;
+	margin: 0.75rem 0;
+	background-color: #f7f8fa;
+	padding: 0 1rem;
+}
+.mui-table-view-cell div p{
+	min-height: 3rem;
+	padding: ;
+}
+.mui-table-view-cell div p:nth-child(1) {
+	font-size: 1.2rem;
+	line-height: 3rem;
+	font-weight: bold;
+	white-space:nowrap; 
+	overflow:hidden; 
+	text-overflow:ellipsis;
+}
+.mui-table-view img {
+	width: 2rem;
+	height: 2rem;
+	margin: 0.5rem 0.5rem 0.5rem 0rem;
+	float: left;
+	display: block;
+	border-radius: 50%;
+}
+.mui-table-view li div p {
+	margin: 0;
+}
+.mui-table-view li div p span {
+	color: #20b7f0;
+}
+
+
+.mui-bar~.mui-content .mui-fullscreen {
+	top: 44px;
+	height: auto;
+}
+
+.mui-pull-top-tips {
+	position: absolute;
+	top: -20px;
+	left: 50%;
+	margin-left: -25px;
+	width: 40px;
+	height: 40px;
+	border-radius: 100%;
+	z-index: 1;
+}
+
+.mui-bar~.mui-pull-top-tips {
+	top: 24px;
+}
+
+.mui-pull-top-wrapper {
+	width: 42px;
+	height: 42px;
+	display: block;
+	text-align: center;
+	background-color: #efeff4;
+	border: 1px solid #ddd;
+	border-radius: 25px;
+	background-clip: padding-box;
+	box-shadow: 0 4px 10px #bbb;
+	overflow: hidden;
+}
+
+.mui-pull-top-tips.mui-transitioning {
+	-webkit-transition-duration: 200ms;
+	transition-duration: 200ms;
+}
+
+.mui-pull-top-tips .mui-pull-loading {
+	/*-webkit-backface-visibility: hidden;
+				-webkit-transition-duration: 400ms;
+				transition-duration: 400ms;*/
+	margin: 0;
+}
+
+.mui-pull-top-wrapper .mui-icon,
+.mui-pull-top-wrapper .mui-spinner {
+	margin-top: 7px;
+}
+
+.mui-pull-top-wrapper .mui-icon.mui-reverse {
+	/*-webkit-transform: rotate(180deg) translateZ(0);*/
+}
+
+.mui-pull-bottom-tips {
+	text-align: center;
+	background-color: #efeff4;
+	font-size: 15px;
+	line-height: 40px;
+	color: #777;
+}
+
+.mui-pull-top-canvas {
+	overflow: hidden;
+	background-color: #fafafa;
+	border-radius: 40px;
+	box-shadow: 0 4px 10px #bbb;
+	width: 40px;
+	height: 40px;
+	margin: 0 auto;
+}
+
+.mui-pull-top-canvas canvas {
+	width: 40px;
+}
+
+.mui-slider-indicator.mui-segmented-control {
+	background-color: #efeff4;
+}

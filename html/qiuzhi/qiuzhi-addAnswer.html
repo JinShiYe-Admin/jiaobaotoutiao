@@ -1,0 +1,608 @@
+<!--求知回答问题，添加评论界面-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<link href="../../css/utils/preview.css" rel="stylesheet" />
+		<link href="../../css/quan/custom-textarea.css" rel="stylesheet" />
+		<link rel="stylesheet" type="text/css" href="../../css/qiuzhi/qiuzhi-addAnswer.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title" style="color: white;">我要回答</h1>
+			<a id="submitBtn" class="mui-pull-right" style="text-align: right;right: 10px;font-size: 14px;">提交</a>
+		</header>
+
+		<div class="mui-scroll-wrapper mui-content">
+			<div class="mui-scroll">
+				<!--<p id="askTitle" style="font-size: 14px;margin-top: 12px;word-wrap: break-word;padding: 0 15px;text-align: justify;"></p>-->
+				<!--<div class="input-content">-->
+				<!--输入框-->
+				<textarea id="answerContent" class="" placeholder="添加回答,最多4000字"></textarea>
+				<!--额外附件-->
+				<div class="extras-info">
+					<div id="take_pic" class="take_pic file-extras">
+						<a class="mui-icon iconfont icon-xiangji1"></a>
+
+					</div>
+					<div id="get_gallery" class="get_gallery file-extras">
+						<a class="mui-icon iconfont icon-tuku"></a>
+					</div>
+					<div id="get_record" class="get_record file-extras">
+						<a class="mui-icon iconfont icon-yuyin3"></a>
+					</div>
+					<div id="take_camero" class="take_camero file-extras">
+						<a class="mui-icon iconfont icon-shipin" disabled="disabled"></a>
+					</div>
+					<div class="isAnonymity">
+						<div class="mui-input-row mui-checkbox mui-left file-extras">
+							<label style="font-size: 12px;">匿名</label>
+							<input id="checkbox" name="checkbox" value="" type="checkbox">
+						</div>
+					</div>
+
+				</div>
+				<!--</div>-->
+				<!--显示附件控件-->
+				<div id="pictures" style="width: 100%;"></div>
+			</div>
+		</div>
+
+		<script src="../../js/mui.min.js"></script>
+		<!--公共事件js-->
+		<script src="../../js/utils/events.js" type="text/javascript" charset="utf-8"></script>
+		<!--相机js-->
+		<script src="../../js/utils/camera.js"></script>
+		<!--七牛js-->
+		<script src="../../js/qiniu/qiniu.js" type="text/javascript" charset="utf-8"></script>
+		<!--加密js-->
+		<script src="../../js/utils/cryption.js" type="text/javascript" charset="utf-8"></script>
+		<!--压缩文件js-->
+		<script src="../../js/utils/compress.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/mui.zoom.js"></script>
+		<script src="../../js/mui.previewimage.js"></script>
+		<!--	<script src="../../js/utils/recordvideoutil.js"></script>-->
+		<script src="../../js/utils/load.js"></script>
+		<script src="../../js/utils/video.js"></script>
+		<!--上传至七牛云js-->
+		<script src="../../js/utils/CloudFileUtil.js" type="text/javascript" charset="utf-8"></script>
+		<!--求知接口js-->
+		<script src="../../js/publicQiuzhiProtocol.js" type="text/javascript" charset="utf-8"></script>
+
+		<script type="text/javascript">
+			video.initVideo();
+			mui.init();
+			//将传值到的标题显示
+			var askModel; //问题model
+			var answerInfo; //答案信息
+			var commentInfo; //评论信息
+			var type = 0; //0：回答问题，1：评论答案 2：评论回复
+			/*mui(".mui-scroll-wrapper").scroll();*/
+			//传值接收方法
+			mui.plusReady(function() {
+				events.blurBack();
+				mui.previewImage();
+				plus.webview.currentWebview().addEventListener("hide", function() {
+					document.getElementById("pictures").innerHTML = "";
+					document.getElementById("answerContent").value = "";
+				})
+				window.addEventListener('qiuzhi-addAnswer', function(event) {
+					CloudFileUtil.files = [];
+					document.getElementById('pictures').innerHTML = "";
+					type = 0;
+					askModel = event.detail.data;
+					document.getElementById('title').innerText = '我要回答';
+					//匿名默认未选择
+					document.getElementById('checkbox').checked = false;
+					document.querySelector(".extras-info").style.display = "block";
+					//					[].forEach.call(document.querySelectorAll('.file-extras'), function(item) {
+					//						item.style.display = 'inline-block';
+					//					})
+					document.getElementById('answerContent').value = "";
+					document.getElementById('answerContent').placeholder = "添加回答,最多4000字";
+					jQuery('#answerContent').prop("maxLength", "4000"); //设置最长
+					//					var askTitle = document.getElementById("askTitle");
+					//					askTitle.innerHTML = askModel.AskTitle;
+				});
+				//加载评论
+				window.addEventListener('add-comment', function(e) {
+					CloudFileUtil.files = [];
+					document.getElementById('pictures').innerHTML = "";
+					type = 1;
+					document.getElementById('answerContent').value = "";
+					document.getElementById('title').innerText = '我要评论';
+					document.getElementById('answerContent').placeholder = "添加评论,最多300字";
+					jQuery('#answerContent').prop("maxLength", "300"); //设置最长
+					document.querySelector(".extras-info").style.display = "none";
+					//					[].forEach.call(document.querySelectorAll('.file-extras'), function(item) {
+					//						item.style.display = 'none';
+					//					})
+					answerInfo = e.detail.data;
+					//					document.getElementById('askTitle').innerText = "";
+				})
+				window.addEventListener("comment-reply", function(e) {
+					//console.log('回复评论要加载的值：' + JSON.stringify(e.detail.data));
+					type = 2;
+					document.getElementById('answerContent').value = "";
+					jQuery('#answerContent').prop("maxLength", "300"); //设置最长
+					document.getElementById('title').innerText = '回复评论';
+					commentInfo = e.detail.data;
+					//					document.getElementById('askTitle').innerText = commentInfo.CommentContent;
+					document.getElementById('answerContent').placeholder = "添加评论回复,最多300字";
+					document.querySelector(".extras-info").style.display = "none";
+					//					[].forEach.call(document.querySelectorAll('.file-extras'), function(item) {
+					//						item.style.display = 'none';
+					//					})
+				})
+				window.addEventListener("changeAnswer", function(e) {
+					CloudFileUtil.files = [];
+					type = 3;
+					//console.log("要获取的回答详情：" + JSON.stringify(e.detail.data));
+					document.getElementById('title').innerText = '修改回答';
+					//匿名默认未选择
+					document.querySelector(".extras-info").style.display = "block";
+					document.getElementById('answerContent').placeholder = "修改回答,最多4000字";
+					jQuery('#answerContent').prop("maxLength", "4000"); //设置最长
+					answerInfo = e.detail.data;
+					setAnswerInfo(answerInfo);
+				})
+				setListener();
+			});
+			var setAnswerInfo = function(answerInfo) {
+				document.getElementById('answerContent').value = answerInfo.AnswerContent;
+				document.getElementById('checkbox').checked = answerInfo.IsAnonym ? true : false;
+				if(answerInfo.AnswerThumbnail) {
+					var imgs = answerInfo.AnswerThumbnail.split("|");
+					var bigImgs = answerInfo.AnswerEncAddr.split("|");
+					var cutImgs = answerInfo.AnswerCutImg.split("|");
+					var files = [];
+					for(var i in imgs) {
+						var img = {
+							url: bigImgs[i],
+							thumb: imgs[i],
+							clip: cutImgs[i],
+							order: parseInt(i),
+							type: answerInfo.AnswerEncType
+						};
+						files.push(img);
+					}
+					for(var i in files) {
+						CloudFileUtil.setPic(files[i], 1);
+					}
+				}
+			}
+			//设置监听
+			var setListener = function() {
+				//拍照
+				events.addTap('take_pic', function() {
+					if(CloudFileUtil.files.length > 0 && CloudFileUtil.files[0].type != 1) {
+						mui.toast("只能上传一种附件！");
+						return;
+					}
+					var item = this;
+					jQuery(item).css("pointerEvents", "none");
+					if(CloudFileUtil.files.length < 9) {
+						camera.getPic(camera.getCamera(), function(picPath) {
+							plus.nativeUI.showWaiting(storageKeyName.UPLOADING, {
+								back: 'none'
+							});
+							jQuery(item).css("pointerEvents", "all");
+							var saveSpace = storageKeyName.KNOWLEDGE; //保存空间
+							compress.compressPIC(picPath, function(event) {
+								var localPath = event.target;
+								var options = {
+									type: 10,
+									thumbSize: {
+										width: 200,
+										height: 200
+									},
+									cropSize: {
+										width: event.width,
+										height: event.width * 0.45
+									}
+								}
+								var data = CloudFileUtil.getSingleImgUploadOptions(localPath, 7, 0, saveSpace, options);
+								CloudFileUtil.getQNUpTokenWithManage(storageKeyName.QNGETUPLOADTOKEN, data.options, function(datas) {
+									//console.log("获取的数据：" + JSON.stringify(datas));
+									if(datas.Status == 1) {
+										var tokenInfo = datas.Data;
+
+										//上传文件
+										CloudFileUtil.uploadFile(tokenInfo, localPath, function(uploadData, status) {
+											//console.log(JSON.stringify(uploadData));
+											var img = { //图片信息
+												url: tokenInfo.Domain + tokenInfo.Key,
+												thumb: tokenInfo.OtherKey[data.thumbKey],
+												clip: tokenInfo.OtherKey[data.clipKey],
+												type: 1
+											}
+											//console.log("获取的图片信息：" + JSON.stringify(img));
+											//关闭等待框
+											plus.nativeUI.closeWaiting();
+											//放置图片
+											CloudFileUtil.setPic(img);
+										});
+									}
+
+								}, function(xhr, type, errorThrown) {
+									//console.log("错误类型：" + type + errorThrown);
+									plus.nativeUI.closeWaiting(); //关闭等待框
+								});
+							})
+						}, function(err) {
+							jQuery(item).css("pointerEvents", "all");
+						})
+					} else {
+						mui.toast('上传图片附件不得多于9张！');
+						jQuery(item).css("pointerEvents", "all");
+					}
+				});
+				//录像
+				document.getElementById("take_camero").onclick = function() {
+					var item = this;
+					jQuery(item).css('pointerEvents', 'none');
+					//console.log("item不能点击了！" + item.id);
+					if(CloudFileUtil.files.length > 0) {
+						switch(CloudFileUtil.files[0].type) {
+							case 1:
+								mui.toast("只能上传一种附件！");
+								break;
+							case 2:
+								mui.toast("只能上传一个视频！");
+								break;
+							default:
+								break;
+						}
+						jQuery(item).css('pointerEvents', 'all');
+						return;
+					}
+					video.recordVideo({}, function(path) {
+						events.showWaiting();
+						//console.log("保存在本地的路径：" + path);
+						load.getManageOptions(2, path, function(mData, thumb) {
+							//console.log("视频获取的各项参数：" + JSON.stringify(data));
+							mData.saveSpace = storageKeyName.KNOWLEDGE;
+							mData.spaceId = 7;
+							var data = CloudFileUtil.getSingleImgUploadOptions(path, mData.spaceId, mData.spaceType, mData.saveSpace, mData.options);
+							CloudFileUtil.getQNUpTokenWithManage(storageKeyName.QNGETUPLOADTOKEN, data.options, function(datas) {
+								//console.log("获取的数据：" + JSON.stringify(datas));
+								if(datas.Status == 1) {
+									var tokenInfo = datas.Data;
+									//上传文件
+									CloudFileUtil.uploadFile(tokenInfo, path, function(uploadData, status) {
+										//console.log("获取的上传数据：" + JSON.stringify(uploadData));
+										//console.log("获取的token信息：" + JSON.stringify(tokenInfo));
+										var img = { //图片信息
+											url: tokenInfo.Domain + tokenInfo.Key,
+											thumb: tokenInfo.OtherKey[data.thumbKey],
+											clip: tokenInfo.OtherKey[data.thumbKey] + "?imageMogr2/gravity/Center/crop/!" + mData.options.thumbSize.width + "x" + mData.options.thumbSize.width * 0.45,
+											localPath: path,
+											type: 2
+										}
+										//										//console.log("获取的图片信息：" + JSON.stringify(img));
+										//关闭等待框
+										plus.nativeUI.closeWaiting();
+										//放置图片
+										CloudFileUtil.setPic(img, 0, thumb);
+										jQuery("#take_camero").css('pointerEvents', 'all');
+									});
+								}
+
+							}, function(xhr, type, errorThrown) {
+								//console.log("错误类型：" + type + errorThrown);
+								plus.nativeUI.closeWaiting(); //关闭等待框
+								jQuery("#take_camero").css('pointerEvents', 'all');
+							});
+						})
+					}, function(errData) {
+						//console.log(errData.code);
+						if(errData.code != 0) {
+							mui.toast(errData.message);
+						}
+						jQuery("#take_camero").css('pointerEvents', 'all');
+						//console.log("item能点击了！")
+					})
+				};
+				events.addTap('get_record', function() {
+					mui.toast('此功能暂未开放');
+				})
+				//相册
+				events.addTap('get_gallery', function() {
+					if(CloudFileUtil.files.length > 0 && CloudFileUtil.files[0].type != 1) {
+						mui.toast("只允许上传一种附件！");
+						return;
+					}
+					if(CloudFileUtil.files.length < 9) {
+						var picCount = 0; //上传图片计数
+						gallery.getMultiplePic(9 - CloudFileUtil.files.length, function(paths) { //回调函数
+							plus.nativeUI.showWaiting(storageKeyName.UPLOADING, {
+								back: 'none'
+							}); //等待框
+							//console.log("保存的路径：" + JSON.stringify(paths));
+							var saveSpace = storageKeyName.KNOWLEDGE; //保存路径
+							compress.compressPics(paths, function(compressedPaths, widths) {
+									//console.log('获取的图片路径：' + JSON.stringify(compressedPaths));
+									var multiOptions = [];
+									for(var i in compressedPaths) {
+										var options = { //上传七牛后的处理参数
+											type: 1, //处理类型 0：缩略图 1 裁剪 10 缩略图+裁剪
+											thumbSize: {
+												width: 200, //缩略图最大宽度
+												height: 200 //缩略图最大高度
+											},
+											cropSize: {
+												width: widths[i],
+												height: widths[i] * 0.45 //裁剪宽度值
+											}
+										}
+										multiOptions.push(options);
+									}
+									//多图片处理获取参数
+									var data = CloudFileUtil.getMultipleImgUploadOptions(compressedPaths, 7, 0, saveSpace, multiOptions);
+									//								var data = CloudFileUtil.getMultipleUploadDataOptions(compressedPaths, 7, 200, 0, saveSpace); //获取获取token的各参数
+									CloudFileUtil.getQNUpTokenWithManage(storageKeyName.QNGETUPLOADTOKEN, data.options, function(datas) {
+										//console.log("传回来的值：" + JSON.stringify(datas)) //回调数据
+										if(datas.Status == 1) { //成功
+											var tokenInfos = datas.Data; //参数信息
+											var imgs = [];
+											//上传图片
+											CloudFileUtil.uploadFiles(compressedPaths, tokenInfos, function(uploadData, status, index) {
+												//console.log(JSON.stringify(uploadData));
+												imgs[index] = {
+													url: tokenInfos[0].Domain + JSON.parse(uploadData.responseText).key,
+													thumb: (tokenInfos[0].Domain + JSON.parse(uploadData.responseText).key).replace(saveSpace, saveSpace + "thumb/"),
+													clip: (tokenInfos[0].Domain + JSON.parse(uploadData.responseText).key).replace(saveSpace, saveSpace + "clip/"),
+													type: 1
+												}
+												picCount++;
+
+												if(picCount == compressedPaths.length) { //所有图片已上传
+													plus.nativeUI.closeWaiting(); //关闭等待框
+													for(var i in imgs) {
+														CloudFileUtil.setPic(imgs[i]); //放置图片
+													}
+
+												}
+											});
+										}
+									})
+								},
+								//错误的回调
+								function(xhr, type, errorThrown) {
+									//console.log("错误类型：" + type + errorThrown);
+									plus.nativeUI.closeWaiting();
+								});
+
+						});
+					} else {
+						mui.toast('上传图片附件不得多于9张！');
+					}
+
+				});
+
+				//提交按钮
+				events.addTap('submitBtn', function() {
+					var answerContent = jQuery.trim(document.getElementById("answerContent").value);
+					answerContent = events.trim(answerContent);
+					if(answerContent) {
+						switch(type) {
+							case 0:
+								if(events.limitInput(answerContent, 4000)) {
+									return;
+								}
+								addAnswer(answerContent);
+								break;
+							case 1:
+								if(events.limitInput(answerContent, 300)) {
+									return;
+								}
+								addComment(answerContent);
+								break;
+							case 2:
+								if(events.limitInput(answerContent, 300)) {
+									return;
+								}
+								addComment(answerContent, commentInfo);
+								break;
+							case 3:
+								if(events.limitInput(answerContent, 4000)) {
+									return;
+								}
+								changeAnswer(answerContent);
+								break;
+							default:
+								break;
+						}
+					} else {
+						mui.toast('请输入内容');
+					}
+				});
+			}
+			/**
+			 * 修改回答
+			 */
+			var changeAnswer = function(answerContent) {
+				var anonymIsChecked = document.getElementById('checkbox').checked;
+				var comData = {
+					answerId: answerInfo.AnswerId, //回答ID
+					answerContent: answerContent, //回答内容,4000
+					encType: getTypeAddress(CloudFileUtil.files).encType, //文件类型
+					encLen: 0,
+					encAddr: getTypeAddress(CloudFileUtil.files).encAddr, //附件地址,300,多个的情况例如：1.jpg|2.jpg
+					thumbnail: getTypeAddress(CloudFileUtil.files).encImg, //缩略图
+					cutImg: getTypeAddress(CloudFileUtil.files).clipAddress, //裁剪地址
+					isAnonym: anonymIsChecked ? 1 : 0 //是否匿名
+				};
+				if(!comData.cutImg) {
+					comData.cutImg = "";
+				}
+				var wd1 = events.showWaiting();
+				postDataQZPro_setAnswerById(comData, wd1, function(data) {
+					wd1.close();
+					//console.log("更改回答的值：" + JSON.stringify(data));
+					if(data.RspCode == 0 && data.RspData.Result) {
+						comData.AnswerEncType = comData.encType;
+						comData.AnswerThumbnail = comData.thumbnail;
+						comData.AnswerEncAddr = comData.encAddr;
+						comData.AnswerCutImg = comData.cutImg;
+						mui.fire(plus.webview.currentWebview().opener(), "answerChanged", comData);
+						mui.back();
+					} else {
+						mui.toast(data.RspTxt);
+					}
+				})
+			}
+			/**
+			 * 回答问题
+			 */
+			var addAnswer = function(answerContent) {
+				var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid; //用户id
+
+				var isAnonym = document.getElementById('checkbox').checked;
+				var isAnonymNo = isAnonym ? 1 : 0;
+				//console.log('是否显示匿名：' + isAnonym);
+				//所需参数
+				var comData = {
+					askId: askModel.TabId, //问题ID
+					answerContent: answerContent, //回答内容,4000
+					encType: getTypeAddress(CloudFileUtil.files).encType,
+					encLen: 0,
+					encAddr: getTypeAddress(CloudFileUtil.files).encAddr, //附件地址,300,多个的情况例如：1.jpg|2.jpg
+					thumbnail: getTypeAddress(CloudFileUtil.files).encImg,
+					cutImg: getTypeAddress(CloudFileUtil.files).clipAddress,
+					answerMan: personalUTID, //回答人
+					isAnonym: isAnonymNo //
+				};
+				// 等待的对话框
+				var wd = events.showWaiting();
+				//9.新增某个用户回答问题
+				postDataQZPro_addAnswer(comData, wd, function(data) {
+					wd.close();
+					//console.log('9.新增某个用户回答问题:' + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						mui.toast('回答成功');
+						document.getElementById("answerContent").value = '';
+						events.fireToPageNone('qiuzhi-question.html', 'answerAdded');
+						events.fireToPageNone('expert-detail.html', 'refresh_expertdetail');
+						mui.back();
+					} else {
+						mui.toast(data.RspTxt);
+					}
+				});
+			}
+			/**
+			 * 增加评论
+			 * @param {Object} commentValue
+			 */
+			var addComment = function(commentValue, opotions) {
+				var pId = myStorage.getItem(storageKeyName.PERSONALINFO).utid;
+				var wd = events.showWaiting();
+				var upperId = 0;
+				var replyId = 0;
+				var answerId;
+				if(answerInfo) {
+					answerId = answerInfo.AnswerId;
+				}
+				//如果有参数
+				if(opotions) {
+					//console.log("数值：" + JSON.stringify(opotions))
+					if(opotions.UpperId == 0) {
+						upperId = opotions.TabId;
+					} else {
+						upperId = opotions.UpperId;
+					}
+					replyId = opotions.UserId;
+					answerId = opotions.AnswerId;
+				}
+
+				postDataQZPro_addAnswerComment({
+					answerId: answerId, //回答ID
+					upperId: upperId, //上级评论ID,第一个评论传0，其他的传最上层的ID
+					userId: pId, //评论用户ID,
+					commentContent: commentValue, //评论内容
+					replyId: replyId //回复用户ID,新增评论的话传0，回复评论传用户Id
+				}, wd, function(data) {
+					wd.close();
+
+					if(data.RspCode == 0) {
+						if(data.RspData.Result) {
+							document.getElementById('answerContent').value = '';
+							mui.toast('评论成功！')
+							events.fireToPageNone('expert-detail.html', 'refresh_expertdetail');
+							events.fireToPageNone('qiuzhi-answerDetail.html', 'commentAdded', {
+								commentInfo: {
+									userId: myStorage.getItem(storageKeyName.PERSONALINFO).utid, //	用户ID
+									answerId: answerId, //回答ID
+									commentId: data.RspData.Result //评论ID
+								},
+								upperInfo: {
+									upperId: upperId,
+									replyId: replyId
+								}
+							});
+							mui.back();
+						}
+					} else {
+						mui.toast(data.RspTxt);
+					}
+				})
+			}
+
+			//删除图标的点击事件
+			CloudFileUtil.setDelPicListener();
+			//播放视频按钮
+			CloudFileUtil.setPlayVideoListener();
+			/**
+			 * 获取接口数据文件及缩略图
+			 * encType: '',//附件类型,1图片2音视频3仅文字
+			 * encAddr: '',//附件地址
+			 * encImg: '',//附件缩略图地址
+			 */
+			var getTypeAddress = function() {
+				var TAs = {};
+				var encType;
+				var encAddrs = [];
+				var encImgs = [];
+				var clipImgs = [];
+				//console.log("要处理的上传图片：" + JSON.stringify(CloudFileUtil.files))
+				if(CloudFileUtil.files.length > 0) { //如果存在附件
+					for(var i in CloudFileUtil.files) {
+						var theFile = CloudFileUtil.files[i];
+						if(i == 0) {
+							TAs.encType = theFile.type;
+						}
+						//						if(i == 0) {
+						//							TAs.encType = theFile.type;
+						//							if(theFile.clip) {
+						//								TAs.clipAddress = theFile.clip;
+						//							}
+						//						}
+						encAddrs.push(theFile.url);
+						encImgs.push(theFile.thumb);
+						clipImgs.push(theFile.clip);
+					}
+					//console.log(JSON.stringify(encAddrs));
+					//console.log(JSON.stringify(encImgs));
+					TAs.encAddr = encAddrs.join('|');
+					TAs.encImg = encImgs.join('|');
+					TAs.clipAddress = clipImgs.join("|");
+				} else { //不存在附件
+					TAs.encType = 0;
+					TAs.encAddr = '';
+					TAs.encImg = '';
+					TAs.clipAddress = '';
+				}
+				return TAs;
+			}
+		</script>
+	</body>
+
+</html>

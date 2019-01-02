@@ -1,0 +1,72 @@
+<!--申请入群界面-->
+<!--@anthor an-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/mine/search.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<!--申请样式表-->
+		<link href="../../css/mine/apply.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">
+				<div class="search-form">
+					<div class="mui-input-row  ">
+						<input id="search-group" type="search" class="mui-input-clear search-input" placeholder="通过群成员手机号或用户名搜索群">
+						<input id="search-btn" type="submit" class="search-btn" value="搜索" />
+					</div>
+				</div>
+			</h1>
+		</header>
+		<div class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<!--这里放置真实显示的DOM内容-->
+				<ul id="groups-container" class="mui-table-view">
+					
+				</ul>
+			</div>
+		</div>
+		<!--申请入群弹出框-->
+		<div id="chose-roles" class="mui-popover center-popover">
+			<div class="pop-title">
+				<div class="title-left"></div>
+				<div class="title-middle">请选择身份</div>
+				<span id="btn-cancle" class="title-right iconfont icon-guanbi1"></span>
+			</div>
+			<form class="mui-input-group chose-container">
+				<div class="mui-input-row mui-radio mui-left display-inlineBlock">
+					<label class="parents-label mui-ellipsis">家长</label>
+					<input id="check-parents" name="radio1" type="radio" value="0">
+				</div>
+				<div class="mui-input-row mui-radio mui-left display-inlineBlock">
+					<label class="tea-label mui-ellipsis">老师</label>
+					<input id="check-tea" name="radio1" type="radio" value="2">
+				</div>
+				<div class="mui-input-row mui-radio mui-left display-inlineBlock">
+					<label class="stu-label mui-ellipsis">学生</label>
+					<input id="check-stu" name="radio1" type="radio" value="3">
+				</div>
+			</form>
+			<textarea id="extra-input" class="extra-input" rows="2" placeholder="请输入备注信息，最多20字"></textarea>
+			<div class="buttons">
+				<button id="btn-sure" type="button" class="mui-btn mui-btn-primary btn-sure">确认</button>
+				<!--<button  type="button" class="  -btn mui-btn-green btn-cancel">取消</button>-->
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<!--本页面的js-->
+		<script src="../../js/mine/apply-group.js"></script>
+	</body>
+
+</html>

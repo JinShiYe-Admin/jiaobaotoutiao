@@ -1,0 +1,102 @@
+<!--班级群组界面-->
+<!--@anthor an-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<link href="../../css/quan/class_space.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				min-height: 100%;
+			}
+			.mui-navigate-right{
+				font-size: 1.6rem;
+			}
+			.mui-navigate-right p{
+				font-size: 1.3rem;
+			}
+			.group-personName{
+				font-size: 1.3rem;
+			}
+			.group-button{
+				font-size: 16px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<!--标题栏-->
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title">班级名称</h1>
+		</header>
+		<div class="mui-content mui-scroll-wrapper">
+			<div class="mui-scroll">
+				<ul id="gride" class="mui-table-view mui-grid-view mui-grid-9" style="background-color: white;">
+
+				</ul>
+				<div id="show-all" class="more-container display-none" style="background-color: white; display: none;">
+					<p class="show-all-words">查看全部群成员<span class="mui-icon mui-icon-arrowright more-arrow"></span></p>
+				</div>
+				<div style="width: 100%;background-color: #E4E4E4;height: 1px;margin-top: -10px;"></div>
+				<ul id="info-container" class="mui-table-view display-none" style="margin-top: 20px;background-color: white;">
+					<li id="qun-code" class="mui-table-view-cell">
+						<a class="mui-navigate-right">
+							群二维码
+							<span id="data-info" class="mui-badge single-line iconfont icon-erweima" style="background-color: transparent;color: #B7B7B7;"></span>
+						</a>
+					</li>
+					<div style="width: 100%;background-color: #E4E4E4;height: 1px;"></div>
+					<li class="mui-table-view-cell">
+						<a class="mui-navigate-right">
+							群说明
+							<p id="group-info" class="group-info">你好好好哦啊哦啊哦啊哦哦嗷嗷嗷的回复京东方简称甲亢地方就才看到女魔</p>
+						</a>
+					</li>
+				</ul>
+				<div class="quit-container display-none">
+					<button id="quit-group" type="button" class="mui-btn mui-btn-danger group-button  ">退出</button>
+				</div>
+			</div>
+		</div>
+		<div id="chose-roles" class="mui-popover center-popover group-pop">
+			<div class="center-title">选择身份:</div>
+			<div class="group-choose">
+				<form class="mui-input-group">
+					<div class="mui-input-row mui-radio mui-left">
+						<label class="parents-label mui-ellipsis">邀请[家长]入群</label>
+						<input id="check-parents" name="radio1" type="radio" value="0">
+					</div>
+					<div class="mui-input-row mui-radio mui-left">
+						<label class="tea-label mui-ellipsis">邀请[老师]入群</label>
+						<input id="check-tea" name="radio1" type="radio" value="2">
+					</div>
+					<div class="mui-input-row mui-radio mui-left">
+						<label class="stu-label mui-ellipsis">邀请[学生]入群</label>
+						<input id="check-stu" name="radio1" type="radio" value="3">
+					</div>
+				</form>
+			</div>
+			<div class="buttons-container">
+				<button id="btn-sure" type="button" class="mui-btn mui-btn-primary btn-aplly">确定</button>
+				<button id="btn-cancle" type="button" class="mui-btn mui-btn-primary mui-btn-outlined  btn-cancel">取消</button>
+			</div>
+		</div>
+
+	</body>
+	<script src="../../js/mui.min.js"></script>
+	<!--公共接口js-->
+	<script src="../../js/publicProtocol.js"></script>
+	<!--公共事件JS-->
+	<script type="text/javascript" src="../../js/utils/events.js"></script>
+	<!--本頁專用JS-->
+	<script type="text/javascript" src="../../js/quan/class-group1.js"></script>
+
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<!--引入系统样式-->
+		<link rel="stylesheet" href="../../css/mui.min.css" />
+		<script type="text/javascript" src="../../js/mui.min.js" ></script>
+		<!--<script type="text/javascript" src="../../js/mui.js" ></script>-->
+		<!--引入共用样式-->
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+	</head>
+
+	<body>
+		<div class="mui-content"></div>
+	</body>
+	<script type="text/javascript">
+		//启用双击监听
+		mui.init({
+			gestureConfig:{
+				doubletap:true
+			},
+			subpages:[{ 
+				url:'clip_sub.html',
+				id:'clip_sub.html',
+				styles:{
+//					top: '45px',
+//					bottom: localStorage.getItem('$Statusbar'),
+				}
+			}] 
+		});
+	
+//		var contentWebview = null;
+//		document.querySelector('header').addEventListener('doubletap',function () {
+//			if(contentWebview==null){
+//				contentWebview = plus.webview.currentWebview().children()[0];
+//			}
+//			contentWebview.evalJS("mui('#pullrefresh').pullRefresh().scrollTo(0,0,100)");
+//		});
+	</script>
+
+</html>

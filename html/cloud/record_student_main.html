@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<meta name="author" content="莫尚霖,email:444811716@qq.com" />
+		<meta name="description" content="学生档案" />
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/utils/preview.css" />
+		<link rel="stylesheet" href="../../css/utils/pullToRefresh.css" />
+		<style>
+			body,
+			.mui-content,
+			.mui-scroll-wrapper {
+				background-color: white;
+			}
+
+			.mui-table-view:before,
+			.mui-table-view:after,
+			.mui-table-view-cell:after {
+				height: 0px;
+			}
+
+			.mui-table-view {
+				word-break: break-all;
+				background-color: white;
+			}
+
+			.mui-col-sm-9 {
+				background: #F2F3F5;
+			}
+
+			.mui-col-sm-3 {
+				padding-left: 10px;
+			}
+
+			.dynamic-date :first-child {
+				font-size: 3rem;
+				display: inline;
+			}
+
+			.dynamic-date :last-child {
+				font-size: 1.5rem;
+				display: inline;
+			}
+
+			.mui-table-view-cell {
+				padding: 8px;
+				margin: 0px;
+			}
+
+			.mui-table-view-cell.mui-active {
+				background: #D9D9D9;
+			}
+
+			.dynamic-ellipsis-show {
+				overflow: hidden;
+				text-overflow: ellipsis;
+				display: -webkit-box;
+				-webkit-line-clamp: initial;
+				-webkit-box-orient: vertical;
+				font-size: 1.4rem;
+				line-height: 20px;
+			}
+
+			.dynamic-date-parent {
+				margin-top: 20px;
+			}
+
+			.dynamic-date-year-parent {
+				width: 16.6%;
+				margin-left: 15px;
+			}
+
+			.dynamic-date-year {
+				font-weight: bold;
+				font-size: 1.8rem;
+			}
+
+			.dynamic-date {
+				/*日期*/
+				font-weight: bold;
+				/*加粗*/
+				margin-top: 4px;
+			}
+
+			.mui-row {
+				margin-top: 5px;
+				margin-right: 10px;
+				word-break: break-all;
+			}
+
+			.record-imge {
+				width: 100%;
+				margin-top: 3px;
+			}
+
+			.record-picture {
+				overflow: hidden;
+				position: relative;
+				float: left;
+				text-align: center;
+				margin-bottom: 3px;
+			}
+
+			.record-picture-num {
+				/*剩余图片数量*/
+				position: absolute;
+				color: white;
+				background-color: rgba(0, 0, 0, .3);
+				width: 100%;
+				font-size: 25px;
+			}
+
+			.show-all {
+				display: none;
+				color: #B7B7B7;
+				font-size: 1.4rem;
+			}
+
+			.dynamic-name {
+				float: right;
+				color: #808080;
+			}
+
+			.mui-pull-bottom-wrapper {
+				/*底部加载更多区域*/
+				background-color: white;
+			}
+
+			.mui-checkbox input[type=checkbox]:checked:before,
+			.mui-radio input[type=radio]:checked:before {
+				color: #13b7f6;
+			}
+
+			.mui-checkbox label {
+				width: 0px;
+				/*padding-right: 28px;*/
+			}
+
+			.mui-checkbox input[type=checkbox],
+			.mui-radio input[type=radio] {
+				right: 0px;
+			}
+
+			.mui-input-row {
+				position: absolute;
+				right: 0px;
+				width: 28px;
+				display: none;
+			}
+
+			#commit_div {
+				/*底部按钮区域*/
+				position: absolute;
+				display: none;
+				bottom: 0px;
+				width: 100%;
+				background-color: white;
+				border-top: 1px solid rgba(228, 228, 228, 0.4);
+				padding-top: 10px;
+			}
+
+			#commit {
+				/*底部按钮*/
+				width: 95%;
+				left: 2.5%;
+				padding: 6px 12px 7px;
+			}
+
+			.mui-scroll-wrapper {
+				top: 44px;
+			}
+
+			.mui-btn-block.delete-no,
+			.mui-btn-block.delete-no:active {
+				background-color: #e4e4e4;
+				border: 1px solid #e4e4e4;
+			}
+
+			.mui-popover {
+				width: 100%;
+				height: 0px;
+				border-radius: initial;
+				background-color: transparent;
+				border: none;
+				box-shadow: none;
+			}
+
+			.mui-backdrop {
+				background-color: black;
+			}
+
+			.video-thumb {
+				/*视频缩略图*/
+				width: 50%;
+				visibility: hidden;
+			}
+
+			.video-play {
+				/*播放按钮*/
+				position: absolute;
+				visibility: hidden;
+			}
+
+			.video-time {
+				/*视频时间*/
+				position: absolute;
+				color: white;
+				right: 52%;
+				visibility: hidden;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<div id="cancel" class="title-text-pull-left" style="display: none;">取消</div>
+			<a id="back" class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title" style="color: white;"></h1>
+			<div id="add" class="title-text-pull-right">添加</div>
+		</header>
+		<div class="mui-content">
+			<div id="pullrefresh" class="mui-scroll-wrapper" style="z-index: 1;">
+				<div class="mui-scroll">
+					<!--数据列表-->
+					<ul class="mui-table-view" id="ul_table">
+					</ul>
+				</div>
+			</div>
+			<div id="commit_div">
+				<button id="commit" type="button" class="mui-btn mui-btn-red mui-btn-block delete-no">删除</button>
+			</div>
+		</div>
+		<div id="videoPopover" class="mui-popover">
+			<video id="video" style="position: absolute;z-index: 999;" controls="controls" webkit-playsinline playsinline>
+				您的浏览器不支持 video 标签。
+			</video>
+		</div>
+	</body>
+	<script src="../../js/mui.min.js"></script>
+	<script type="text/javascript" src="../../js/utils/events.js"></script>
+	<script src="../../js/publicProtocol.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../../js/storageKeyName.js" type="text/javascript" charset="utf-8"></script>
+	<script type="text/javascript" src="../../js/mui.zoom.js"></script>
+	<script type="text/javascript" src="../../js/mui.previewimage.js"></script>
+	<script type="text/javascript" src="../../js/mui.pullToRefresh.js"></script>
+	<script type="text/javascript" src="../../js/mui.pullToRefresh.material.js"></script>
+	<script type="text/javascript" src="../../js/qiuzhi/delContent_pop.js"></script>
+	<script type="text/javascript" src="../../js/utils/CloudFileUtil.js"></script>
+	<script type="text/javascript" src="../../js/qiniu/qiniu.js"></script>
+	<script type="text/javascript" src="../../js/utils/cryption.js"></script>
+	<script type="text/javascript" src="../../js/utils/recordvideoutil.js"></script>
+	<script type="text/javascript" src="../../js/utils/playutil.js"></script>
+	<script type="text/javascript" src="../../js/utils/showvideoutil.js"></script>
+
+	<script type="text/javascript">
+		//启用双击监听
+		mui.init({
+			gestureConfig: {
+				doubletap: true,
+				longtap: true,
+			}
+		});
+
+		var markDate = ''; //记录日期
+		var today = ''; //记录今天日期
+		var year = ''; //记录年份
+		var previewImage; //查看图片的控件
+		var main; //当前web
+		var mainData //当前web的数据
+		var pullRefresh; //下拉，上拉控件
+		var deleteRecord = false; //是否切换到了删除状态
+		var studentFile = {}; //存储获取的记录
+		//var qnDelFileArray = []; //记录删除记录时七牛的文件路径
+		var page; //记录页数
+		var offsetWidth = document.getElementById('ul_table').offsetWidth;
+		var imageWidth = parseInt((offsetWidth * 0.77 - 30) * 0.32);
+		var imageHeight = parseInt(imageWidth * 3 / 4);
+		var marginBottom = parseInt((offsetWidth * 0.77 - 30) * 0.02);
+		var checkRight = parseInt((offsetWidth * 0.12 - 18) / 2);
+
+		mui.plusReady(function() {
+			initData();
+			initControl();
+			initListener();
+			//获取数据
+			requestData(1, 0);
+		});
+
+		/**
+		 * 初始化数据
+		 */
+		function initData() {
+			main = plus.webview.currentWebview(); //获取当前窗体对象
+			mainData = main.data; //页面传入参数值
+			//console.log(main.id + ' ' + JSON.stringify(mainData));
+
+			var myDate = new Date();
+			var month = myDate.getMonth() + 1;
+			if(month.length = 1) {
+				month = '0' + month;
+			}
+			today = myDate.getFullYear() + '-' + month + '-' + myDate.getDate();
+			var name = mainData.DocName || mainData.StudentName;
+			document.body.querySelector('.mui-title').innerText = '云盘--' + name + '档案';
+		}
+
+		/**
+		 * 初始化控件
+		 */
+		function initControl() {
+			previewImage = mui.previewImage(); //初始化显示图片的控件
+			var deceleration = mui.os.ios ? 0.003 : 0.0009;
+			mui('.mui-scroll-wrapper').scroll({
+				bounce: false,
+				indicators: true, //是否显示滚动条
+				deceleration: deceleration
+			});
+			//初始化下拉，上拉控件
+			pullRefresh = mui('.mui-scroll-wrapper .mui-scroll').pullToRefresh({
+				down: {
+					callback: function() {
+						if(!deleteRecord) {
+							//console.log('down ' + JSON.stringify(page));
+							requestData(1, 1);
+						} else {
+							pullRefresh.endPullDownToRefresh(); //结束下拉刷新
+						}
+					}
+				},
+				up: {
+					contentinit: '', //默认没有更多显示空白
+					contentnomore: '', //隐藏没有更多提示
+					callback: function() {
+						//console.log('up ' + JSON.stringify(page));
+						if(page) {
+							requestData(page.pageIndex + 1, 2);
+						} else {
+							pullRefresh.endPullUpToRefresh();
+							mui.toast('数据异常，请下拉刷新后重新尝试');
+						}
+					}
+				}
+			});
+
+			//修改安卓返回功能键
+			mui.back = function() {
+				if(deleteRecord) {
+					quitDel();
+				} else {
+					events.closeWebview(main);
+				}
+			}
+
+			//初始化播放器
+			ShowVideoUtil.initVideo(document.getElementById("video"));
+		}
+
+		/**
+		 * 初始化监听
+		 */
+		function initListener() {
+			//添加档案或全选
+			document.getElementById('add').addEventListener('tap', function() {
+				var name = this.innerText;
+				if(name == '添加') {
+					events.openNewWindowWithData('record_student_add.html', {
+						data: mainData
+					});
+				} else if(name == '全选') {
+					var checkArray = document.querySelectorAll('.mui-checkbox');
+					for(var i = 0; i < checkArray.length; i++) {
+						checkArray[i].querySelector('input').checked = true;
+					}
+					this.innerText = '全不选';
+					checkChange();
+				} else if(name == '全不选') {
+					var checkArray = document.querySelectorAll('.mui-checkbox');
+					for(var i = 0; i < checkArray.length; i++) {
+						checkArray[i].querySelector('input').checked = false;
+					}
+					this.innerText = '全选';
+					checkChange();
+				}
+			});
+
+			//刷新的监听
+			window.addEventListener('refreshView', function() {
+				mui('#pullrefresh').scroll().scrollTo(0, 0, 100);
+				requestData(1, 0);
+			});
+
+			//点击图片的数字
+			mui('#ul_table').on('tap', '.record-picture-num', function() {
+				previewImage.open(document.getElementById("img_" + this.getAttribute('data-id')))
+			});
+
+			//显示全部，收起
+			mui('#ul_table').on('tap', '.show-all', function() {
+				if(!deleteRecord) { //不是删除状态
+					var str = this.innerText;
+					var id = this.id.replace('_show', '');
+					var content = document.getElementById(id + "_content");
+					if(str == '显示全部') {
+						this.innerText = '收起';
+						content.style.webkitLineClamp = 'inherit';
+					} else if(str == '收起') {
+						var offsetHeight_0 = content.offsetHeight;
+						this.innerText = '显示全部';
+						content.style.webkitLineClamp = '3';
+						var offsetHeight_1 = content.offsetHeight;
+						var scroll = mui('#pullrefresh').scroll(); //滑动控件
+						var move = scroll.y + (offsetHeight_0 - offsetHeight_1);
+						if(move >= 0) {
+							mui('.mui-scroll-wrapper').scroll().scrollTo(0, 0, 0);
+						} else {
+							mui('.mui-scroll-wrapper').scroll().scrollTo(0, move, 0);
+						}
+					}
+				}
+			});
+
+			//双击标题返回列表顶部
+			document.getElementById('title').addEventListener('doubletap', function() {
+				mui('#pullrefresh').scroll().scrollTo(0, 0, 100);
+			});
+
+			//长按内容
+			mui('#ul_table').on('longtap', '.mui-table-view-cell', function() {
+				if(!deleteRecord) {
+					//切换到删除状态
+					deleteRecord = true;
+					//禁用上拉下拉控件
+					document.getElementById("pullrefresh").style.zIndex = 2;
+					pullRefresh.endPullUpToRefresh(true);
+					//调整顶部导航
+					showAddOrDel(1);
+					//调整界面
+					var rowArray = document.querySelectorAll('.mui-row');
+					for(var i = 0; i < rowArray.length; i++) {
+						rowArray[i].style.paddingRight = '12%';
+						//显示选择按钮
+						var checkBox = rowArray[i].querySelector('.mui-checkbox');
+						checkBox.querySelector('input').checked = false;
+						//垂直居中显示
+						checkBox.style.marginTop = (checkBox.parentNode.offsetHeight - checkBox.offsetHeight - 35) / 2 + 'px';
+						checkBox.style.display = 'inline';
+						var videoThumb = rowArray[i].querySelector('.video-thumb');
+						if(videoThumb) {
+							videoThumbLoad(videoThumb);
+						}
+					}
+				}
+			});
+
+			//退出删除状态
+			document.getElementById('cancel').addEventListener('tap', function() {
+				quitDel();
+			});
+
+			//点击checkbox
+			mui('#pullrefresh').on('change', 'input', function() {
+				checkChange();
+			});
+
+			//点击删除按钮
+			document.getElementById('commit').addEventListener('tap', function() {
+				var className = this.className;
+				if(className == 'mui-btn mui-btn-red mui-btn-block') { //允许删除
+					//选择删除
+					var checked = document.querySelectorAll('.mui-checkbox input[type=checkbox]:checked');
+					var idsArray = [];
+					for(var i = 0; i < checked.length; i++) {
+						idsArray[idsArray.length] = checked[i].value;
+					}
+					delRecord(idsArray);
+				}
+			});
+
+			/**
+			 * 播放视频
+			 */
+			mui('#ul_table').on('tap', '.video-play', function() {
+				if(!deleteRecord) { //不是删除状态
+					var ids = this.id.split('_');
+					ShowVideoUtil.showVideo(document.getElementById("video"), 'videoPopover', studentFile[ids[2]].EncAddr, studentFile[ids[2]].EncImgAddr);
+				}
+			});
+		}
+
+		/**
+		 * 请求数据
+		 * @param {Object} pageIndex 页码
+		 * @param {Object} wd 等待框
+		 */
+		function requestData(pageIndex, type, wait) {
+			var wd = null;
+			if(type == 0) {
+				if(wait) {
+					wd = wait;
+				} else {
+					wd = events.showWaiting();
+				}
+			}
+			var userId = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid;
+			var comData = {
+				parentId: userId, //家长ID
+				docId: mainData.DocId, //文件夹ID
+				docType: mainData.DocType, //文件夹类型
+				pageIndex: pageIndex, //当前页数
+				pageSize: '10' //每页记录数
+			};
+			//69.（云档案）按家长获取学生档案
+			postDataPro_getStudentFile(comData, wd, function(data) {
+				//console.log('69 按家长获取学生档案 getStudentFile ' + JSON.stringify(data));
+				if(data.RspCode == 0) {
+					//记录页数
+					page = {
+						pageIndex: pageIndex, //当前页数
+						totalPage: data.RspData.TotalPage //总页数
+					};
+					//console.log('page ' + JSON.stringify(page));
+					if(pageIndex == 1) { //下拉刷新或者获取的第一页的内容
+						//清空对应的界面
+						document.getElementById('ul_table').innerHTML = '';
+						year = ''; //清空年份
+						markDate = ''; //清空年份
+						studentFile = {} //清空记录
+						pullRefresh.refresh(true); //更新当前控件
+					}
+
+					if(data.RspData.Data.length == 0 && pageIndex == 1) {
+						mui.toast('档案为空');
+					} else {
+						for(var i = 0; i < data.RspData.Data.length; i++) {
+							createNotes(data.RspData.Data[i]);
+						}
+					}
+				} else {
+					mui.toast(data.RspTxt);
+				}
+				if(type == 0) {
+					wd.close();
+				}
+				if(type == 1) { //结束下拉刷新
+					pullRefresh.endPullDownToRefresh();
+				}
+				endPullUp();
+			});
+		}
+
+		/**
+		 * 界面中创建一条记录
+		 * @param {Object} item
+		 */
+		function createNotes(data) {
+			studentFile[data.TabId] = data;
+			var date = data.PublishDate.split(' '); //发布的日期和时间
+			var dateItem = date[0]; //日期
+			var time = date[0].split('-'); //时间
+			var timeItem_month = time[1] + '月';
+			var timeItem_day = time[2];
+			var yearItem = dateItem.split('-')[0];
+			if(year == yearItem) { //同一年
+				yearItem = '';
+			} else {
+				year = yearItem; //新的一年
+			}
+			if(year == today.split('-')[0]) { //今年
+				yearItem = '';
+			}
+
+			if(markDate != dateItem) {
+				var element = document.createElement('div');
+				element.className = 'dynamic-date-parent'
+				element.id = dateItem;
+				element.innerHTML = '<div class="dynamic-date-year-parent"><div class="dynamic-date-year">' + yearItem + '</div></div>';
+				document.getElementById("ul_table").appendChild(element);
+			}
+
+			if(dateItem == today) {
+				timeItem_day = '今天';
+				timeItem_month = '';
+			}
+			if(markDate == dateItem) {
+				timeItem_month = '';
+				timeItem_day = '';
+			}
+
+			var html_media = ''; //多媒体
+			var nameMarginTop = 0; //发布者距离顶部的高度
+			var marginRight;
+
+			if(data.EncType == 1) { //附件类型,1图片2音视频3仅文字
+				nameMarginTop = imageHeight + marginBottom;
+				var imageArray = data.EncAddr.split('|');
+				var thumbArray = data.EncImgAddr.split('|');
+				var html_0 = '<div class="record-imge" style="height=' + imageHeight + marginBottom + 'px;">';
+				var html_1 = '';
+				var html_2 = ''; //显示剩余的图片数量
+				var html_3 = ''; //是否显示图片
+				for(var i = 0; i < imageArray.length; i++) {
+					if(i == 2 || i == 5 || i == 8) {
+						marginRight = '0px';
+					} else {
+						marginRight = '2%';
+					}
+					if(i > 2) {
+						html_3 = 'display: none;';
+					}
+					if(i == 2 && imageArray.length > 3) {
+						html_2 = '<div data-id="' + data.TabId + '_' + i + '" class="record-picture-num" style="line-height: ' + (imageHeight + 1) + 'px;">+' + (imageArray.length - 3) + '</div>'
+					}
+					html_1 = html_1 + '<div class="record-picture" style="width: 32%;height:' + imageHeight + 'px;margin-right: ' + marginRight + ';' + html_3 + '">\
+									' + html_2 + '<img id="img_' + data.TabId + '_' + i + '" src="' + thumbArray[i] + '" data-preview-src="' + imageArray[i] + '" data-preview-group="' + data.TabId + '" style="width:100%;visibility: hidden;" onerror="events.imageOnError(this,this.getAttribute(\'data-preview-src\'));this.style.visibility=\'visible\';" onload="if(this.offsetHeight<=this.offsetWidth){if(this.offsetHeight<this.parentNode.offsetHeight){this.style.height=this.parentNode.offsetHeight+\'px\';this.style.width=\'initial\';}this.style.marginLeft=-parseInt((this.offsetWidth-this.parentNode.offsetWidth)/2)+\'px\';}else{this.style.marginTop=-parseInt((this.offsetHeight-this.parentNode.offsetHeight)/2)+\'px\';};this.style.visibility=\'visible\';">\
+								</div>';
+				}
+				html_media = html_0 + html_1 + '</div>';
+			} else if(data.EncType == 2) { //视频
+				var play_width = 55;
+				var html_0 = '<div class="record-video">\
+								<div id="video_time_' + data.TabId + '" class="video-time">' + data.EncLen + '\'\'</div>\
+								<img id="video_play_' + data.TabId + '" style="width:' + play_width + 'px;height:' + play_width + 'px;" class="video-play" onload="videoThumbLoad(this);" src="../../image/utils/playvideo.png" />\
+								<img id="video_thumb_' + data.TabId + '" class="video-thumb" src="' + data.EncImgAddr + '" onload="videoThumbLoad(this);" onerror="videoThumbError(this);">\
+							</div>';
+				html_media = html_0;
+			}
+			var element = document.createElement('div');
+			element.className = 'mui-row';
+			element.id = 'row_' + data.TabId;
+			element.innerHTML = '<div class="mui-col-sm-3 mui-col-xs-3">\
+										<div class="dynamic-date">\
+											<div style="font-size:2.5rem;">' + timeItem_day + '</div><div style="margin-left:2px;font-size:1.4rem;">' + timeItem_month + '</div>\
+										</div>\
+									</div>\
+									<div class="mui-col-sm-9 mui-col-xs-9">\
+										<div class="mui-table-view-cell">\
+											<div id="' + data.TabId + '_content" class="dynamic-ellipsis-show"></div>\
+											<div id="' + data.TabId + '_show" class="show-all">显示全部</div>' + html_media + '\
+											<div style="margin-top:' + nameMarginTop + 'px;" ><div id="' + data.TabId + '_name" class="dynamic-name">' + data.PublisherName + '</div></div>\
+										</div>\
+									</div>\
+									<div class="mui-input-row mui-checkbox" style="margin-right: ' + checkRight + 'px;">\
+										<label>&nbsp;</label>\
+										<input name="Checkbox" type="checkbox" value="' + data.TabId + '">\
+									</div>';
+			document.getElementById(dateItem).appendChild(element);
+
+			if(data.EncType == 2) { //视频
+				var video_time = document.getElementById("video_time_" + data.TabId);
+				video_time.style.bottom = document.getElementById(data.TabId + "_name").offsetHeight + 18 + 'px';
+			}
+			var type = ''; //类型
+			if(data.NoteType == 1) { //点到
+				if(data.MsgContent != '') { //有内容
+					type = data.CheckTypeStr + ' : ';
+				} else {
+					type = data.CheckTypeStr;
+				}
+			}
+			if(data.MsgContent == '' && data.NoteType == 2) {
+				document.getElementById(data.TabId + '_content').style.display = 'none';
+			} else {
+				var height_0;
+				var height_1;
+				var contentEl = document.getElementById(data.TabId + '_content');
+				contentEl.innerText = type + data.MsgContent;
+				contentEl.style.webkitLineClamp = '4';
+				height_0 = contentEl.offsetHeight;
+				contentEl.style.webkitLineClamp = '3';
+				height_1 = contentEl.offsetHeight;
+				if(height_0 > height_1) {
+					//内容高度大于三行
+					document.getElementById(data.TabId + "_show").style.display = 'inline';
+				}
+			}
+			markDate = dateItem;
+		}
+
+		/**
+		 * 显示添加或删除
+		 * @param {Object} type 0,显示添加;1,显示删除
+		 */
+		function showAddOrDel(type) {
+			if(type == 0) { //添加
+				document.getElementById("back").style.display = 'inline';
+				document.getElementById("cancel").style.display = 'none';
+				document.getElementById("commit_div").style.display = 'none';
+				document.getElementById("pullrefresh").style.bottom = '0px';
+				document.getElementById("add").innerText = '添加';
+				var name = mainData.DocName || mainData.StudentName;
+				document.getElementById("title").innerText = '云盘--' + name + '档案';
+			} else { //删除
+				document.getElementById("back").style.display = 'none';
+				document.getElementById("cancel").style.display = 'inline';
+				document.getElementById("commit_div").style.display = 'inline';
+				document.getElementById("pullrefresh").style.bottom = '61px';
+				document.getElementById("add").innerText = '全选';
+				document.getElementById("title").innerText = '已选定0个';
+			}
+			document.getElementById("commit").className = 'mui-btn mui-btn-red mui-btn-block delete-no';
+		}
+
+		/**
+		 * 退出删除状态
+		 */
+		function quitDel() {
+			//退出删除状态
+			deleteRecord = false;
+			document.getElementById("pullrefresh").style.zIndex = 1;
+			//调整顶部导航和删除按钮
+			showAddOrDel(0);
+			//获取当前显示的cell
+			//			var scroll = mui('#pullrefresh').scroll();
+			//			var cells = mui('.mui-row');
+			//			var y = scroll.y * (-1); //滚动的距离
+			//			var height = 0; //计算cells的高度
+			//			var topCellId; //当前顶部显示的cellId
+			//			for(var i = 0; i < cells.length; i++) {
+			//				height = height + cells[i].offsetHeight;
+			//				if(height >= y) {
+			//					topCellId = cells[i].id;
+			//					////console.log(cells[i].innerText);
+			//					break;
+			//				}
+			//			}
+			////console.log(height + ' ' + y + ' ' + topCellId);
+			//隐藏选择按钮
+			var rowArray = document.querySelectorAll('.mui-row');
+			for(var i = 0; i < rowArray.length; i++) {
+				rowArray[i].style.paddingRight = '0px';
+				rowArray[i].querySelector('.mui-checkbox').style.display = 'none';
+				var videoThumb = rowArray[i].querySelector('.video-thumb');
+				if(videoThumb) {
+					videoThumbLoad(videoThumb);
+				}
+			}
+			//调整scroll
+			//启用上拉下拉控件
+			if(page.pageIndex < page.totalPage) {
+				pullRefresh.refresh(true);
+			}
+			//移动到之前显示的cell的位置
+			//			height = 0
+			//			for(var i = 0; i < cells.length; i++) {
+			//				if(cells[i].id != topCellId) {
+			//					height = height + cells[i].offsetHeight;
+			//				} else {
+			//					break;
+			//				}
+			//			}
+			//			//console.log(-height + ' ' + scroll.y * (-1));
+			//			scroll.scrollTo(0, -height, 0);
+		}
+
+		/**
+		 * checkbox被修改后做相应的处理
+		 */
+		function checkChange() {
+			var checkBox = document.querySelectorAll('.mui-checkbox');
+			var checked = document.querySelectorAll('.mui-checkbox input[type=checkbox]:checked');
+			////console.log(checkBox.length + ' ' + checked.length);
+			//修改顶部导航数量
+			document.getElementById("title").innerText = '已选定' + checked.length + '个';
+			//修改全选按钮
+			if(checked.length == checkBox.length) {
+				document.getElementById("add").innerText = '全不选';
+			} else {
+				document.getElementById("add").innerText = '全选';
+			}
+			//修改删除按钮
+			if(checked.length == 0) {
+				document.getElementById("commit").className = 'mui-btn mui-btn-red mui-btn-block delete-no';
+			} else {
+				document.getElementById("commit").className = 'mui-btn mui-btn-red mui-btn-block';
+			}
+		}
+
+		/**
+		 * 删除记录
+		 * @param {Object} idsArray
+		 */
+		function delRecord(idsArray) {
+			var ids = arrayToStr(idsArray);
+			////console.log('delRecord ' + ids);
+			var data1 = {
+				flag: 10, //flag:求知：提问1，回答2，评论3；班级空间：班级动态4；个人空间：个人动态5，个人动态评论6，档案7
+				comData: {
+					ids: ids
+				}, //协议需要参数
+				buttons: [{
+					title: '确认',
+					btnFlag: 1
+				}],
+				title: '确认删除?', //弹出框中，显示的标题
+				delFlag: 2 //删除确认弹出框格式，1从下弹出，2中间confirm
+			};
+			delContent_pop(data1, function(data) {
+				//console.log('delContent_pop 返回值为 ' + JSON.stringify(data));
+				if(data.flag == 1 && data.data.RspCode == 0 && data.data.RspData.Result == 1) {
+					//删除成功
+					for(var i = 0; i < idsArray.length; i++) {
+						var cellData = studentFile[idsArray[i]];
+						//console.log('cellData ' + JSON.stringify(cellData));
+						if(cellData.EncAddr != '') { //有附件
+							var EncAddrArray = cellData.EncAddr.split('|');
+							var EncImgAddrArray = cellData.EncImgAddr.split('|');
+						}
+					}
+					mui.toast('档案记录删除成功');
+					//退出删除状态
+					quitDel();
+					//获取数据
+					requestData(1, 0, data.wd);
+				} else {
+					data.wd.close();
+					mui.toast(data.data.RspTxt);
+				}
+			});
+		}
+
+		/**
+		 * 结束上拉加载更多
+		 */
+		function endPullUp() {
+			if(page && page.pageIndex >= page.totalPage) {
+				//console.log('没有下一页');
+				pullRefresh.endPullUpToRefresh(true);
+			} else {
+				pullRefresh.endPullUpToRefresh();
+			}
+		}
+
+		/**
+		 * 视频的缩略图加载成功
+		 * @param {Object} img
+		 */
+		function videoThumbLoad(img) {
+			var ids = img.id.split('_');
+			img.setAttribute('data-load', 1);
+			var img_a;
+			if(ids[1] == 'play') {
+				img_a = document.getElementById("video_thumb_" + ids[2]);
+			} else {
+				img_a = document.getElementById("video_play_" + ids[2]);
+			}
+			if(img.getAttribute('data-load') && img_a.getAttribute('data-load')) {
+				ShowVideoUtil.videoThumbLoad(document.getElementById("video_thumb_" + ids[2]), document.getElementById("video_play_" + ids[2]), 0, document.getElementById("video_time_" + ids[2]));
+			}
+		}
+
+		/**
+		 * 视频的缩略图加载失败
+		 * @param {Object} img
+		 */
+		function videoThumbError(img) {
+			var ids = img.id.split('_');
+			ShowVideoUtil.videoThumbError(img, document.getElementById("video_play_" + ids[2]), studentFile[ids[2]].EncAddr);
+		}
+	</script>
+
+</html>

@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" type="text/css" href="../../css/utils/pullToRefresh.css" />
+		<style type="text/css">
+			.imgClass {
+				padding-top: 50px;
+				clear: both;
+				display: block;
+				margin: auto;
+				width: 150px;
+				height: 150px;
+			}
+			
+			.aClass {
+				font-size: 16px;
+				color: #333;
+				display: inline-block;
+				text-align: center;
+			}
+			
+			.aClass1 {
+				font-size: 16px;
+				color: #13b7f6;
+				display: inline-block;
+				text-align: center;
+			}
+			
+			.mui-pull-caption {
+				font-size: 14px; //字体大小
+				color: red;
+				font-weight: normal;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title" style="color: white;">收藏</h1>
+			<!--<h1 class="mui-icon mui-icon-right-nav mui-pull-right" id="cancelBtn" style="text-align: right;right: 10px;font-size: 15px;">取消</h1>-->
+		</header>
+		<div class="mui-content mui-fullscreen" id="tempVue" style="background: white;margin-top: 45px;z-index:0;">
+			<div v-if="flag==0">
+				<img class="imgClass" src="../../image/mine/nologin.png" />
+				<p></p>
+				<p style="text-align: center">
+					<a class="aClass">暂无数据，请先</a>
+					<a class="aClass1" @click="login">登录</a>
+				</p>
+			</div>
+			<div v-else="">
+				<div class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<ul class="mui-table-view">
+							<li class="mui-table-view-cell mui-media" v-for="collectModel in collectListArray" @tap="clickCollect(collectModel)">
+								<a href="javascript:;">
+									<div class="mui-media-body" style="overflow: hidden;white-space: nowrap;text-overflow: ellipsis;font-size: 16px;">
+										{{collectModel.title}}
+										<p class="mui-ellipsis" style="font-size: 13px;padding-top: 10px;">收藏时间：{{collectModel.recdate}}</p>
+									</div>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/vue.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script src="../../js/utils/utils.js"></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<script type="text/javascript">
+			var pageIndex = 1; //请求数据页面
+			var totalPageCount; //总页码
+			var flagRef = 0; //是刷新0，还是加载更多1
+			mui.init()
+			console.log('utid:' + window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid);
+			mui.plusReady(function() {
+				var tempVue = new Vue({
+					el: "#tempVue",
+					data: {
+						flag: window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid,
+						collectListArray: []
+					},
+					methods: {
+						login: function() {
+							utils.mOpenWithData("../../html/register/login.html", {});
+						},
+						clickCollect: function(model) {
+							console.log('clickCollect');
+							var translateData = {
+								acode: '',
+								tabid: model.tnewid,
+								title: model.title,
+								tips: '',
+							}
+							events.readyToPage(true, "sciedu_show_main.html", "scieduItemInfo", translateData);
+						}
+					}
+				});
+				getTnewsCollList(pageIndex);
+				var curPage = plus.webview.currentWebview();
+				main = curPage.opener();
+				//阻尼系数、初始化刷新加载更多
+				var deceleration = mui.os.ios ? 0.003 : 0.0009;
+				mui('.mui-scroll-wrapper').scroll({
+					bounce: false,
+					indicators: true, //是否显示滚动条
+					deceleration: deceleration
+				});
+
+				//上拉下拉注册
+				mui(".mui-scroll-wrapper .mui-scroll").pullToRefresh({
+					down: {
+						callback: function() {
+							var self = this;
+							//console.log("下拉刷新");
+							pageIndex = 1;
+							flagRef = 0;
+							//54.科教频道_个人收藏列表
+							getTnewsCollList(pageIndex);
+							setTimeout(function() {
+								//结束下拉刷新
+								self.endPullDownToRefresh();
+							}, 1000);
+						}
+					},
+					up: {
+						callback: function() {
+							var self = this;
+							//console.log("上拉加载更多");
+							flagRef = 1;
+							if(pageIndex <= totalPageCount) {
+								//54.科教频道_个人收藏列表
+								getTnewsCollList(pageIndex);
+								setTimeout(function() {
+									//结束下拉刷新
+									self.endPullUpToRefresh();
+									if(mui(".mui-table-view-cell").length < 10) {
+										mui(".mui-pull-loading")[0].innerHTML = "";
+									}
+								}, 1000);
+							} else {
+								//结束下拉刷新
+								self.endPullUpToRefresh();
+								mui(".mui-pull-loading")[0].innerHTML = "没有更多了";
+							}
+						}
+					}
+				});
+				//54.科教频道_个人收藏列表
+				function getTnewsCollList(index) {
+					//需要加密的数据
+					var comData = {
+						top: '10', //每页行数，
+						vvl1: index //页码,获取第几页
+					};
+					// 等待的对话框
+					var wd = events.showWaiting();
+					//54.科教频道_个人收藏列表
+					postDataPro_PostTnewsCollList(comData, wd, function(data) {
+						wd.close();
+						console.log('54.科教频道_个人收藏列表:' + JSON.stringify(data));
+						if(data.RspCode == 0) {
+							//总页数
+							totalPageCount = data.RspData.pg.PageCount;
+							pageIndex++;
+							//
+							if (data.RspData.dt) {
+								for (var i = 0; i < data.RspData.dt.length; i++) {
+									var tempModel = data.RspData.dt[i];
+									tempModel.recdate = tempModel.recdate.replace('T',' ');
+									var tempArr = tempModel.recdate.split('.');
+									tempModel.recdate = tempArr[0];
+								}
+							}
+							if(flagRef == 0) { //刷新
+								tempVue.collectListArray = data.RspData.dt;
+							} else { //加载更多
+								//合并数组
+								tempVue.collectListArray = tempVue.collectListArray.concat(data.RspData.dt);
+							}
+						} else {
+//							mui.toast(data.RspTxt);
+						}
+					});
+				};
+			});
+		</script>
+	</body>
+
+</html>

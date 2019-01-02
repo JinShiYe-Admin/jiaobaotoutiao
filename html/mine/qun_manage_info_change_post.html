@@ -1,0 +1,178 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<style>
+			body,
+			.mui-content {
+				background-color: white;
+			}
+
+			#input {
+				border: none;
+				border-bottom: 1px solid #00A5E0;
+				border-radius: initial;
+			}
+
+			#input_num {
+				position: absolute;
+				right: 10px;
+				text-align: justify;
+			}
+
+			.text-area {
+				margin-left: 1%;
+				width: 98%;
+				padding-left: 10px;
+				padding-right: 10px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title"></h1>
+			<div id="save" class="title-text-pull-right">保存</div>
+		</header>
+		<div class="mui-content">
+			<div class="mui-input-row">
+				<p id="input_num">&nbsp;</p>
+				<!--<input id="input" type="text">-->
+				<textarea id="input" type="text" rows="1" class="text-area"></textarea>
+				<div class="text-area" style="font-size: 17px;visibility:hidden;font-family: 'Helvetica Neue', Helvetica, sans-serif;">
+					<div id="text_div">十</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript">
+			mui.init();
+			var rows = 1; //行数
+			var text_height; //文本高度
+			var input_num = document.getElementById("input_num");
+			var text_div = document.getElementById("text_div");
+			text_height = text_div.offsetHeight;
+			input_num.style.top = document.getElementById("input").offsetHeight - document.getElementById("input_num").offsetHeight + 'px';
+			mui.plusReady(function() {
+				events.blurBack();
+				//---从父页面获取数据---start---
+				var main = plus.webview.currentWebview(); //获取当前窗体对象
+				var subData = main.data; //接收页面传入的参数值
+				//console.log('从父页面获取的数据:' + JSON.stringify(subData));
+				//---从父页面获取数据---end---
+				var maxLength = 0; //字数限制
+				switch(subData.type) {
+					case 'gname': //名称
+						maxLength = 20;
+						document.getElementById("title").innerText = '群名称';
+						break;
+					case 'gnote': //群说明
+						maxLength = 30;
+						document.getElementById("title").innerText = '群说明';
+						break;
+					case 'qunremark': //群备注
+						maxLength = 30;
+						document.getElementById("title").innerText = '群备注';
+						break;
+					default:
+						//console.log('修改群资料的类型选择出错');
+						break;
+				}
+
+				document.getElementById('input').maxLength = maxLength;
+				document.getElementById("input").placeholder = document.getElementById("title").innerText + ',最多' + maxLength + '字';
+				document.getElementById("input").value = subData.value;
+				input_num.innerText = maxLength - subData.value.length;
+				changeRows(subData.value);
+				document.getElementById('input').addEventListener('input', function() {
+					var value = this.value.replace(/\r|\n/g, '');
+					this.value = value;
+					changeRows(value);
+				});
+				document.getElementById('save').addEventListener('tap', function() {
+					var vvl = document.getElementById("input").value;
+					if(subData.type == 'gname' && vvl.replace(/(^\s*)|(\s*$)/g, "") == "") {
+						mui.toast('群名称不能为空');
+					} else if(vvl.length > maxLength) {
+						mui.toast(document.getElementById("title").innerText + '最多' + maxLength + '字');
+					} else if(vvl == subData.value) {
+						mui.back();
+					} else {
+						document.getElementById("input").disabled = true;
+						var tempListener = subData.listener;
+						if(subData.post) {
+							//8.用户修改群各项信息
+							//需要参数
+							var comData = {
+								rid: subData.gid, //要修改的群id
+								vtp: subData.type, //更改项，指更改用户信息的相应项,对应后面的vvl值,gimg(头像),gname(群名),gnote(群说明)
+								vvl: vvl //要修改成的值
+							};
+							//返回值model：model_groupList
+							// 等待的对话框
+							var wd = events.showWaiting();
+							postDataPro_PostReGinfo(comData, wd, function(data) {
+								wd.close();
+								//console.log('8.90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+								if(data.RspCode == 0) {
+									mui.toast('修改成功');
+									var web = plus.webview.getWebviewById(tempListener[1].webid);
+									mui.fire(web, tempListener[1].winid, {
+										type: subData.type, //资料类型
+										value: vvl //修改后的值
+									});
+									if(subData.type == 'gname') {
+										var web2 = plus.webview.getWebviewById(tempListener[0].webid);
+										mui.fire(web2, tempListener[0].winid, {
+											gid: subData.gid, //群id
+											type: 'gname', //修改的类型
+											value: vvl //修改后的值
+										});
+									}
+									mui.back();
+								} else {
+									document.getElementById("input").disabled = false;
+									mui.toast(data.RspTxt);
+								}
+							});
+						} else { //创建群资料
+							var web = plus.webview.getWebviewById(tempListener[0].webid);
+							mui.fire(web, tempListener[0].winid, {
+								type: subData.type, //资料类型
+								value: vvl //修改后的值
+							});
+							mui.back();
+						}
+					}
+				});
+
+				/**
+				 * 修改行数
+				 * @param {Object} value
+				 */
+				function changeRows(value) {
+					text_div.innerText = value;
+					var height_1 = text_div.offsetHeight;
+					if(text_height >= height_1) {
+						rows = 1;
+						document.getElementById("input").rows = 1;
+					} else if(text_height < height_1) {
+						rows = parseInt(height_1 / text_height);
+						document.getElementById("input").rows = rows;
+					}
+					input_num.innerText = maxLength - value.length;
+					input_num.style.top = document.getElementById("input").offsetHeight - document.getElementById("input_num").offsetHeight + 'px';
+				}
+			});
+		</script>
+	</body>
+
+</html>

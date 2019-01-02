@@ -1,0 +1,75 @@
+<!--
+	@anthor an
+-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/mine/edit-info.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title">标题</h1>
+			<a id="btn-save" class="mui-pull-right">保存</a>
+		</header>
+		<div class="mui-content">
+			<input id="input-text" type="text" class="mui-input-clear" placeholder="带清除按钮的输入框"/>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<!--公共接口-->
+		<script src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript">
+			mui.init()
+			mui.plusReady(function() {
+				//当前webview
+				var curpage=plus.webview.currentWebview();
+				//传递的值
+				var curPageData = curpage.data;
+				//各项控件
+				var title = document.getElementById('title');
+				var inputText = document.getElementById('input-text')
+				var btnSave = document.getElementById('btn-save');
+				//console.log('传过来的值：'+JSON.stringify(curPageData))
+				/**
+				 * 根据有无数据判断是否是第一次填写
+				 */
+				if(curPageData.content) {
+					inputText.value = curPageData.content;
+					title.innerText = '更改' + curPageData.title;
+				} else {
+					title.innerText = '填写' + curPageData.title;
+				}
+				//placeholeder
+				inputText.placeholder = '请填写' + curPageData.title;
+				//保存数据按钮加载监听
+				btnSave.addEventListener('tap', function() {
+					//等待
+					var wd=plus.nativeUI.showWaiting(storageKeyName.WAITING)
+					//更改信息
+					postDataPro_PostReGinfo({vtp:curPageData.vtpValue,vvl:inputText.value,rid:curPageData.groupId},wd,function(data){
+						wd.close();
+						//console.log(JSON.stringify(data))
+						//回调数据
+						if(data.RspCode=='0000'){
+							mui.toast('已成功提交数据');
+							//向上级页面传递事件
+							mui.fire(curpage.opener(),'groupInfoChanged')
+							//返回上级页面
+							mui.back()
+						}else{
+							mui.toast(data.RspTxt);
+						}
+					})
+				})
+			})
+		</script>
+	</body>
+
+</html>

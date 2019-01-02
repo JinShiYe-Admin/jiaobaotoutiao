@@ -1,0 +1,65 @@
+<!--学生作业详情界面-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<link href="../../css/utils/preview.css" rel="stylesheet" />
+		<link href="../../css/homework/subjects-icon.css" rel="stylesheet" />
+		<link href="../../css/homework/workdetail-stu.css" rel="stylesheet" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">作业详情</h1>
+		</header>
+		<!--下拉刷新容器-->
+		<div id="refreshContainer" class="mui-content mui-scroll-wrapper">
+		  <div id="work-detail-stu" v-show="workdetail.Contents" class="mui-scroll">
+		    <!--数据列表-->
+		    <div  class="work-detail">
+				<div class="homework-brief">
+					<span class="subject-icon"></span>
+					<div class="brief-words">
+						<h5 class='brief-title'></h5>
+
+						<div class="publish-info">
+							<p class="publisher"></p>
+							<p class='publish-date'></p>
+						</div>
+					</div>
+				</div>
+				<div class="answer-content">
+				</div>
+				<div class="homework-detail">
+					<p class="brief-content">
+
+					</p>
+					<div id="brief-imgs" class="brief-imgs">
+					</div>
+				</div>
+			</div>
+		  </div>
+		  <div class="startWork-container">
+				<p class='startWork-hint'>作业需要在线提交，点击完成</p>
+				<button id="btn-startWork" type="button" class="mui-btn btn-startAn">完成作业</button>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/mui.zoom.js "></script>
+		<script src="../../js/mui.previewimage.js"></script>
+		<script src="../../js/utils/vue.min.js"></script>
+		<script src="../../js/publicHomeworkProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/publicProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/utils/events.js" type="text/javascript"></script>
+		<script type="text/javascript" src="../../js/homework/workdetail-stu.js"></script>
+	</body>
+
+</html>

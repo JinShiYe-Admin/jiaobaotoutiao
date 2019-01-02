@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<style>
+			.mui-slider-indicator {
+				margin-left: -10px;
+				bottom: -3px;
+			}
+			
+			.mui-slider-indicator .mui-indicator {
+				margin: 1px 2px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a id="changeCity" class="mui-icon mui-icon-list mui-pull-left"></a>
+			<h1 id="title" class="mui-title"></h1>
+			<div id="header-indicator" class="mui-slider-indicator display-none">
+			</div>
+		</header>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript">
+			var cities;
+			var listReady = false;
+			mui.init({
+				subpages: [{
+					url: "sciedu-list.html",
+					id: "sciedu-list.html",
+					styles: {
+						top: "44px",
+						bottom: 0
+					}
+				}]
+			});
+			mui.plusReady(function() {
+				events.preload("sciedu_show_main.html", 500);
+				requireFocusCities();
+				setListeners()
+			});
+
+			function setListeners() {
+				//换人啦
+				window.addEventListener('infoChanged', function() {
+					console.log("*******sciedu-home.html获取的用户切换的监听");
+					cities = [];
+					requireFocusCities();
+				});
+				window.addEventListener("listReady", function(e) {
+					listReady = true;
+				});
+				window.addEventListener("curCity", function(e) {
+					console.log("sciedu获取当前的城市：", e.detail.data);
+					setTitle(e.detail.data);
+				});
+				//进入订制城市界面
+				document.getElementById('changeCity').addEventListener('tap', function() {
+					events.openNewWindowWithData('../utils/customizeCity.html', {
+						id: '0', //0科教，1展现
+						webid: 'sciedu-home.html', //当前webview的id
+						cities: cities //已经定制的城市数组
+					});
+				});
+
+				//退出订制城市界面返回的数据
+				window.addEventListener('customizeCity', function(e) {
+					var data = e.detail.data;
+					console.log('获取的修改后的城市信息:', data);
+					cities = data.cities;
+					curIndex = 0;
+					if(!events.getUtid()) {
+						myStorage.setItem(storageKeyName.SECITY, cities);
+					} else if(cities.length === 0) {
+						cities=[];
+					}
+					addAll(); //
+				});
+			}
+			//获取定制的城市
+			function requireFocusCities() {
+				if(!events.getUtid()) {
+					cities = myStorage.getItem(storageKeyName.SECITY) || [];
+					console.log("sciedu-home获取的城市数组：", cities);
+					addAll(cities);
+					return;
+				}
+				postDataPro_PostUTcity({
+					vvl: 0
+				}, null, function(data) {
+					console.log("sciedu-home.html获取的订制的城市:", data);
+					if(data.RspCode == 0) {
+						if(data.RspData[0].citys) {
+							rechargeCities(data.RspData[0].citys);
+						} else {
+							cities=[];
+//							addLocal();
+							addAll();
+						}
+					} else if(data.RspCode == 9) {
+						var cityInfo = myStorage.getItem(storageKeyName.PERSONALINFO).uarea;
+						console.log("sciedu-home.html获取的城市信息：", cityInfo);
+						cities=[];
+//						addLocal();
+						addAll();
+					}
+				})
+			}
+
+//			function addLocal\n() {
+//				var localArea = myStorage.getItem(storageKeyName.PERSONALINFO).uarea;
+//				console.log("获取的本地localArea", localArea);
+//				cities = [{
+//					acode: localArea.acode,
+//					aname: localArea.aname
+//				}];
+//			}
+			/**
+			 * 重组城市信息
+			 * @param {Object} citiesStr
+			 */
+			function rechargeCities(citiesStr) {
+				var citiesCNA = citiesStr.split('|');
+				cities = citiesCNA.map(function(cityCN, index, array) {
+					var cityInfo = cityCN.split('_');
+					return {
+						acode: cityInfo[0],
+						aname: cityInfo[1]
+					}
+				})
+				addAll();
+			}
+			/**
+			 * 加载全部
+			 */
+			function addAll() {
+				cities.push({
+					acode: '000000',
+					aname: '全部'
+				})
+				setTitle(0);
+				sendToSub();
+			}
+			/**
+			 * 设置标题
+			 */
+			function setTitle(index) {
+				document.getElementById("title").innerText = cities[index].aname;
+				createIndicator(index);
+			}
+			function createIndicator(index){
+				var indicator=document.getElementById("header-indicator");
+				if(cities.length<=1){
+					indicator.style.display="none";
+					return;
+				}
+				indicator.style.display="block";
+				indicator.innerHTML="";
+				for(var i=0;i<cities.length;i++){
+					var div=document.createElement("div");
+					div.className="mui-indicator";
+					if(i==index){
+						div.classList.add("mui-active");
+					}
+					indicator.appendChild(div);
+				}
+			}
+			function sendToSub() {
+				if(listReady) {
+					events.fireToPageNone("sciedu-list.html", "seCities", cities);
+				} else {
+					setTimeout(arguments.callee, 500);
+				}
+			}
+		</script>
+	</body>
+
+</html>

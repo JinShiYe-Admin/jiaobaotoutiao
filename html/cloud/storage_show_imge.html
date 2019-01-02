@@ -1,0 +1,146 @@
+<!--
+	作者：444811716@qq.com
+	时间：2017-02-06
+	描述：查看七牛图片的原图
+-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/utils/preview.css" />
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/qiniu/qiniu.js"></script>
+		<script type="text/javascript" src="../../js/utils/cryption.js"></script>
+		<script type="text/javascript" src="../../js/storageKeyName.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script type="text/javascript" src="../../js/utils/CloudFileUtil.js"></script>
+		<script type="text/javascript" src="../../js/mui.zoom.js"></script>
+		<script type="text/javascript" src="../../js/cloud/mui.previewimage.js"></script>
+		<style>
+			body {
+				background-color: black;
+			}
+
+			.mui-content {
+				background-color: black;
+			}
+		</style>
+	</head>
+
+	<body id="body">
+		<header id="header" class="mui-bar mui-bar-nav" style="z-index: 999;">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">图片</h1>
+		</header>
+		<div class="mui-content" id="content" style="top: 0px;"></div>
+		<script type="text/javascript">
+			mui.init({
+				gestureConfig: {
+					doubletap: true
+				},
+			});
+			var header = document.getElementById("header");
+			header.style.visibility = 'hidden';
+			var change = false;
+			var showId = ''; //当前展示的图片id
+			var previewImage;
+			var allImages = {}; //记录查看的图片
+			mui.plusReady(function() {
+				var wd = events.showWaiting();
+				var main = plus.webview.currentWebview(); //获取当前窗体对象
+				previewImage = mui.previewImage();
+
+				mui.back = function() {
+					previewImage.dispose();
+					plus.webview.hide(main, 'pop-out');
+				}
+
+				document.addEventListener('tap', function(e) {
+					change = true;
+					setTimeout(function() {
+						if(change) {
+							headerChange();
+						}
+					}, 250);
+				});
+
+				document.addEventListener('doubletap', function(e) {
+					change = false;
+				});
+
+				window.addEventListener('showFile', function(e) {
+					previewImage = mui.previewImage();
+					var wd2 = events.showWaiting();
+					var data = allImages[e.detail.data.fpath];
+					if(data) {
+						var myDate = new Date();
+						var getTime = myDate.getTime().toString();
+						getTime = getTime.substring(0, getTime.length - 2);
+						if(getTime < data.deadline) { //在过期时间内
+							showImge(data.id, data.token);
+						} else {
+							getAllToken(e.detail.data.fpath);
+						}
+					} else {
+						getAllToken(e.detail.data.fpath);
+					}
+				});
+
+				getAllToken(main.data.fpath);
+			});
+
+			/**
+			 * 显示或隐藏header
+			 */
+			function headerChange() {
+				var visibility = header.style.visibility;
+				if(visibility == 'hidden') {
+					header.style.visibility = 'visible';
+				} else {
+					header.style.visibility = 'hidden';
+				}
+			}
+
+			/**
+			 * 获取文件的路径
+			 */
+			function getAllToken(fpath) {
+				var getDownToken = {
+					appId: 4, //int 必填 项目id
+					urls: [fpath] //array 必填 需要获取下载token文件的路径
+				}
+				CloudFileUtil.getQNDownToken(window.storageKeyName.QNGETDOWNTOKENFILE, getDownToken, function(data) {
+					//console.log('七牛下载token:' + JSON.stringify(data));
+					allImages[fpath] = {};
+					allImages[fpath].id = fpath;
+					allImages[fpath].token = data.Data[0].Value;
+					allImages[fpath].deadline = allImages[fpath].token.match(/\\?e=(\S*)&token=/)[1];
+					////console.log('allImages ' + JSON.stringify(allImages[fpath]));
+					showImge(fpath, data.Data[0].Value);
+				}, function(xhr, type, errorThrown) {
+					events.closeWaiting();
+					mui.toast('网络连接失败 ' + type);
+				});
+			}
+
+			/**
+			 * 显示图片
+			 * @param {Object} id 图片的存储路径
+			 * @param {Object} path 图片的token
+			 */
+			function showImge(id, path) {
+				//console.log('showImge ' + path);
+				showId = id;
+				document.getElementById("content").innerHTML = '<img id="' + id + '" data-preview-src="' + path + '" data-preview-group="' + id + '"/>';
+				previewImage.open(document.getElementById(id), id);
+				events.closeWaiting();
+			}
+		</script>
+	</body>
+
+</html>

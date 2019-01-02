@@ -1,0 +1,260 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/quan/custom-textarea.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+
+	</head>
+
+	<body style="background-color: #F2F3F5">
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left "></a>
+			<h1 id="title" class="mui-title">评论</h1>
+			<a id="btn-reply" class="mui-icon mui-pull-right mui-plus-visible" style="padding-left: 30px;padding-top: 15px;font-size: 16px;">发布</a>
+		</header>
+		<div class="mui-content">
+			<!--<p id="askTitle" style="margin-left: 10px;font-size: 14px;margin-top: 5px;"></p>-->
+			<div class="input-content" style="background-color: #F2F3F5">
+				<textarea id="msg-content" placeholder="评论（字数不超过200字）" style="border: none;padding: 15px;"></textarea>
+
+			</div>
+
+		</div>
+
+	</body>
+	<script src="../../js/mui.min.js"></script>
+	<script src="../../js/utils/events.js"></script>
+	<script src="../../js/publicProtocol.js"></script>
+
+	<script>
+	</script>
+	<script type="text/javascript">
+		mui.init()
+		var personalunick = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).unick; //用户昵称
+		var personalUTID = myStorage.getItem(storageKeyName.PERSONALINFO).utid;
+		mui.plusReady(function() {
+			var data = plus.webview.currentWebview().data;
+			//console.log('传到评论界面的数据：' + JSON.stringify(data));
+			var tempIndex = data.tempIndex;
+			if(tempIndex == '-1') {
+				events.addTap('btn-reply', function() {
+					var self = this;
+					self.disabled = true;
+					var inputComment = document.getElementById("msg-content");
+					var name = inputComment.value; //评论内容
+					if(name == '') {
+						mui.toast('不允许为空');
+						self.disabled = false;
+						return;
+					} else if(name.length > 200) {
+						mui.toast('不能超过200字');
+						self.disabled = false;
+						return;
+					} else {
+						data.comData.commentContent=name;
+						var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+						postDataPro_addUserSpaceCommentReply(data.comData, wd, function(data) {
+							wd.close();
+							//console.log('添加空间评论回复_addUserSpaceCommentReply' + JSON.stringify(data));
+							if(data.RspCode == 0) {
+								mui.fire(plus.webview.currentWebview().opener(), 'refreshZonep', {});
+								mui.back();
+							}
+						})
+					}
+
+				})
+				return;
+			}
+			var zonepArray = data.zonepArray;
+			if(tempIndex.indexOf('-') >= 0) {
+
+				var indexArr = tempIndex.split('-');
+				var id = indexArr[0];
+				var commentId = indexArr[1];
+				var replyId = indexArr[2];
+
+				var tempModel = zonepArray[id].Comments[commentId];
+				if(!tempModel) {
+					mui.toast('不可以回复自己');
+					return;
+				}
+				//console.log(JSON.stringify(tempModel));
+				var upperId = tempModel.TabId;
+				var replyUserId;
+				var ReplyIdName;
+				if(replyId == '评论') {
+					replyUserId = tempModel.UserId
+					ReplyIdName = tempModel.UserIdName
+				} else {
+					replyUserId = tempModel.Replys[replyId].UserId;
+					ReplyIdName = tempModel.Replys[replyId].UserIdName;
+				}
+				document.getElementById("msg-content").placeholder = '@' + ReplyIdName + '（字数不超过200字)'
+
+			}
+			//console.log(tempIndex + '-----', zonepArray.length)
+			events.addTap('btn-reply', function() {
+				var self = this;
+				self.disabled = true;
+				var replyName = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).unick
+				var inputComment = document.getElementById("msg-content");
+				var name = inputComment.value; //评论内容
+				if(name == '') {
+					mui.toast('不允许为空');
+					self.disabled = false;
+					return;
+				} else if(name.length > 200) {
+					mui.toast('不能超过200字');
+					self.disabled = false;
+					return;
+				} else {
+					if(tempIndex.indexOf('-') >= 0) {
+						var indexArr = tempIndex.split('-');
+						var id = indexArr[0];
+						var commentId = indexArr[1];
+						var replyId = indexArr[2];
+
+						var tempModel = zonepArray[id].Comments[commentId];
+						if(!tempModel) {
+							mui.toast('不可以回复自己');
+							self.disabled = false;
+							return;
+						}
+						//console.log(JSON.stringify(tempModel));
+						var upperId = tempModel.TabId;
+						var replyUserId;
+						var ReplyIdName;
+						if(replyId == '评论') {
+							replyUserId = tempModel.UserId
+							ReplyIdName = tempModel.UserIdName
+						} else {
+							replyUserId = tempModel.Replys[replyId].UserId;
+							ReplyIdName = tempModel.Replys[replyId].UserIdName;
+						}
+						if(personalUTID == replyUserId) {
+							mui.toast('不可以回复自己');
+							self.disabled = false;
+							return;
+						}
+
+						var comData = {
+							userId: personalUTID, //用户ID
+							upperId: upperId, //上级评论ID
+							replyUserId: replyUserId, //回复ID
+							userSpaceId: zonepArray[id].TabId, //用户空间ID
+							commentContent: inputComment.value //回复内容
+						};
+						//console.log('comData=====' + JSON.stringify(comData))
+						var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+						postDataPro_addUserSpaceCommentReply(comData, wd, function(data) {
+							wd.close();
+							//console.log('添加空间评论回复_addUserSpaceCommentReply' + JSON.stringify(data));
+							if(data.RspCode == 0) {
+								var Reply = {
+									TabId: data.RspData.Result,
+									ReplyId: replyUserId,
+									UserId: personalUTID,
+									UpperId: upperId,
+									CommentContent: inputComment.value
+								}
+								mui.fire(plus.webview.currentWebview().opener(), 'refreshShow', {
+									tempIndex: tempIndex,
+									content: inputComment.value,
+									flag: '评论回复',
+									Reply: Reply
+								})
+								mui.fire(plus.webview.currentWebview().opener().opener(), 'refreshShow', {
+									tempIndex: tempIndex,
+									content: inputComment.value,
+									flag: '评论回复',
+									Reply: Reply
+								})
+								mui.fire(plus.webview.currentWebview().opener(), 'refreshZonep', {
+									tempIndex: tempIndex,
+									content: inputComment.value,
+									flag: '评论回复',
+									Reply: Reply
+								})
+								mui.fire(plus.webview.currentWebview().opener().opener(), 'refreshZonep', {
+									tempIndex: tempIndex,
+									content: inputComment.value,
+									flag: '评论回复',
+									Reply: Reply
+								})
+								self.disabled = false;
+								mui.back();
+							} else {
+								self.disabled = false;
+								mui.toast(data.RspTxt)
+							}
+
+						})
+					} else {
+						var comData = {
+							userId: personalUTID, //用户ID
+							userSpaceId: zonepArray[tempIndex].TabId, //用户空间ID
+							commentContent: inputComment.value //回复内容
+						};
+						var tempValue = inputComment.value;
+						var wd = plus.nativeUI.showWaiting(storageKeyName.WAITING);
+						postDataPro_addUserSpaceComment(comData, wd, function(data) {
+							wd.close();
+							//console.log('添加空间评论_addUserSpaceComment' + JSON.stringify(data));
+							if(data.RspCode == 0) {
+								var Comment = {
+									TabId: data.RspData.Result,
+									Replys: [],
+									ReplyId: 0,
+									UserId: personalUTID,
+									UpperId: 0,
+
+								}
+								mui.fire(plus.webview.currentWebview().opener(), 'refreshShow', {
+									tempIndex: tempIndex,
+									content: inputComment.value,
+									flag: '评论',
+									Comment: Comment
+								})
+								mui.fire(plus.webview.currentWebview().opener().opener(), 'refreshShow', {
+									tempIndex: tempIndex,
+									content: inputComment.value,
+									flag: '评论',
+									Comment: Comment
+								})
+								mui.fire(plus.webview.currentWebview().opener(), 'refreshZonep', {
+									tempIndex: tempIndex,
+									content: inputComment.value,
+									flag: '评论',
+									Comment: Comment
+								})
+								mui.fire(plus.webview.currentWebview().opener().opener(), 'refreshZonep', {
+									tempIndex: tempIndex,
+									content: inputComment.value,
+									flag: '评论',
+									Comment: Comment
+								})
+								self.disabled = false;
+								mui.back();
+							} else {
+								self.disabled = false;
+								mui.toast(data.RspTxt)
+							}
+
+						})
+					}
+
+				}
+
+			})
+
+		})
+	</script>
+
+</html>

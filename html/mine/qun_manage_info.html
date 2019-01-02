@@ -1,0 +1,453 @@
+<!--
+	作者：444811716@qq.com
+	时间：2016-12-06
+	描述：创建群
+-->
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/iconfont/iconfont.css" />
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/qiniu/qiniu.js"></script>
+		<script type="text/javascript" src="../../js/utils/cryption.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/utils/CloudFileUtil.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script type="text/javascript" src="../../js/cloud/AndroidFileSystem.js"></script>
+		<script type="text/javascript" src="../../js/utils/UploadHeadImage.js"></script>
+		<script type="text/javascript" src="../../js/utils/compress.js"></script>
+		<script type="text/javascript" src="../../js/utils/MultiMedia.js"></script>
+		<script type="text/javascript" src="../../js/utils/gallerypick.js"></script>
+
+		<style>
+			body,
+			.mui-content {
+				background: white;
+			}
+
+			.qun-image {
+				height: 100px;
+				width: 100px;
+				margin-top: 20px;
+			}
+
+			.mui-input-row label {
+				text-align: center;
+				width: 25%;
+				padding: 11px 0px;
+				font-size: 15px;
+			}
+
+			.mui-input-group {
+				margin-top: 20px;
+			}
+
+			.mui-input-group:before,
+			.mui-input-group:after {
+				height: 0px;
+			}
+
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				width: 75%;
+				font-size: 15px;
+			}
+
+			.mui-input-group .mui-input-row:after {
+				width: 100%;
+				left: 0;
+				background: #e4e4e4;
+			}
+
+			.mui-btn-block {
+				margin-top: 50px;
+				width: 95%;
+				margin-left: 2.5%;
+				height: 40px;
+				padding: 0;
+				border: 1px solid #1db8f1;
+				background-color: #1db8f1
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<p class="mui-title common-color-white">填写群信息</p>
+		</header>
+		<div class="mui-content">
+			<div id="qunimage" style="text-align: center;margin-left: auto;margin-right: auto;">
+				<div id="choose" class="qun-image" style="text-align: center;margin-left: auto;margin-right: auto;border: 1px solid #F2F2F2;border-radius: 50%;">
+					<a class="mui-icon iconfont icon-xiangji" style="color: #BBBBBB;font-size: 30px;margin-top: 20px;">
+						<p style="font-size: 10px;margin-top: 10px;">
+							请上传群图标!
+						</p>
+					</a>
+				</div>
+			</div>
+			<form class="mui-input-group">
+				<div class="mui-input-row" data-value='gname'>
+					<label>群名称：</label>
+					<input id="gname" type="text" onfocus="this.blur();" placeholder="请为你们的群起一个给力的名字吧！">
+				</div>
+				<div class="mui-input-row" data-value='gnote'>
+					<label>群说明：</label>
+					<input id="gnote" type="text" onfocus="this.blur();" placeholder="请简单介绍一下本群！">
+				</div>
+				<div class="mui-input-row" data-value='qunremark' style="display: none;">
+					<label>群备注：</label>
+					<input id="qunremark" type="text" onfocus="this.blur();">
+				</div>
+			</form>
+			<button id="commit" type="button" class="mui-btn mui-btn-blue mui-btn-block">提交</button>
+		</div>
+		<script type="text/javascript">
+			mui.init();
+			mui.plusReady(function() {
+				events.blurBack();
+				var qunImgPath = '';
+				var qname = document.getElementById("gname"); //群名称
+				var qnote = document.getElementById("gnote"); //群说明
+				var qremark = document.getElementById("qunremark"); //群备注
+
+				document.getElementById('choose').addEventListener('tap', function() {
+					////console.log('选择群图标');
+					var btnArray = [{
+						title: "拍照"
+					}, {
+						title: "相册"
+					}];
+					plus.nativeUI.actionSheet({
+						title: "选择上传群图标的方式",
+						cancel: "取消",
+						buttons: btnArray
+					}, function(e) {
+						var index = e.index;
+						switch(index) {
+							case 0: //取消
+								break;
+							case 1: //拍照
+								fromCamera();
+								break;
+							case 2: //相册
+								fromPic();
+								break;
+						}
+					});
+				});
+
+				mui('.mui-input-group').on('tap', '.mui-input-row', function() {
+					var id = this.getAttribute('data-value');
+					var type = '';
+					var value = '';
+					switch(id) {
+						case 'gname': //名称
+							type = 'gname';
+							value = qname.value;
+							break;
+						case 'gnote': //群说明
+							type = 'gnote';
+							value = qnote.value;
+							break;
+						case 'qunremark': //群备注
+							type = 'qunremark';
+							value = qremark.value;
+							break;
+						default:
+							//console.log('修改群资料的类型选择出错');
+							break;
+					}
+
+					events.openNewWindowWithData('qun_manage_info_change_post.html', {
+						type: type, //修改的类型
+						value: value, //修改的值
+						post: false, //是否post
+						listener: [{
+							webid: 'qun_manage_info.html',
+							winid: 'valueChange'
+						}] //监听
+					});
+				});
+
+				document.getElementById("commit").addEventListener('tap', function() {
+					if(qname.value.replace(/(^\s*)|(\s*$)/g, "") == "") {
+						mui.toast('群名称不能为空');
+					} else {
+						document.getElementById("commit").disabled = true;
+						document.activeElement.blur();
+						createQun(qname.value, qnote.value);
+					}
+				});
+
+				//修改群信息成功后修改界面的值
+				window.addEventListener('valueChange', function(e) {
+					var data = e.detail;
+					document.getElementById(data.type).value = data.value;
+				});
+
+				/**
+				 * 从相册选择图片
+				 */
+				function fromPic() {
+					MultiMedia.galleryPickTrue(function(file) {
+						var wd = events.showWaiting('处理中...');
+						//console.log('从相册选取图片成功,图片的路径为：' + file);
+						var myDate = new Date();
+						var dst = '_documents/' + myDate.getTime() + '.png';
+						compress.compressImageTo_512KB({
+							path: file,
+							dst: dst
+						}, function(event) {
+							var div = document.getElementById("choose");
+							div.innerHTML = '<img src="' + event.target + '"style="margin-top:0px;border: 1px solid #F2F2F2;border-radius: 50%;height: 100px;width: 100px;"/>';
+							qunImgPath = event.target;
+							wd.close();
+						}, function(error) {
+							wd.close();
+							mui.toast('压缩失败 ' + '错误编码 ' + error.code + '描述信息 ' + error.message);
+						});
+					}, function(error) {
+						mui.toast('从相册选取图片失败 ' + '错误编码 ' + error.code + '描述信息 ' + error.message);
+					});
+				}
+
+				/**
+				 * 通过相机拍照
+				 */
+				function fromCamera() {
+					MultiMedia.cameraTake(function(path) {
+						var wd = events.showWaiting('处理中...');
+						//压缩图片并且在新页面显示压缩后的图片
+						compress.compressImageTo_512KB({
+							path: path,
+							dst: path
+						}, function(event) {
+							var div = document.getElementById("choose");
+							div.innerHTML = '<img src="' + event.target + '" style="margin-top:0px;border: 1px solid #F2F2F2;border-radius: 50%;height: 100px;width: 100px;"/>';
+							qunImgPath = event.target;
+							wd.close();
+						}, function(error) {
+							wd.close();
+							mui.toast('压缩失败 ' + '错误编码 ' + error.code + '描述信息 ' + error.message);
+						});
+					}, function(error) {
+						var code = error.code; // error.code（Number类型）获取错误编码
+						var message = error.message; // error.message（String类型）获取错误描述信息。
+						if(mui.os.ios) {
+							if(code !== 2) {
+								mui.toast('拍照失败！' + '错误编码：' + code + ' 描述信息：' + message, '拍照失败');
+								//console.log('拍照失败！' + JSON.stringify(error));
+							} else {
+								//console.log('未拍取图片');
+							}
+						} else if(mui.os.android) {
+							if(code !== 11) {
+								mui.toast('拍照失败！' + '错误编码：' + code + ' 描述信息：' + message, '拍照失败');
+								//console.log('拍照失败！' + JSON.stringify(error));
+							} else {
+								//console.log('未拍取图片:' + JSON.stringify(error));
+							}
+						}
+					});
+				}
+
+				/**
+				 * 创建一个群
+				 * @param {Object} gname 名称
+				 * @param {Object} gnote 说明
+				 * @param {Object} gimg
+				 */
+				function createQun(gname, gnote) {
+					//7.用户创建群
+					//需要参数
+					var comData = {
+						gname: gname, //群名
+						gnote: gnote, //群说明
+						gimg: '', //群头像
+					};
+					var gid = ''; //群id
+					// 等待的对话框
+					var wd = events.showWaiting();
+					postDataPro_PostCrGrp(comData, wd, function(data) {
+						//console.log('7.90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+						if(data.RspCode == 0) {
+							gid = data.RspData;
+							if(qunImgPath == '') {
+								changInfo({
+									gid: gid, //群id
+									gname: gname, //群名
+									gnote: gnote, //群说明
+									gimg: '', //群头像
+								});
+								mui.toast('创建群成功');
+								wd.close();
+								mui.back();
+							} else {
+								uploadQunHeadImge(wd, data.RspData, qunImgPath, function(successCB) {
+									changInfo({
+										gid: gid, //群id
+										gname: gname, //群名
+										gnote: gnote, //群说明
+										gimg: successCB, //群头像
+									});
+									mui.toast('创建群成功');
+									wd.close();
+									mui.back();
+								}, function(errorCB) {
+									changInfo({
+										gid: gid, //群id
+										gname: gname, //群名
+										gnote: gnote, //群说明
+										gimg: '', //群头像
+									});
+									mui.toast('创建群成功,上传群头像失败：' + JSON.stringify(errorCB));
+									wd.close();
+									mui.back();
+								});
+							}
+						} else {
+							wd.close();
+							mui.toast(data.RspTxt);
+							//console.log('创建群失败：' + data.RspTxt);
+						}
+					});
+				}
+
+				/**
+				 * 创建群后修改界面
+				 */
+				function changInfo(data) {
+					events.fireToPageNone('qun_manage_a.html', 'createQun', data);
+					events.fireToPageNone('../cloud/cloud_home.html', 'getGroupList');
+				}
+
+				/**
+				 * 上传图片到七牛
+				 * @param {Object} qunId 群id
+				 * @param {Object} qunImge 群头像
+				 * @param {Object} success 成功回调
+				 * @param {Object} error 失败回调
+				 */
+				function uploadQunHeadImge(wd, qunId, qunImge, successCallBack, errorCallBack) {
+					var fileName = 'qunheadimge' + qunId + '.png';
+					//获取七牛上传token的url
+					var getUploadTokenUrl = window.storageKeyName.QNGETUPTOKENHEADIMGE;
+					//私有空间或公有空间
+					var mainSpace = window.storageKeyName.QNPUBSPACE;
+					//头像上传的空间
+					var uploadSpace = window.storageKeyName.HEADIMAGE;
+					var getToken = {
+						type: '0', //str 必填 获取上传token的类型。0上传需要生成缩略图的文件；1上传文件
+						QNFileName: fileName, //str 必填 存放到七牛的文件名
+						appId: 5, //int 必填 项目id
+						mainSpace: mainSpace, //str 必填 私有空间或公有空间
+						uploadSpace: uploadSpace, //str 必填  上传的空间
+					}
+
+					CloudFileUtil.getQNUpToken(getUploadTokenUrl, getToken, function(data) {
+						var QNUptoken = data.data; //token数据
+						var configure = data.configure; //获取token的配置信息
+						//console.log('七牛上传token:' + JSON.stringify(QNUptoken));
+						if(QNUptoken.Status == 0) { //失败
+							mui.toast('获取上传凭证失败 ' + QNUptoken.Message);
+							//console.log('### ERROR ### 请求上传凭证失败' + QNUptoken.Message);
+							wd.close();
+						} else {
+							CloudFileUtil.upload(qunImge, QNUptoken.Data.Token, QNUptoken.Data.Key, function(upload, status) {
+								//上传任务完成的监听
+								//console.log('上传任务完成:' + status);
+								//console.log('上传任务完成:' + JSON.stringify(upload));
+								if(status == 200) { //上传任务成功
+									setTimeout(function() {
+										//头像类型,个人头像0，资料头像1，群头像2
+										var thumb = QNUptoken.Data.OtherKey[configure.thumbKey]; //缩略图地址
+										var domain = QNUptoken.Data.Domain + QNUptoken.Data.Key; //文件地址
+										//console.log(thumb);
+										//console.log(domain);
+										var myDate = new Date();
+										var gimgPath = thumb + '?' + myDate.getTime();
+										//8.用户修改群各项信息
+										//需要参数
+										var comData2 = {
+											rid: qunId, //要修改的群id
+											vtp: 'gimg', //更改项，指更改用户信息的相应项,对应后面的vvl值,gimg(头像),gname(群名),gnote(群说明)
+											vvl: gimgPath, //要修改成的值
+										};
+										//返回值model：model_groupList
+										// 等待的对话框
+										var wd2 = events.showWaiting();
+										postDataPro_PostReGinfo(comData2, wd2, function(data) {
+											//console.log('8_PostReGinfo:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+											if(data.RspCode == 0) {
+												successCallBack(gimgPath);
+											} else {
+												errorCallBack();
+												mui.toast(data.RspTxt);
+											}
+											wd2.close();
+										});
+									}, 2000);
+								} else { //上传失败
+									errorCallBack(upload.responseText);
+									wd.close();
+								}
+							}, function(upload, status) {
+								//上传任务状态监听
+								//上传任务的标识
+								var id = upload.__UUID__;
+								//已完成上传数据的大小
+								var uploadedSize = AndroidFileSystem.readSize(upload.uploadedSize);
+								//上传数据的总大小
+								var totalSize = AndroidFileSystem.readSize(upload.totalSize);
+								//上传任务的状态
+								var uploadState = upload.state;
+								switch(uploadState) {
+									case 0: //上传任务开始调度
+										//console.log('上传任务开始调度:|id:' + id + '|uploadState:' + uploadState);
+										break;
+									case 1: //上传任务开始请求
+										//console.log('上传任务开始请求:|id:' + id + '|uploadState:' + uploadState);
+										break;
+									case 2: //上传任务请求已经建立
+										//console.log('上传任务请求已经建立:|id:' + id + '|uploadState:' + uploadState);
+										break;
+									case 3: //上传任务提交数据
+										////console.log('上传任务状态监听:|id:' + id + '|uploadedSize:' + uploadedSize + '|totalSize:' + totalSize + '|uploadState:' + uploadState);
+										//var num = parseInt(upload.uploadedSize / upload.totalSize * 100) + '%';
+										////console.log(num);
+										//size.setTitle('正在上传 ' + num);
+										break;
+									case 4: //上传任务已完成
+										////console.log('上传任务已完成:|id:' + id + '|uploadState:' + uploadState);
+										break;
+									case 5: //上传任务已暂停
+										//console.log('上传任务已暂停:|id:' + id + '|uploadState:' + uploadState);
+										break;
+									default:
+										//console.log('上传任务状态监听:其他状态:' + uploadState);
+										break;
+								}
+							}, function(task) {
+								//上传任务创建成功的回调
+								task.start();
+							});
+						}
+					}, function(xhr, type, errorThrown) {
+						wd.close();
+						mui.toast('请求上传凭证失败 ' + type);
+						//console.log('### ERROR ### 请求上传凭证失败' + type);
+					});
+				}
+			});
+		</script>
+	</body>
+
+</html>

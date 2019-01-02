@@ -1,0 +1,325 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<link href="../../css/qiuzhi/qiuzhi-inviteAnswer.css" rel="stylesheet" />
+		<style>
+			.mui-table-view {
+				background: #F2F3F5;
+			}
+			
+			.mui-table-view li {
+				background: white;
+				margin-bottom: 5px;
+				border-bottom: #e4e4e4 solid 1px;
+				padding: 3px 0 3px 0;
+			}
+			/*赞评论时间*/
+			
+			.mui-table-cell p {
+				font-family: "楷体";
+				font-size: 1.3rem;
+				color: #B7B7B7;
+			}
+			
+			.mui-table h4,
+			.mui-table h5,
+			.mui-table .mui-h5,
+			.mui-table .mui-h6,
+			.mui-table p {
+				margin-top: 0;
+				padding-left: 10px;
+			}
+			/*问题*/
+			
+			.mui-table h4 {
+				font-family: "楷体";
+				font-size: 1.6rem;
+				line-height: 21px;
+				font-weight: 510;
+				padding-left: 10px;
+				letter-spacing: 0.5px;
+			}
+			
+			.mui-table .oa-icon {
+				position: absolute;
+				right: 0;
+				bottom: 0;
+			}
+			
+			.mui-table .oa-icon-star-filled {
+				color: #f14e41;
+			}
+			
+			.mui-table-cell {
+				float: left;
+			}
+			
+			.mui-table-cell h5 {
+				font-family: "楷体";
+				font-size: 1.5rem;
+				color: #474747;
+				line-height: 1.8rem;
+				-webkit-line-clamp: 3;
+				/*用来限制在一个块元素显示的文本的行数*/
+				display: -webkit-box;
+				/*必须结合的属性，将对象作为弹性伸缩盒子模型显示*/
+				-webkit-box-orient: vertical;
+				/*必须结合的属性 ，设置或检索伸缩盒对象的子元素的排列方式*/
+				overflow: hidden;
+				line-height: 1.2;
+			}
+			
+			.mui-table-view-cell div {
+				width: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">全部回答</h1>
+		</header>
+		<div id="refreshContainer" class="mui-content mui-fullscreen" style="z-index:0">
+			<div class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<ul id="list-container" class="mui-table-view mui-table-view-striped mui-table-view-condensed">
+
+						<!--<li class="mui-table-view-cell">
+							<div class="mui-table">
+								<div class="mui-table-cell mui-col-xs-12">
+									<h4 class="mui-ellipsis">啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊 </h4>
+									<h5>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</h5>
+									<p class="mui-h6 mui-ellipsis"> record.IsLikeNum + '赞 ' + record.CommentNum + '评论 ' + record.AnswerTime + '
+									</p>
+								</div>
+							</div>
+						</li>
+						<li class="mui-table-view-cell">
+							<div class="mui-table">
+								<div class="mui-table-cell mui-col-xs-12">
+									<h4 class="mui-ellipsis">啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊 </h4>
+									<h5>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</h5>
+									<p class="mui-h6 mui-ellipsis"> record.IsLikeNum + '赞 ' + record.CommentNum + '评论 ' + record.AnswerTime + '
+									</p>
+								</div>
+							</div>
+						</li>
+						<li class="mui-table-view-cell">
+							<div class="mui-table">
+								<div class="mui-table-cell mui-col-xs-12">
+									<h4 class="mui-ellipsis">啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊 </h4>
+									<h5>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</h5>
+									<p class="mui-h6 mui-ellipsis"> record.IsLikeNum + '赞 ' + record.CommentNum + '评论 ' + record.AnswerTime + '
+									</p>
+								</div>
+							</div>
+						</li>
+						<li class="mui-table-view-cell">
+							<div class="mui-table">
+								<div class="mui-table-cell mui-col-xs-12">
+									<h4 class="mui-ellipsis">啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊 </h4>
+									<h5>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</h5>
+									<p class="mui-h6 mui-ellipsis"> record.IsLikeNum + '赞 ' + record.CommentNum + '评论 ' + record.AnswerTime + '
+									</p>
+								</div>
+							</div>
+						</li>
+						<li class="mui-table-view-cell">
+							<div class="mui-table">
+								<div class="mui-table-cell mui-col-xs-12">
+									<h4 class="mui-ellipsis">啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊 </h4>
+									<h5>啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊啊</h5>
+									<p class="mui-h6 mui-ellipsis"> record.IsLikeNum + '赞 ' + record.CommentNum + '评论 ' + record.AnswerTime + '
+									</p>
+								</div>
+							</div>
+						</li>-->
+				</div>
+				</ul>
+			</div>
+		</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<!--<script src="../../js/utils/h5fresh.js"></script>-->
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/storageKeyName.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/publicQiuzhiProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var ExpertsInfo; //专家详细页传来的 专家信息
+			var pageIndex = 1; //请求数据页面
+			var totalPageCount; //总页码
+			var flagRef = 0; //是刷新0，还是加载更多1
+			var answerArray = []; //回答总数组
+
+			mui.init();
+
+			mui.plusReady(function() {
+				//从专家页面传值
+				var curPage = plus.webview.currentWebview();
+				ExpertsInfo = curPage.data;
+				pageIndex = 1;
+				flagRef = 0;
+				getAnswersByUser(ExpertsInfo.UserId);
+				window.addEventListener("answerShield", function() {
+					pageIndex = 1;
+					flagRef = 0;
+					getAnswersByUser(ExpertsInfo.UserId);
+				})
+				mui('.mui-table-view').on('tap', '.mui-table-view-cell', function() {
+					var index = this.id.replace('li', '');
+					//console.log('传递的answerInfo:' + this.dataset.info);
+					var tempModel = answerArray[index];
+					//判断回答或则问题是否还存在,flag=1为提问，=2为回答，id为对应id
+					events.askDetailOrAnswerDetail(2, tempModel.AnswerId, function(data) {
+						if(data) {
+							//跳转界面
+							events.fireToPageWithData('qiuzhi-answerDetail.html', 'answerInfo', tempModel);
+						}
+					});
+				});
+
+				//阻尼系数、初始化刷新加载更多
+				var deceleration = mui.os.ios ? 0.003 : 0.0009;
+				mui('.mui-scroll-wrapper').scroll({
+					bounce: false,
+					indicators: true, //是否显示滚动条
+					deceleration: deceleration
+				});
+				//上拉下拉注册
+				mui(".mui-scroll-wrapper .mui-scroll").pullToRefresh({
+					down: {
+						callback: function() {
+							//清除节点
+							document.getElementById('list-container').innerHTML = "";
+							var self = this;
+							//console.log("下拉刷新");
+							pageIndex = 1;
+							flagRef = 0;
+							//24.获取某个用户的回答列表
+							getAnswersByUser(ExpertsInfo.UserId);
+							setTimeout(function() {
+								//结束下拉刷新
+								self.endPullDownToRefresh();
+							}, 1000);
+						}
+					},
+					up: {
+						callback: function() {
+							var self = this;
+							//console.log("上拉加载更多");
+							flagRef = 1;
+							if(pageIndex <= totalPageCount) {
+								//24.获取某个用户的回答列表
+								getAnswersByUser(ExpertsInfo.UserId);
+								setTimeout(function() {
+									//结束下拉刷新
+									self.endPullUpToRefresh();
+									if(mui(".mui-table-view-cell").length < 10) {
+										mui(".mui-pull-loading")[0].innerHTML = "";
+									}
+								}, 1000);
+							} else {
+								//结束下拉刷新
+								self.endPullUpToRefresh();
+								mui(".mui-pull-loading")[0].innerHTML = "没有更多了";
+							}
+						}
+					}
+				});
+
+			});
+
+			//24.获取某个用户的回答列表
+			function getAnswersByUser(userId) {
+				//需要加密的数据
+				var comData = {
+					userId: userId, //用户ID
+					pageIndex: pageIndex, //当前页数
+					pageSize: '10' //每页记录数,传入0，获取总记录数
+				};
+				// 等待的对话框
+				var wd = events.showWaiting();
+				//24.获取某个用户的回答列表
+				postDataQZPro_getAnswersByUser(comData, wd, function(data) {
+					wd.close();
+					//console.log('24.获取某个用户的回答列表:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						//总页数
+						totalPageCount = data.RspData.TotalPage;
+						pageIndex++;
+						//如果是旧数据，去掉里面的html标签
+						for(var i = 0; i < data.RspData.Data.length; i++) {
+							var temp = data.RspData.Data[i];
+							if(temp.AnswerSFlag == 1) {
+								temp.AnswerContent = events.deleteHtml(temp.AnswerContent);
+							}
+						}
+						if(flagRef == 0) { //刷新
+							//清除节点
+							document.getElementById('list-container').innerHTML = "";
+							answerArray = data.RspData.Data;
+							if(data.RspData.Data.length == 0) {
+								mui.toast('没有数据');
+							}
+						} else { //加载更多
+							//合并数组
+							answerArray = answerArray.concat(data.RspData.Data);
+						}
+						if(mui(".mui-table-view-cell").length < 10) {
+							mui(".mui-pull-loading")[0].innerHTML = "";
+						}
+						setAnswerRecord(data.RspData.Data);
+					} else {
+						mui.toast(data.RspTxt);
+					}
+				});
+			};
+
+			/**
+			 * 放置邀请回答记录数据
+			 * @param {Object} list 回答记录数据
+			 */
+			var setAnswerRecord = function(list) {
+				var listContainer = document.getElementById('list-container');
+				for(var i in list) {
+					createList(listContainer, list[i], i)
+				}
+			}
+			/**
+			 * 拼接回答记录
+			 * @param {Object} listContainer
+			 * @param {Object} record
+			 */
+			var createList = function(listContainer, record, index) {
+				var li = document.createElement('li');
+				li.className = 'mui-table-view-cell';
+				//console.log(JSON.stringify(record))
+				li.dataset.info = (JSON.stringify(record));
+				li.id = 'li' + index;
+				//拼接显示
+				li.innerHTML = '<div class="mui-table">' +
+					'<div class="mui-table-cell mui-col-xs-12">' +
+					'<h4 id="askTitle" class="mui-ellipsis" style="font-weight:normal;">' +
+					record.AskTitle +
+					'</h4><h5 id="answerContent" style="letter-spacing :0.3px;color:#808080">' +
+					record.AnswerContent +
+					'</h5>' +
+					'<p class="mui-h6 mui-ellipsis">' + record.IsLikeNum + '赞 · ' + record.CommentNum + '评论 · ' + modifyTimeFormat(record.AnswerTime) +
+					'</p></div></div>';
+				listContainer.appendChild(li);
+			}
+		</script>
+	</body>
+
+</html>

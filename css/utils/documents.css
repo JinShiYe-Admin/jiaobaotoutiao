@@ -1,0 +1,83 @@
+/**
+ * 公文预览样式
+ */
+
+.mui-table-view {
+	background: transparent;
+	/*背景透明*/
+}
+
+.mui-table-view-cell {
+	background: white;
+	/*背景白色*/
+
+	margin-top: 10px;
+	/*距离顶部*/
+}
+
+.mui-table-view:before,
+.mui-table-view:after,
+.mui-table-view-cell:after {
+	height: 0px;
+	/*头部和尾部*/
+}
+
+
+.document-content {
+
+	font-size: 14px;
+	/*字体大小*/
+	font-weight: 900;
+	/*字体粗细*/
+	margin-top: 5px;
+	/*距离顶部*/
+	margin-bottom: 10px;
+	/*距离底部*/
+		margin-left: 60px;
+	/*距离左边*/
+
+	overflow: hidden;
+	/*设置多于3行省略号*/
+	text-overflow: ellipsis;
+	/*设置多于3行省略号*/
+	display: -webkit-box;
+	/*设置多于3行省略号*/
+	-webkit-line-clamp: 3;
+	/*设置多于3行省略号*/
+	-webkit-box-orient: vertical;
+	/*设置多于3行省略号*/
+}
+
+.document-headimg{
+	
+	/*图标：未读*/
+	width: 50px;
+	/*宽度*/
+	height: 50px;
+	/*高度*/
+	position: absolute;
+	/*绝对布局*/
+	left: 5px;
+	/*距离左边*/
+
+}
+.document-redpoint{
+		/*图标：未读*/
+	width: 10px;
+	/*宽度*/
+	height: 10px;
+	/*高度*/
+	position: absolute;
+	/*绝对布局*/
+	left: 60px;
+	top: 20px;
+	/*距离左边*/
+}
+
+.document-time {
+	/*时间*/
+	float: right;
+	/*居右*/
+	
+}
+

@@ -1,0 +1,46 @@
+<!--与我相关界面-->
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>与我相关</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../../css/mui.min.css">
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/quan/about-me.css" />
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav common-background-bar ">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left common-color-white"></a>
+			<h1 class="mui-title common-color-white common-font-family-Regular">与我相关</h1>
+		</header>
+		<!--下拉刷新容器-->
+		<div id="refreshContainer" class="mui-content mui-fullscreen" style="z-index: 0;">
+			<div class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<!--数据列表-->
+					<ul id="list-container" class="mui-table-view">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<!--公共事件js-->
+		<script src="../../js/utils/events.js"></script>
+		<!--h5刷新-->
+		<script src="../../js/utils/h5fresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<!--公共接口-->
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<!--作业接口-->
+		<script type="text/javascript" src="../../js/publicHomeworkProtocol.js"></script>
+		<!--本页js-->
+		<script src="../../js/quan/about-me.js"></script>
+	</body>
+
+</html>

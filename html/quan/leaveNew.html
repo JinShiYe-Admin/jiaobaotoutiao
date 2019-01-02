@@ -1,0 +1,368 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet" />
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/quan/about-me.css" />
+		<link rel="stylesheet" href="../../css/utils/bubble.css" />
+		<link rel="stylesheet" href="../../css/utils/fresh.css" />
+		<style>			
+			.mui-table-view {
+				background: white;
+				/*背景色透明*/
+			}
+			
+			.mui-table-view-cell {
+				background: #eaeaea;
+				/*cell 背景设为白色*/
+				/*padding: 0;*/
+				/*内边距为0*/
+				/*margin-bottom: 10px;*/
+			}
+			
+			.mui-table-view:before,
+			.mui-table-view:after,
+			.mui-table-view-cell:after {
+				height: 0px;
+				/*去掉横线*/
+			}
+			
+			.dynamic-personal-image {
+				/*个人头像圆形*/
+				border-radius: 50%;
+				width: 40px;
+				height: 40px;
+			}
+			
+			.dynamic-padding-left-10px {
+				padding-left: 10px;
+			}
+			
+			.dynamic-praise-name,
+			.dynamic-comment-name {
+				/*点赞者和评论者的名字*/
+				color: #1277C7;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<a id="pubLeave" class=" mui-icon iconfont icon-xie  mui-pull-right mui-plus-visible common-color-white"></a>
+			<h1 class="mui-title">留言板</h1>
+		</header>
+		<div id="refreshContainer" class="mui-content mui-fullscreen" style="z-index:0;background: #eaeaea;">
+			<div class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<ul id="list-container" class="mui-table-view">
+
+					</ul>
+				</div>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<script src="../../js/utils/events.js"></script>
+		<script src="../../js/publicProtocol.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../js/storageKeyName.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			var userID; //传值过来的个人ID
+			var pageIndex = 1; //请求数据页面
+			var totalPageCount; //总页码
+			var flagRef = 0; //是刷新0，还是加载更多1
+			var leaveArray = []; //留言总数组
+			var personalUTID; //账号id
+			var userId
+			mui.init();
+
+			mui.plusReady(function() {
+				userId = plus.webview.currentWebview().data;
+				events.addTap('pubLeave', function() {
+					//判断是否是游客身份登录
+					if(events.judgeLoginMode(this)) {
+						return;
+					}
+					//console.log(JSON.stringify(userId))
+					events.singleWebviewInPeriod(this,'../quan/pub-leave.html', userId);
+//					events.openNewWindowWithData();
+				})
+				personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid; //当前登录账号utid
+				//赋值
+				userID = plus.webview.currentWebview().data;
+				//console.log('传值过来的个人信息：' + userID);
+				//清除节点
+				document.getElementById('list-container').innerHTML = "";
+				//24.获取某个用户的回答列表
+				getUserSpaceMsgsById(userID,null);
+
+				//上拉下拉注册
+				mui(".mui-scroll-wrapper .mui-scroll").pullToRefresh({
+					down: {
+						callback: function() {
+							//清除节点
+							//							document.getElementById('list-container').innerHTML = "";
+							var self = this;
+							flagRef = 1;
+							if(pageIndex <= totalPageCount) {
+								//24.获取某个用户的回答列表
+								getUserSpaceMsgsById(userID,self);
+							} else {
+								mui.toast('没有更多了');
+								self.endPullDownToRefresh();
+							}
+							
+						}
+					},
+					//					up: {
+					//						callback: function() {
+					//							var self = this;
+					//							//console.log("上拉加载更多");
+					//
+					//							self.endPullUpToRefresh();
+					//						}
+					//					}
+				});
+
+			});
+
+			//49.（用户空间）获取用户空间所有留言
+			function getUserSpaceMsgsById(userId,self) {
+				var comData = {
+					userId: userId, //留言板拥有者id
+					pageIndex: pageIndex, //当前页数
+					pageSize: '10' //每页记录数
+				};
+				//49.（用户空间）获取用户空间所有留言，model_userSpaceInfo
+				postDataPro_getUserSpaceMsgsById(comData, null, function(data) {
+					//console.log('49、空间所有留言:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt + data.RspData.TotalCnt);
+					if(data.RspCode == 0) {
+						//总页数
+						totalPageCount = data.RspData.TotalPage;
+						pageIndex++;
+						if(personalUTID == userID) {
+							var comData = {
+								userId: personalUTID, //用户ID
+								spaceTypes: '[7,8]'
+							}
+							postDataPro_setCommentMsgReadByUser(comData, null, function(data) {
+								//console.log('59与我相关设置成已读:' + JSON.stringify(data));
+							})
+						}
+						var tempRspData = data.RspData.Data;
+						//获取当前回调留言的个人信息，主要是头像、昵称
+						var tempArray = [];
+						//先遍历回调数组，获取
+						for(var item in tempRspData) {
+							//当前循环的model
+							var tempModel0 = tempRspData[item];
+							//将当前model中id塞到数组
+							tempArray.push(tempModel0.UserId);
+							tempArray.push(tempModel0.ReplyId);
+						}
+						//给数组去重
+						tempArray = arrayDupRemoval(tempArray);
+						//发送获取用户资料申请
+						var tempData = {
+							vvl: tempArray.join(), //用户id，查询的值,p传个人ID,g传ID串
+							vtp: 'g' //查询类型,p(个人)g(id串)
+						}
+						//console.log('tempData:' + JSON.stringify(tempData));
+						//21.通过用户ID获取用户资料
+						postDataPro_PostUinf(tempData, null, function(data1) {
+							//console.log('21、获取个人资料:' + data1.RspCode + ',RspData:' + JSON.stringify(data1.RspData) + ',RspTxt:' + data1.RspTxt);
+							if(data1.RspCode == 0) {
+								//循环当前的个人信息返回值数组
+								for(var i in data1.RspData) {
+									//当前model
+									var tempModel = data1.RspData[i];
+									//更新头像
+									tempModel.uimg = updateHeadImg(tempModel.uimg, 2);
+									//循环留言数组
+									for(var item in tempRspData) {
+										//当前循环的model
+										var tempModel0 = tempRspData[item];
+										//对比id是否一致
+										if(tempModel0.UserId == tempModel.utid) {
+											//合并
+											tempModel0 = $.extend(tempModel0, tempModel);
+										}
+										if(tempModel0.ReplyId == tempModel.utid) {
+											tempModel0.ReplyName = tempModel.unick
+										}
+									}
+								}
+							}
+							//console.log('循环遍历后的值：' + JSON.stringify(tempRspData));
+							if(flagRef == 0) { //刷新
+								leaveArray = tempRspData;
+							} else { //加载更多
+								//合并数组
+								leaveArray = leaveArray.concat(tempRspData);
+							}
+							//console.log('合并后的值为：' + JSON.stringify(leaveArray));
+							var listContainer = document.getElementById('list-container');
+							listContainer.innerHTML = '';
+							setLeaveList(leaveArray);
+						});
+
+					} else {
+						mui.toast(data.RspTxt);
+					}
+					if (self) {
+						self.endPullDownToRefresh();
+					}
+				});
+			};
+
+			/**
+			 * 放置邀请回答记录数据
+			 * @param {Object} list 回答记录数据
+			 */
+			var setLeaveList = function(list) {
+				var listContainer = document.getElementById('list-container');
+				//console.log('数量为' + list.length)
+				for(var i in list) {
+					createList(listContainer, list[i], i)
+				}
+			}
+			/**
+			 * 拼接回答记录
+			 * @param {Object} listContainer
+			 * @param {Object} record
+			 */
+			var createList = function(listContainer, datasource, index) {
+				datasource.MsgContent = replaceAllBL(datasource.MsgContent)
+				var li = document.createElement('li');
+				li.className = 'mui-table-view-cell ableSelectedCell';
+				li.id = 'reply' + index
+				if(datasource.ReplyId == 0) {
+					if(datasource.UserId != personalUTID) {
+						li.innerHTML = '<div style="padding:12px">' +
+							'<div class="mui-media-body mui-pull-left">' +
+							'<img class=" dynamic-personal-image" src="' + datasource.uimg + '">' +
+							'</div>' +
+							'<div class="mui-media-body dynamic-padding-left-10px">' +
+							'<h6>' + events.shortForString(datasource.unick, 12) + '</h6>' +
+							'</div></div>' +
+							'<div style= "margin-top:-10px"  class = "chat_content_left">' +
+							datasource.MsgContent +
+							'<p style = "text-align: right;">' + events.shortForDate(datasource.MsgDate)+ '</p></div>'
+					} else {
+						li.innerHTML = '<div style="padding:12px">' +
+							'<div class="mui-media-body mui-pull-right">' +
+							'<img class=" dynamic-personal-image" src="' + datasource.uimg + '">' +
+							'</div>' +
+							'<div class="mui-media-body dynamic-padding-left-10px"  style = "text-align: right;padding-right:10px">' +
+							'<h6>' + events.shortForString(datasource.unick, 12) + '</h6>' +
+							'</div></div>' +
+							'<div style= "margin-top:-10px"  class = "chat_content_right">' +
+							datasource.MsgContent +
+							'<p style = "text-align: right;">' + events.shortForDate(datasource.MsgDate) + '</p></div>'
+					}
+
+					listContainer.insertBefore(li, listContainer.childNodes[0]);
+
+				} else {
+					if(datasource.UserId != personalUTID) {
+						li.innerHTML = '<div style="padding:12px">' +
+							'<div class="mui-media-body mui-pull-left">' +
+							'<img class=" dynamic-personal-image" src="' + datasource.uimg + '">' +
+							'</div>' +
+							'<div class="mui-media-body dynamic-padding-left-10px">' +
+							'<h6>' + events.shortForString(datasource.unick, 12) + '</h6>' +
+							'</div></div>' +
+							'<div style= "margin-top:-10px"  class = "chat_content_left">' + '<span style = "color:rgb(43,176,238);font-size:14px;" class="mui-ellipsis">' +
+							'@' + events.shortForString(datasource.ReplyName, 12) + '</span> ' +
+							datasource.MsgContent +
+							'<p style = "text-align: right;">' + events.shortForDate(datasource.MsgDate) + '</p></div>'
+					} else {
+						li.innerHTML = '<div style="padding:12px">' +
+							'<div class="mui-media-body mui-pull-right">' +
+							'<img class=" dynamic-personal-image" src="' + datasource.uimg + '">' +
+							'</div>' +
+							'<div class="mui-media-body" style = "text-align: right;padding-right:10px">' +
+							'<h6>' + events.shortForString(datasource.unick, 12) + '</h6>' +
+							'</div></div>' +
+							'<div style= "margin-top:-5px; "  class = "chat_content_right">' + '<div class="chat-body ">' +
+							'<div >' + '<span style = "font-size:14px;">' + '<span style = "color:rgb(43,176,238);">' +
+							'@' + events.shortForString(datasource.ReplyName, 12) + '</span>' + '<span>' + " " +
+							datasource.MsgContent + '</span> ' + '</span> </div></div>' + '<p>' + events.shortForDate(datasource.MsgDate) + '</p></div>';
+					}
+					listContainer.insertBefore(li, listContainer.childNodes[0]);
+				}
+				if(flagRef == 0) {
+					var scroll = mui('.mui-scroll-wrapper').scroll();
+					//重新计算布局值，最大滚动的高度等等
+					scroll.reLayout();
+					//滚动到底部
+					scroll.scrollToBottom(100);
+				} else {
+
+				}
+
+			}
+			window.addEventListener('refreshLeaveList', function() { //发布留言成功后的回调
+				//刷新时将页码归1
+				totalCnt = 0;
+				flagRef = 0;
+				pageIndex = 1;
+				getUserSpaceMsgsById(userId);
+
+			})
+			mui('.mui-table-view').on('tap', '.dynamic-personal-image', function() {
+				var li = this.parentElement.parentElement.parentElement;
+				var index = li.id.replace('reply', '');
+				//console.log(JSON.stringify(leaveArray))
+				mui.openWindow({
+					url: '../quan/zone_main.html',
+					id: '../quan/zone_main.html',
+					styles: {
+						top: '0px', //设置距离顶部的距离
+						bottom: '0px'
+					},
+
+					extras: {
+						data: leaveArray[index].utid,
+						NoReadCnt: 0,
+						flag: '0'
+					},
+					createNew: true,
+
+				});
+				window.event.stopPropagation()
+
+			})
+			//点击回复
+			mui('.mui-table-view').on('tap', '.ableSelectedCell', function() {
+				//判断是否是游客身份登录
+				if(events.judgeLoginMode(this)) {
+					return;
+				}
+				var item=this;
+				cellIndex = this.id.replace('reply', '');
+
+				if(leaveArray[cellIndex].UserId == personalUTID) {
+					mui.toast('不可以回复自己')
+					return;
+				}
+				//console.log(cellIndex);
+				var data = {
+					userId: personalUTID,
+					upperId: leaveArray[cellIndex].TabId,
+					replyUserId: leaveArray[cellIndex].UserId,
+					userOwnerId: userId,
+				}
+				events.singleWebviewInPeriod(item,'leave-reply.html', data);
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,47 @@
+<!--他关注的人和关注他的人界面-->
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="author" content="rockan007@github.com" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link href="../../css/utils/common.css" rel="stylesheet">
+		<link href="../../css/iconfont/iconfont.css" rel="stylesheet" />
+		<link href="../../css/qiuzhi/attention-persons.css" rel="stylesheet" />
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title">关注他的人</h1>
+		</header>
+		<!--下拉刷新容器-->
+		<div id="refreshContainer" class="mui-content mui-fullscreen" style="z-index:0">
+			<div class="mui-scroll-wrapper">
+				<div class="mui-scroll">
+					<ul id="list-container" class="mui-table-view">
+
+					</ul>
+				</div>
+			</div>
+			<p id="noOne-container" class="display-none" style="position: absolute;width:100%;top: 70%;text-align: center;">暂无关注的人</p>
+		</div>
+
+		<script src="../../js/mui.min.js"></script>
+		<!--h5刷新js-->
+		<!--<script src="../../js/utils/h5fresh.js"></script>-->
+		<!--公共事件js-->
+		<script src="../../js/utils/events.js"></script>
+		<!--公共接口js-->
+		<script src="../../js/publicProtocol.js"></script>
+		<!--求知接口js-->
+		<script src="../../js/publicQiuzhiProtocol.js"></script>
+		<!--刷新方法js-->
+		<script src="../../js/mui.pullToRefresh.js"></script>
+		<script src="../../js/mui.pullToRefresh.material.js"></script>
+		<!--本页面js-->
+		<script src="../../js/qiuzhi/attentionPersons.js"></script>
+	</body>
+
+</html>

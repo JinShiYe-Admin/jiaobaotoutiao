@@ -1,0 +1,1030 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<meta name="author" content="莫尚霖,email:444811716@qq.com" />
+		<meta name="description" content="群管理和人员资料" />
+		<link href="../../css/mui.min.css" rel="stylesheet" />
+		<link rel="stylesheet" href="../../css/utils/common.css" />
+		<link rel="stylesheet" href="../../css/iconfont/iconfont.css" />
+		<style>
+			body,
+			.mui-content {
+				background-color: white;
+			}
+
+			.mui-segmented-control.mui-segmented-control-inverted {
+				background-color: #efeff4;
+			}
+
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item:nth-last-child(2) {
+				border-right: none;
+			}
+
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item.mui-active {
+				border-bottom: none;
+			}
+
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item {
+				border-right: 1px solid #b7b7b7;
+				color: #323232;
+				line-height: inherit;
+				margin-top: 9px;
+			}
+
+			.mui-segmented-control.mui-segmented-control-inverted .mui-control-item:last-child {
+				border-right: none;
+			}
+
+			.mui-segmented-control.mui-segmented-control-inverted {
+				border-left: 3px solid #0099FF;
+				margin-top: 0px;
+			}
+
+			.mui-segmented-control .mui-control-item {
+				line-height: normal;
+			}
+
+			.mui-segmented-control.mui-scroll-wrapper .mui-scroll {
+				height: 38px;
+			}
+
+			.mui-slider-indicator .mui-icon.mui-icon-plus {
+				position: relative;
+				border: none;
+				font-size: 26px;
+				color: #C7C7CC;
+				line-height: inherit;
+				margin: 0px;
+				top: -3px;
+			}
+
+			.mui-popover {
+				text-align: center;
+				width: 80%;
+				left: 10%;
+				top: 30%;
+			}
+
+			.mui-popover-li {
+				height: 45px;
+				line-height: 45px;
+			}
+
+			.mui-checkbox {
+				position: absolute;
+			}
+
+			.popover-button {
+				text-align: center;
+				height: 53px;
+				padding-top: 10px;
+			}
+
+			.mui-checkbox input[type=checkbox]:checked:before,
+			.mui-radio input[type=radio]:checked:before {
+				color: #1DB8F1;
+			}
+
+			#noqun {
+				display: none;
+				padding-top: 20px;
+				text-align: center;
+				font-size: 13px;
+				color: #808080;
+			}
+
+			.icon-tianjia {
+				color: #1DB8F1;
+				font-size: 40px;
+				margin-top: 25px;
+			}
+
+			.mui-btn-blue {}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 id="title" class="mui-title"></h1>
+			<a id="changeInfo" class="mui-icon iconfont icon-changeinfo1 mui-pull-right" style="display: none;"></a>
+			<a id="addData" class="mui-icon iconfont icon-adddata1 mui-pull-right" style="display: none;margin-right: 5px;"></a>
+		</header>
+		<div id="content" class="mui-content">
+			<div id="noqun">
+				<div>现在还没有群请点击以下按钮创建群。</div>
+				<span class="mui-icon iconfont icon-tianjia qun-add"></span>
+			</div>
+			<div id="qun_sw" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted" style="visibility: hidden;">
+				<div id="qunList" class="mui-scroll">
+					<a id="qunAdd" class="mui-icon mui-icon-plus qun-add"></a>
+				</div>
+			</div>
+			<div id="slider_group" class="mui-slider-group" style="visibility: visible;margin-top: 0px;">
+			</div>
+			<div id="popover" class="mui-popover">
+				<ul class="mui-table-view">
+					<div style="height: 40px;line-height: 40px;font-size: 16px;">
+						选择身份:
+					</div>
+					<li class="mui-popover-li">
+						<div class="mui-input-row mui-checkbox mui-left">
+							<label id="parents_la" class="mui-ellipsis" style="text-align: left;">家长</label>
+							<input id="0" name="Checkbox" type="checkbox" checked>
+						</div>
+					</li>
+					<li class="mui-popover-li">
+						<div class="mui-input-row mui-checkbox mui-left">
+							<label id="teacher_la" class="mui-ellipsis" style="text-align: left;">老师</label>
+							<input id="2" name="Checkbox" type="checkbox">
+						</div>
+					</li>
+					<li class="mui-popover-li">
+						<div class="mui-input-row mui-checkbox mui-left">
+							<label id="student_la" class="mui-ellipsis" style="text-align: left;">学生</label>
+							<input id="3" name="Checkbox" type="checkbox">
+						</div>
+					</li>
+					<li class="popover-button">
+						<button id="commit" type="button" class="mui-btn mui-btn-blue" style="border: 1px solid #1DB8F1;background-color: #1DB8F1;">确定</button>
+						<button id="cancle" type="button" class="mui-btn mui-btn-blue mui-btn-outlined" style="border: 1px solid #1DB8F1;color:#1DB8F1 ;">取消</button>
+					</li>
+				</ul>
+			</div>
+		</div>
+		<script src="../../js/mui.min.js"></script>
+		<script type="text/javascript" src="../../js/publicProtocol.js"></script>
+		<script type="text/javascript" src="../../js/utils/events.js"></script>
+		<script type="text/javascript" src="../../js/utils/CloudFileUtil.js"></script>
+		<script type="text/javascript" src="../../js/qiniu/qiniu.js"></script>
+		<script type="text/javascript" src="../../js/utils/cryption.js"></script>
+		<script type="text/javascript">
+			var main; //获取当前窗体对象
+			var mainData; //接收页面传入参数值
+			var selectGid; //记录点击邀请或创建资料时的群id
+			var mstype = 0; //被邀请成为的类型
+			var personalUTID = window.myStorage.getItem(window.storageKeyName.PERSONALINFO).utid;
+			var qunsInfo = {
+				gidKey: [] //记录qunInfo的Key,即gid
+			}; //所有的群的信息
+			var beiZhu = {
+				utidKey: [] //记录beiZhu的Key,即utid
+			} //记录所有成员的备注
+			var uids = {
+				utidKey: [] //记录所有关联人员的手机号的Key,即utid
+			} //记录所有关联人员的手机号
+			//群底部列表的高度
+			var botHeight = localStorage.getItem('resolutionHeight') * 1 - (localStorage.getItem('getStatusbarHeight') * 1 + 45 + 38);
+
+			var qunList = document.getElementById("qunList"); //群列表
+			var qunAdd = document.getElementById("qunAdd"); //新增群按钮
+			mui.init({
+				gestureConfig: {
+					longtap: true, //默认为false
+				}
+			});
+
+			mui.plusReady(function() {
+				var wd = events.showWaiting();
+				initData();
+				getCGQun(wd);
+			});
+
+			/**
+			 * 初始化数据
+			 */
+			function initData() {
+				if(plus.webview.getWebviewById('group-pInfo.html') == null) {
+					events.preload('../quan/group-pInfo.html');
+				}
+				main = plus.webview.currentWebview(); //获取当前窗体对象
+				mainData = main.data; //接收页面传入参数值
+				//console.log(main.id + ' ' + JSON.stringify(mainData));
+
+				var link = document.createElement("link");
+				link.type = "text/css";
+				link.rel = "stylesheet";
+				if(mainData.type == 0) {
+					link.href = "../../css/mine/manager_member.css";
+					document.getElementById("title").innerText = '群管理';
+					document.getElementById("slider_group").style.textAlign = 'center';
+					var sWidth = parseInt(localStorage.getItem('resolutionWidth') * 0.8);
+					document.getElementById("parents_la").style.width = sWidth + 'px';
+					document.getElementById("teacher_la").style.width = sWidth + 'px';
+					document.getElementById("student_la").style.width = sWidth + 'px';
+					initMemberListener(); //初始化成员的监听
+				} else {
+					link.href = "../../css/mine/manager_data.css";
+					document.getElementById("title").innerText = '人员资料';
+					initDataListener(); //初始化人员资料的监听
+				}
+				document.getElementsByTagName("head")[0].appendChild(link);
+				initQunListener();
+			}
+
+			/**
+			 * 初始化与群有关的监听
+			 */
+			function initQunListener() {
+				//创建群
+				mui('.mui-content').on('tap', '.qun-add', function() {
+					events.openNewWindow('qun_manage_info.html');
+				});
+
+				//点击群名
+				mui('#qunList').on('tap', '.mui-control-item', function() {
+					var id = this.id.replace('qun_top_', '');
+					var info = qunsInfo[id];
+					////console.log(JSON.stringify(info));
+					selectGid = info.qunInfo.gid;
+					//是否是群管理
+					if(mainData.type == 0) {
+						if(!info.memKey) {
+							getMember(selectGid, -1);
+						}
+					} else {
+						if(!info.dataKey) {
+							getAllData(selectGid);
+						}
+					}
+				});
+
+				//点击修改群信息
+				document.getElementById('changeInfo').addEventListener('tap', function() {
+					events.openNewWindowWithData('qun_manage_info_change.html', {
+						gid: selectGid, //群ID
+						listener: {
+							webid: 'qun_manage_a.html',
+							winid: 'changeQunInfo'
+						} //webview的id
+					});
+				});
+
+				//创建一个群
+				window.addEventListener('createQun', function(e) {
+					var data = e.detail.data;
+					////console.log('createQun ' + JSON.stringify(data));
+					if(qunsInfo.gidKey.length != 0) { //有群
+						addQunItem(data, -1, 0);
+					} else { //没有群
+						getCGQun();
+					}
+				});
+
+				//修改群信息（群名称）
+				window.addEventListener('changeQunInfo', function(e) {
+					var data = e.detail;
+					////console.log('changeQunInfo ' + JSON.stringify(data));
+					if(data.type == 'gname') { //群名称
+						var element = document.getElementById("qun_top_" + data.gid);
+						element.innerText = data.value;
+						qunsInfo[data.gid].qunInfo.gname = data.value;
+					}
+				});
+			}
+
+			/**
+			 * 初始化成员的监听
+			 */
+			function initMemberListener() {
+				//点击成员
+				mui('#slider_group').on('tap', '.member-item', function() {
+					var ids = this.id.split('_');
+					var gid = ids[0];
+					var type = ids[1];
+					var utid = ids[2];
+					var info = qunsInfo[gid].members[type + '_' + utid];
+					var beizhu = beiZhu[info.utid];
+					mui.extend(true, info, beizhu);
+					info.isMaster = true;
+					////console.log(JSON.stringify(info));
+					events.fireToPageWithData('group-pInfo.html', 'postPInfo', info);
+				});
+
+				//长按成员
+				mui('#slider_group').on('longtap', '.member-item', function() {
+					var ids = this.id.split('_');
+					var gid = ids[0];
+					var type = ids[1];
+					var utid = ids[2];
+					var info = qunsInfo[gid].members[type + '_' + utid];
+					////console.log(JSON.stringify(info));
+					if(type == '1') {
+						mui.toast('不能删除群主');
+					} else {
+						var btnArray = ['否', '是'];
+						mui.confirm('确认删除？', '删除群成员', btnArray, function(e) {
+							if(e.index == 1) {
+								var wd = events.showWaiting();
+								var comData = {
+									vvl: info.gutid, //群成员群ID，gutid
+								};
+								//31.群成员退出群或者剔除群成员
+								postDataPro_PostGuD(comData, wd, function(data) {
+									//console.log('31 群成员退出群或者剔除群成员 PostGuD ' + JSON.stringify(data));
+									if(data.RspCode == 0) {
+										delMember(info.gid, info.utid, info.mstype);
+										mui.toast('删除成功');
+									} else {
+										mui.toast(data.RspTxt);
+									}
+									wd.close();
+								});
+							}
+						},"div");
+					}
+				});
+
+				//邀请群成员
+				mui('#slider_group').on('tap', '.member-add', function() {
+					////console.log('邀请群成员 ' + selectGid);
+					var info = qunsInfo[selectGid].qunInfo;
+					document.getElementById("parents_la").innerText = '邀请[家长]进入[' + info.gname + ']';
+					document.getElementById("teacher_la").innerText = '邀请[老师]进入[' + info.gname + ']';
+					document.getElementById("student_la").innerText = '邀请[学生]进入[' + info.gname + ']';
+					mui('#popover').popover('toggle');
+				});
+
+				//选择身份
+				mui('#popover').on('change', 'input', function() {
+					var id = this.id
+					////console.log(id + '|' + mstype);
+					if(id == mstype) {
+						document.getElementById(id).checked = true;
+					} else {
+						document.getElementById(mstype).checked = false;
+						document.getElementById(id).checked = true;
+						mstype = id;
+					}
+				});
+
+				//邀请成员 确定或取消
+				mui('#popover').on('tap', 'button', function() {
+					//console.log(this.id);
+					if(this.id == 'commit') {
+						var info = qunsInfo[selectGid].qunInfo;
+						events.openNewWindowWithData('qun_manage_invite_a.html', {
+							gid: info.gid, //群ID
+							gname: info.gname, //群名
+							mstype: mstype, //被邀请成为的类型
+							vtp: '1' //邀请人的类型（用户管理角色,0家长,1管理员,2老师,3学生）
+						});
+					}
+					mui('#popover').popover('hide');
+				});
+			}
+
+			/**
+			 * 初始化人员资料的监听
+			 */
+			function initDataListener() {
+				//点击资料
+				mui('#slider_group').on('tap', '.mui-table-view-cell', function() {
+					//是否是人员资料
+					var ids = this.id.split('_');
+					var gid = ids[0];
+					var stuid = ids[1];
+					var dataInfo = qunsInfo[gid].dataAll[stuid].info;
+					var qunInfo = qunsInfo[gid].qunInfo;
+					var data = {
+						gid: qunInfo.gid, //群id
+						gname: qunInfo.gname, //群名称
+						mstype: 1, //用户管理角色,0家长,1管理员,2老师,3学生
+						stuid: dataInfo.stuid, //资料id
+						stuname: dataInfo.stuname, //资料名称
+						stuimg: dataInfo.stuimg, //资料头像
+						type: '', //资料类型
+					}
+					switch(dataInfo.mstype) { //0家长,1管理员,2老师,3学生
+						case 0:
+							data.type = 'parents'; //资料类型
+							break;
+						case 1:
+							data.type = 'teacher'; //资料类型
+							break;
+						case 2:
+							data.type = 'teacher'; //资料类型
+							break;
+						case 3:
+							data.type = 'student'; //资料类型
+							break;
+						default:
+							break;
+					}
+					events.openNewWindowWithData('qun_data_details.html', data);
+				});
+
+				//长按资料
+				mui('#slider_group').on('longtap', '.mui-table-view-cell', function() {
+					var id = this.id;
+					var ids = this.id.split('_');
+					var gid = ids[0];
+					var stuid = ids[1];
+					var dataInfo = qunsInfo[gid].dataAll[stuid].info;
+					//console.log(JSON.stringify(dataInfo));
+					var btnArray = ['否', '是'];
+					var title = '';
+					if(dataInfo.mstype == 1 || dataInfo.mstype == 2) {
+						title = '您确定要删除吗？';
+					} else {
+						title = '您确定要删除吗？删除后记事将被清空哦';
+					}
+					mui.confirm(title, '删除资料', btnArray, function(e) {
+						if(e.index == 1) {
+							if(dataInfo.mstype == 1 || dataInfo.mstype == 2) {
+								//33.根据资料表ID删除资料
+								deleteData(dataInfo.stuid, id);
+							} else {
+								var wd = events.showWaiting();
+								//先删除家校圈的点到记事记录，再删除资料
+								var comData = {
+									studentId: dataInfo.stuid, //学生ID
+									classId: dataInfo.gid //班级ID
+								};
+								//75.（点到记事）删除某学生点到记事
+								postDataPro_delNoteByStudent(comData, wd, function(data) {
+									//console.log('75 删除某学生点到记事 delNoteByStudent ' + JSON.stringify(data));
+									if(data.RspCode == 0) {
+										mui.toast('删除记事成功,正在删除资料...');
+										var pathArray = [];
+										if(dataInfo.stuimg) {
+											pathArray.push(dataInfo.stuimg);
+											var img = dataInfo.stuimg.replace('/Thumb', ''); //原图
+											pathArray.push(img);
+										}
+										BatchDelete(pathArray, function() {
+											//33.根据资料表ID删除资料
+											deleteData(dataInfo.stuid, id, wd);
+										});
+									} else {
+										wd.close();
+										mui.toast('删除记事失败：' + data.RspTxt);
+									}
+								});
+							}
+						}
+					},"div");
+				});
+
+				//创建资料
+				document.getElementById('addData').addEventListener('tap', function() {
+					var data = {
+						gid: qunsInfo[selectGid].qunInfo.gid, //群id
+						gname: qunsInfo[selectGid].qunInfo.gname, //群名称
+					}
+					events.openNewWindowWithData('qun_data_create.html', data);
+				});
+
+				//增加一项新的资料
+				window.addEventListener('addData', function(e) {
+					var data = e.detail.data;
+					//console.log('addData ' + JSON.stringify(data));
+					var value = data.stuid;
+					qunsInfo[data.gid].dataKey.push(value); //资料的key
+					qunsInfo[data.gid].dataAll[value] = {} //初始化资料的信息
+					qunsInfo[data.gid].dataAll[value].info = data; //资料的value
+					//不同身份的key
+					var keys = data.mstype + '_key';
+					qunsInfo[data.gid][keys].push(value);
+					addDataItem(data.mstype, qunsInfo[data.gid].dataAll[value], 1);
+				});
+
+				//修改资料的姓名
+				window.addEventListener('changeName', function(e) {
+					var data = e.detail.data;
+					//console.log('changeName ' + JSON.stringify(data));
+					var id = data.gid + '_' + data.stuid;
+					if(data.stuname == '') {
+						document.getElementById("name_" + id).innerHTML = '&nbsp;';
+					} else {
+						document.getElementById("name_" + id).innerText = data.stuname;
+					}
+					qunsInfo[data.gid].dataAll[data.stuid].info.stuname = data.stuname;
+				});
+			}
+
+			/**
+			 * 获取创建的群
+			 */
+			function getCGQun(wd) {
+				var wd = wd || events.showWaiting();
+				var getQunData = {
+					vtp: 'cg', //要获取的项:cg(创建的群),ug(参与群),mg(协管的群),ag(所有的群)
+					vvl: personalUTID //查询的各项，对应人的utid，可以是查询的任何人
+				};
+				//9.获取用户群
+				postDataPro_PostGList(getQunData, wd, function(data) {
+					//console.log('9 获取用户群 创建的群 PostGList ' + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						document.getElementById("noqun").style.display = 'none';
+						document.getElementById("qun_sw").style.visibility = 'visible';
+						document.getElementById("slider_group").style.visibility = 'visible';
+						document.getElementById("changeInfo").style.display = 'inline';
+						for(var i = 0; i < data.RspData.length; i++) {
+							addQunItem(data.RspData[i], i, data.RspData.length);
+						}
+						mui(".mui-scroll-wrapper").scroll({
+							scrollY: true, //是否竖向滚动
+							scrollX: false, //是否横向滚动
+							indicators: true, //是否显示滚动条
+							deceleration: 0.0006, //阻尼系数,系数越小滑动越灵敏
+							bounce: false, //是否启用回弹
+						});
+						//获取成员或人员资料
+						if(mainData.type == 0) {
+							getMember(data.RspData[0].gid, -1, wd);
+						} else if(mainData.type == 1) {
+							getAllData(data.RspData[0].gid, wd);
+						}
+					} else if(data.RspCode == 9) { //没有创建的群
+						document.getElementById("noqun").style.display = 'block';
+						mui.toast('创建的群' + data.RspTxt);
+						wd.close();
+					} else {
+						mui.toast(data.RspTxt);
+						wd.close();
+					}
+
+				});
+			}
+
+			/**
+			 * 在界面中创建一个群的框架
+			 * @param {Object} data 数据
+			 * @param {Object} index 第几个数据
+			 * @param {Object} length 数据的总长度
+			 */
+			function addQunItem(data, index, length) {
+				////console.log('addQunItem ' + index + '|' + length + '|' + JSON.stringify(data));
+				qunsInfo.gidKey.push(data.gid); //记录gid
+				qunsInfo[data.gid] = {};
+				qunsInfo[data.gid].qunInfo = data; //记录群信息
+
+				var className1 = ''; //顶部
+				var className2 = ''; //底部
+				var invite = ''; //邀请
+
+				//是否是第一个群
+				if(index == 0) {
+					className1 = 'mui-control-item mui-active';
+					className2 = 'mui-slider-item mui-control-content mui-active';
+					selectGid = data.gid;
+				} else {
+					className1 = 'mui-control-item';
+					className2 = 'mui-slider-item mui-control-content';
+				}
+				//是否是群管理
+				if(mainData.type == 0) {
+					invite = '<ul id="qun_bottom_ul_' + data.gid + '" class="mui-table-view">\
+								<li class="mui-table-view-cell mui-media member-add">\
+									<span class="mui-media-body mui-icon iconfont icon-yaoqing0"></span>\
+									<div class="mui-media-body mui-ellipsis ">邀请</div>\
+								</li>\
+							</ul>';
+				} else {
+					document.getElementById("addData").style.display = 'inline';
+					invite = '<ul id="qun_bottom_tea_ul_' + data.gid + '" class="mui-table-view">\
+							  </ul>\
+							  <ul id="qun_bottom_stu_ul_' + data.gid + '" class="mui-table-view">\
+							  </ul>';
+				}
+
+				//---顶部--start---
+				var element1 = document.createElement('a');
+				element1.id = 'qun_top_' + data.gid;
+				element1.className = className1;
+				element1.href = '#qun_bottom_' + data.gid;
+				element1.innerText = data.gname;
+				qunList.insertBefore(element1, qunAdd);
+				//---顶部---end---
+
+				//---底部---start---
+				var element2 = document.createElement('div');
+				element2.id = 'qun_bottom_' + data.gid;
+				element2.className = className2;
+				element2.innerHTML = '<div class="mui-scroll-wrapper" style="height:' + botHeight + 'px;">\
+										<div class="mui-scroll">\
+											' + invite + '\
+										</div>\
+									  </div>';
+				document.getElementById("slider_group").appendChild(element2);
+				//---底部---end---
+			}
+
+			//---成员---start---
+
+			/**
+			 * 界面中创建一个成员
+			 * @param {Object} type 类型
+			 * @param {Object} data 成员的数据
+			 */
+			function addMemItem(type, data) {
+				////console.log('addMemItem ' + type + '|' + JSON.stringify(data));
+				var element = document.createElement('li');
+				element.id = data.gid + '_' + type + '_' + data.utid;
+				element.className = 'mui-table-view-cell mui-media member-item';
+				element.innerHTML = '<img src="' + updateHeadImg(data.uimg, 2) + '" />\
+									 <div id="name_' + data.gid + '_' + type + '_' + data.utid + '" class="mui-media-body mui-ellipsis"></div>';
+				document.getElementById('qun_bottom_ul_' + data.gid).appendChild(element);
+
+				//设置名称
+				var name = '';
+				if(beiZhu[data.utid]) {
+					//使用备注
+					name = beiZhu[data.utid].bunick;
+				} else if(data.ugname == null || data.ugname == '') { //没有群昵称
+					//使用用户昵称
+					name = data.ugnick;
+				} else {
+					//使用群昵称
+					name = data.ugname;
+				}
+				//0家长,1管理员,2老师,3学生
+				switch(parseInt(type)) {
+					case 0:
+						name = '[家长]' + name;
+						break;
+					case 1:
+					case 2:
+						name = '[老师]' + name;
+						break;
+					case 3:
+						name = '[学生]' + name;
+						break;
+					default:
+						break;
+				}
+				document.getElementById("name_" + data.gid + '_' + type + '_' + data.utid).innerText = name;
+
+				//群主红名
+				if(data.mstype == 1) {
+					document.getElementById("name_" + data.gid + '_' + type + '_' + data.utid).style.color = 'red';
+				}
+			}
+
+			/**
+			 * 通过群ID获取群的正常用户
+			 * @param {Object} gid 群ID
+			 * @param {Object} vvl1 //群员类型，0家长,1管理员,2老师,3学生,-1取全部
+			 */
+			function getMember(gid, vvl1, wd) {
+				var wd = wd || events.showWaiting();
+				qunsInfo[gid].memKey = []; //所有成员数据的key
+				qunsInfo[gid].members = {}; //记录成员的数据
+				var keys = ['0_key', '1_key', '2_key', '3_key'];
+				//初始化所有成员类型的key
+				for(var k = 0; k < keys.length; k++) {
+					qunsInfo[gid][keys[k]] = [];
+				}
+				var tempArray = []; //获取备注的用户
+				var getMemData = {
+					top: '-1', //选择条数,-1取全部
+					vvl: gid, //群ID，查询的值
+					vvl1: vvl1, //群员类型，0家长,1管理员,2老师,3学生,-1取全部
+				};
+
+				//13.通过群ID获取群的正常用户
+				postDataPro_PostGusers(getMemData, wd, function(data) {
+					//console.log('13 通过群ID获取群的正常用户 PostGusers ' + JSON.stringify(data));
+					document.getElementById("qun_top_" + gid).setAttribute('data-code', data.RspCode);
+					if(data.RspCode == 0) {
+						for(var i = 0; i < data.RspData.length; i++) {
+							var value = data.RspData[i].mstype + '_' + data.RspData[i].utid;
+							qunsInfo[gid].memKey.push(value); //成员的key
+							qunsInfo[gid].members[value] = data.RspData[i]; //成员的value
+							//不同身份的key
+							qunsInfo[gid][keys[data.RspData[i].mstype]].push(value);
+							//如果没有这个人的备注记录并且不是自己
+							if(!beiZhu[data.RspData[i].utid] && personalUTID != data.RspData[i].utid) {
+								tempArray.push(data.RspData[i].utid);
+							}
+						}
+						////console.log('qunsInfo ' + JSON.stringify(qunsInfo));
+						//获取备注
+						getBeiZhu(gid, tempArray, wd, function() {
+							var order = ['1_key', '2_key', '0_key', '3_key'];
+							for(var i = 0; i < order.length; i++) {
+								var item = qunsInfo[gid][order[i]];
+								for(var j = 0; j < item.length; j++) {
+									var type = item[j].split('_')[0];
+									addMemItem(type, qunsInfo[gid].members[item[j]]);
+								}
+							}
+							events.closeWaiting(wd);
+						});
+					} else {
+						wd.close();
+						mui.toast(data.RspTxt);
+					}
+				});
+			}
+
+			/**
+			 * 获取备注
+			 * @param {Object} gid 群id
+			 * @param {Object} utids utid数组
+			 */
+			function getBeiZhu(gid, utids, wd, callback) {
+				if(utids.length == 0) {
+					callback();
+					return false;
+				}
+				var vvl = utids.join(',')
+				var comData = {
+					vvl: vvl //被备注用户ID,utid或utid串
+				};
+				//35.个人获取对某人或一群人的备注
+				postDataPro_PostUmk(comData, wd, function(data) {
+					//console.log('35 个人获取对某人或一群人的备注 PostUmk ' + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						for(var i = 0; i < data.RspData.length; i++) {
+							beiZhu[data.RspData[i].butid] = data.RspData[i];
+						}
+					} else {
+						if(data.RspCode != 9) {
+							mui.toast(data.RspTxt);
+						}
+					}
+					callback();
+				});
+			}
+
+			/**
+			 * 删除成员
+			 * @param {Object} gid 群id
+			 * @param {Object} utid 用户utid
+			 *  @param {Object} utype 用户类型
+			 */
+			function delMember(gid, utid, utype) {
+				var id = gid + '_' + utype + '_' + utid;
+				var element = document.getElementById(id);
+				if(element) {
+					var parNode = element.parentNode;
+					parNode.removeChild(element);
+				}
+			}
+
+			//---成员---end---
+
+			//---资料---start---
+
+			/**
+			 * 界面生成一项资料
+			 * @param {Object} type
+			 * @param {Object} data
+			 */
+			function addDataItem(type, dataAll) {
+				////console.log('addDataItem ' + JSON.stringify(dataAll));
+				var data = dataAll.info;
+				var guanLian = dataAll.guanLian;
+				var element = document.createElement('li');
+				element.id = data.gid + '_' + data.stuid;
+				element.className = 'mui-table-view-cell';
+				var phoneId = '';
+				var showType = type;
+				if(type == '1' || type == '2') {
+					showType = '老师';
+					phoneId = 'teacher_' + data.gid + '_' + data.stuid;
+				} else {
+					showType = '学生';
+					phoneId = 'parent_' + data.gid + '_' + data.stuid;
+				}
+				element.innerHTML = '<div class="mui-navigate-right">\
+										<div id="name_' + data.gid + '_' + data.stuid + '" class="mui-ellipsis  data-name"></div>\
+										<div class="mui-ellipsis  data-type">' + showType + '</div>\
+										<div id="' + phoneId + '" class="mui-ellipsis  data-parent"></div>\
+									</div>';
+
+				if(type == '2') {
+					var table_ul = document.getElementById("qun_bottom_tea_ul_" + data.gid);
+					table_ul.appendChild(element);
+				} else if(type == '1') {
+					var table_ul = document.getElementById("qun_bottom_tea_ul_" + data.gid);
+					if(table_ul.children[0]) {
+						table_ul.insertBefore(element, table_ul.children[0]);
+					} else {
+						table_ul.appendChild(element);
+					}
+				} else {
+					var table_ul = document.getElementById("qun_bottom_stu_ul_" + data.gid);
+					table_ul.appendChild(element);
+				}
+
+				//资料名称为空
+				if(data.stuname == '') {
+					document.getElementById("name_" + data.gid + '_' + data.stuid).innerHTML = '&nbsp;';
+				} else {
+					document.getElementById("name_" + data.gid + '_' + data.stuid).innerText = data.stuname;
+				}
+				if(guanLian) {
+					if(uids[guanLian.utid]) {
+						var tel = uids[guanLian.utid].uid;
+						if(type == '1' || type == '2') {
+							tel = '电话:' + tel;
+						} else {
+							tel = '家长:' + tel;
+						}
+						document.getElementById(phoneId).innerHTML = tel;
+					}
+				}
+			}
+
+			/**
+			 * 获取所有的资料
+			 * @param {Object} gid 群id
+			 */
+			function getAllData(gid, wd) {
+				var wd = wd || events.showWaiting();
+				qunsInfo[gid].dataKey = []; //所有人员资料数据的key
+				qunsInfo[gid].dataAll = {}; //记录人员资料数据的value
+				var keys = ['0_key', '1_key', '2_key', '3_key'];
+				//初始化所有人员资料类型的key
+				for(var k = 0; k < keys.length; k++) {
+					qunsInfo[gid][keys[k]] = [];
+				}
+				var tempArray = []; //获取关联用户的资料id
+				var getMemData = {
+					vtp: '0', //获取类型,0普通资料获取,1邀请排除(主老师用)
+					top: '-1', //选择条数,-1取全部
+					vvl: gid, //群ID，查询的值
+					vvl1: '-1', //类型,0家长,1管理员,2老师,3学生,-1全部
+				};
+				//16.通过群ID获取群对象资料
+				postDataPro_PostGUInf(getMemData, wd, function(data) {
+					//console.log('16 通过群ID获取群对象资料 PostGUInf ' + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						for(var i = 0; i < data.RspData.length; i++) {
+							var value = data.RspData[i].stuid;
+							tempArray.push(value);
+							qunsInfo[gid].dataKey.push(value); //资料的key
+							qunsInfo[gid].dataAll[value] = {} //初始化资料的信息
+							qunsInfo[gid].dataAll[value].info = data.RspData[i]; //资料的value
+							//不同身份的key
+							qunsInfo[gid][keys[data.RspData[i].mstype]].push(value);
+						}
+						getGuanLian(tempArray, gid, wd, function() {
+							var order = ['1_key', '2_key', '3_key'];
+							for(var i = 0; i < order.length; i++) {
+								var item = qunsInfo[gid][order[i]];
+								////console.log('item ' + JSON.stringify(item));
+								for(var j = 0; j < item.length; j++) {
+									var type = order[i].split('_')[0];
+									addDataItem(type, qunsInfo[gid].dataAll[item[j]]);
+								}
+							}
+							events.closeWaiting(wd);
+						});
+					} else {
+						mui.toast(data.RspTxt);
+						wd.close();
+					}
+				});
+			}
+
+			/**
+			 * 通过资料ID获取关联的人员
+			 * @param {Object} stuids
+			 * @param {Object} gid
+			 */
+			function getGuanLian(stuids, gid, wd, callback) {
+				if(stuids.length == 0) {
+					callback();
+					return false;
+				}
+				var vvl = stuids.join(',');
+				var comData2 = {
+					vvl: vvl, //群成员群ID，Stuid或ID串
+					vtp: 'ids' //资料ID类型,Id:单个ID,ids:ID串
+				};
+				var temp = {
+					utids: [] //记录获取手机号的utid
+				};
+				//30.通过资料ID获取关联的人员
+				postDataPro_PostStuU(comData2, wd, function(data) {
+					//console.log('30 通过资料ID获取关联的人员 PostStuU ' + JSON.stringify(data));
+					if(data.RspCode == 0) {
+						for(var i = 0; i < data.RspData.length; i++) {
+							////console.log(JSON.stringify(data.RspData[i]));
+							var value = data.RspData[i].stuid;
+							//只获取一个
+							if(gid == data.RspData[i].gid && !qunsInfo[gid].dataAll[value].guanLian) {
+								qunsInfo[gid].dataAll[value].guanLian = data.RspData[i];
+								var utid = data.RspData[i].utid;
+								//不是重复的utid并且没有这个人的电话
+								if(!temp[utid] && !uids[utid]) {
+									temp.utids.push(utid);
+									temp[utid] = utid;
+								}
+							}
+						}
+						////console.log('qunsInfo ' + JSON.stringify(qunsInfo));
+					} else {
+						if(data.RspCode != 9) {
+							mui.toast(data.RspTxt);
+						}
+					}
+					//获取手机号
+					getUid(temp.utids, wd, function() {
+						callback();
+					});
+				});
+			}
+
+			/**
+			 * 获取手机号
+			 * @param {Object} parList
+			 */
+			function getUid(utids, wd, callback) {
+				if(utids.length == 0) {
+					callback();
+					return false;
+				}
+				var vvl = utids.join(',')
+				var comData = {
+					vvl: vvl, //用户id，查询的值,p传个人ID,g传ID串
+					vtp: 'g' //查询类型,p(个人)g(id串)
+				};
+				//21.通过用户ID或ID串获取用户资料
+				postDataPro_PostUinf(comData, wd, function(data) {
+					//console.log('21.通过用户ID获取用户资料postDataPro_PostUinf:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						for(var i = 0; i < data.RspData.length; i++) {
+							////console.log(JSON.stringify(data.RspData[i]));
+							var utid = data.RspData[i].utid;
+							uids[utid] = data.RspData[i]
+						}
+					} else {
+						if(data.RspCode != 9) {
+							mui.toast(data.RspTxt);
+						}
+					}
+					callback();
+				});
+			}
+
+			/**
+			 * 根据资料表ID删除资料
+			 * @param {Object} stuid 资料id
+			 * @param {Object} id 元素id
+			 */
+			function deleteData(stuid, id, wd) {
+				var wd = wd || events.showWaiting();
+				//33.根据资料表ID删除资料
+				//所需参数
+				var comData2 = {
+					vvl: stuid, //资料ID，stuid
+				};
+
+				postDataPro_PostStuD(comData2, wd, function(data) {
+					//console.log('90909090success:RspCode:' + data.RspCode + ',RspData:' + JSON.stringify(data.RspData) + ',RspTxt:' + data.RspTxt);
+					if(data.RspCode == 0) {
+						mui.toast('删除资料成功');
+						document.getElementById(id).parentNode.removeChild(document.getElementById(id));
+					} else {
+						mui.toast('删除资料失败：' + data.RspTxt);
+					}
+					wd.close();
+				});
+			}
+
+			/**
+			 * 删除七牛文件
+			 */
+			function BatchDelete(paths, callback) {
+				if(paths.length == 0) {
+					callback();
+					return false;;
+				}
+				var batchDelete = {
+					appId: 6, //int 必填 项目id
+					urls: paths //array 必填 需要获取下载token文件的路径
+				}
+				/**
+				 * 七牛批量删除
+				 */
+				CloudFileUtil.BatchDelete(window.storageKeyName.QNGETTOKENDELETE, batchDelete, function(data) {
+						if(data.Status == 1) {
+							//console.log('七牛删除成功 ' + JSON.stringify(data));
+						} else {
+							//console.log('### ERROR ### 七牛删除失败 ### ' + JSON.stringify(data));
+							mui.toast('云端文件删除失败 ' + JSON.stringify(data));
+						}
+						callback();
+					},
+					function(xhr, type, errorThrown) {
+						//console.log('### ERROR ### 请求七牛删除失败 ### ' + JSON.stringify(type));
+						mui.toast('请求删除失败' + JSON.stringify(type));
+						callback();
+					}
+				);
+			}
+
+			//---资料---end---
+		</script>
+	</body>
+
+</html>
