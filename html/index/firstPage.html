@@ -9,8 +9,9 @@
 	</head>
 
 	<body>
-		<div style="background-image:url(../../image/ios_1242-2208.png);background-position: center; background-size: cover;background-repeat: no-repeat;" class="mui-fullscreen" style="width: 100%;height: 100%;"></div>
+		<div style="background-image:url(../../image/first.png);background-position: center; background-size: cover;background-repeat: no-repeat;" class="mui-fullscreen" style="width: 100%;height: 100%;"></div>
 		<script src="../../js/mui.min.js"></script>
+		<script src="../../js/utils/utils.js"></script>
 		<script src="../../js/utils/events.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/publicProtocol.js" type="text/javascript" charset="utf-8"></script>
 		<script src="../../js/utils/app-update.js" type="text/javascript" charset="utf-8"></script>
@@ -107,7 +108,7 @@
 					return false;
 				};
 				//判断是否需要更新
-				setTimeout(appUpdate.updateApp, 5000);
+				// setTimeout(appUpdate.updateApp, 5000);
 				//默认自动登录
 				login();
 			});

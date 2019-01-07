@@ -2,17 +2,17 @@
 
 var storageKeyName = (function(mod) {
 
-	mod.key = 3; //0,开发;1,测试--教宝云;2,测试--微视学堂 3外网--微视学堂 4外网--教宝云
-	var exLog = console.log;
-	console.log = function(hint, object) {
-		if(mod.key === 3) {
-			var argus = hint;
-			if(typeof(object)!=='undefined') {
-				argus = hint + JSON.stringify(object);
-			}
-			exLog.apply(this, [argus]);
-		}
-	}
+	mod.key = 0; //0,开发;1,测试--教宝云;2,测试--微视学堂 3外网--微视学堂 4外网--教宝云
+// 	var exLog = console.log;
+// 	console.log = function(hint, object) {
+// 		if(mod.key === 0) {
+// 			var argus = hint;
+// 			if(typeof(object)!=='undefined') {
+// 				argus = hint + JSON.stringify(object);
+// 			}
+// 			exLog.apply(this, [argus]);
+// 		}
+// 	}
 	switch(mod.key) {
 		case 0: //开发
 			//---开发---start---
@@ -71,13 +71,12 @@ var storageKeyName = (function(mod) {
 			mod.QNGETTOKENDELETE = 'http://114.215.222.186:8005/Api/QiNiu/Delete'; //获取批量（或者一个）删除七牛文件的token的url
 			break;
 		case 3: //外网--微视学堂
-			//---移动版---start---
-			mod.MAINEDU = 'http://114.215.222.186:8009/'; //科教图片url
-			mod.MAINURL = 'http://114.215.222.186:8009/api/CloudApi/'; //主url
-			mod.MAINJIAOXIAOURL = 'http://114.215.222.194:8088/JiaoBaoCloudService/'; //家校圈url
-			mod.MAINHOMEWORKURL = 'http://114.215.222.186:8008/'; //作业主url
-			mod.MAINQIUZHI = 'http://114.215.222.194:8088/JiaoBaoCloudService/'; //求知主url
-			mod.MAINMICROCLASS = 'http://114.215.222.194:8088/JiaoBaoCloudService/'; //微课主url
+			mod.MAINEDU = 'https://jbyc.jiaobaowang.net:8442/'; //科教图片url
+			mod.MAINURL = 'https://jbyc.jiaobaowang.net:8442/api/CloudApi/'; //主url
+			mod.MAINJIAOXIAOURL = 'https://jbyj.jiaobaowang.net:9443/JiaoBaoCloudService/'; //家校圈url
+			mod.MAINHOMEWORKURL = 'https://jbyc.jiaobaowang.net:8448/'; //作业主url
+			mod.MAINQIUZHI = 'https://jbyj.jiaobaowang.net:9443/JiaoBaoCloudService/'; //求知主url
+			mod.MAINMICROCLASS = 'https://jbyj.jiaobaowang.net:9443/JiaoBaoCloudService/'; //微课主url
 			//---外网---end---
 
 			//---七牛空间和接口---测试---start---
